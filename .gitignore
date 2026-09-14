@@ -1,0 +1,50 @@
+# ==============================================================================
+# Git Ignore Configuration - TESI Nicola Flego
+# ==============================================================================
+
+# --- Secrets, API Keys & Environment Variables ---
+.env
+.env.*
+!.env.example
+
+# --- Python Environments, Caches & Bytecode ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.hypothesis/
+build/
+dist/
+*.egg-info/
+
+# --- IDE & Editor Specific Files ---
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# --- Temporary Files, Diagnostics & Logs ---
+*.log
+*.tmp
+scratch/
+
+# --- Database & Benchmark Caches (Generated Run-Time Data) ---
+*.db
+*.sqlite
+*.sqlite3
+dataset/*.db
+dataset/benchmark.db
+
+# --- Heavy Artifacts & Test Execution Outputs ---
+# I risultati e report benchmark possono essere rigenerati via CLI
+results/
+Test_code/**/results/
+Test_code/**/documentation.db
+Test_code/**/LLM_INTERACTIONS_LOG.md
+Test_code/**/extracted_metadata.json

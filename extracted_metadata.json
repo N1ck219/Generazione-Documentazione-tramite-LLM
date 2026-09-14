@@ -1,0 +1,496 @@
+{
+  "ring_buffer.h": {
+    "file": "d:\\python\\TESI_Nicola_Flego\\Test_code\\Easy C\\ring_buffer.h",
+    "includes": [
+      {
+        "included_file": "stddef.h",
+        "line": 4
+      },
+      {
+        "included_file": "stdbool.h",
+        "line": 5
+      }
+    ],
+    "enums": [
+      {
+        "name": "rb_status_t",
+        "values": [
+          {
+            "name": "RB_OK",
+            "value": 0
+          },
+          {
+            "name": "RB_ERR_NULL_PTR",
+            "value": -1
+          },
+          {
+            "name": "RB_ERR_FULL",
+            "value": -2
+          },
+          {
+            "name": "RB_ERR_EMPTY",
+            "value": -3
+          },
+          {
+            "name": "RB_ERR_NO_MEM",
+            "value": -4
+          }
+        ],
+        "line": 10
+      }
+    ],
+    "structs": [
+      {
+        "name": "RingBuffer",
+        "fields": [
+          {
+            "name": "data",
+            "type": "int *"
+          },
+          {
+            "name": "capacity",
+            "type": "size_t"
+          },
+          {
+            "name": "head",
+            "type": "size_t"
+          },
+          {
+            "name": "tail",
+            "type": "size_t"
+          },
+          {
+            "name": "count",
+            "type": "size_t"
+          }
+        ],
+        "line": 21,
+        "raw_comment": "/**\n * Struttura principale del buffer circolare.\n */"
+      }
+    ],
+    "classes": [],
+    "typedefs": [
+      {
+        "name": "rb_status_t",
+        "underlying_type": "enum rb_status_t",
+        "line": 16
+      },
+      {
+        "name": "RingBuffer",
+        "underlying_type": "struct RingBuffer",
+        "line": 27
+      }
+    ],
+    "macros": [
+      {
+        "name": "_WIN32",
+        "line": 356
+      },
+      {
+        "name": "_WIN64",
+        "line": 357
+      },
+      {
+        "name": "_M_FP_CONTRACT",
+        "line": 358
+      },
+      {
+        "name": "_M_FP_PRECISE",
+        "line": 359
+      },
+      {
+        "name": "_MSC_VER",
+        "line": 360
+      },
+      {
+        "name": "_MSC_FULL_VER",
+        "line": 361
+      },
+      {
+        "name": "_MSC_BUILD",
+        "line": 362
+      },
+      {
+        "name": "_MSVC_CONSTEXPR_ATTRIBUTE",
+        "line": 363
+      },
+      {
+        "name": "_MSC_EXTENSIONS",
+        "line": 364
+      },
+      {
+        "name": "_ISO_VOLATILE",
+        "line": 365
+      },
+      {
+        "name": "_INTEGRAL_MAX_BITS",
+        "line": 366
+      },
+      {
+        "name": "_MSVC_EXECUTION_CHARACTER_SET",
+        "line": 368
+      },
+      {
+        "name": "_M_X64",
+        "line": 369
+      },
+      {
+        "name": "_M_AMD64",
+        "line": 370
+      },
+      {
+        "name": "RING_BUFFER_H",
+        "line": 2
+      }
+    ],
+    "functions": [
+      {
+        "name": "rb_init",
+        "return_type": "rb_status_t",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "RingBuffer *"
+          },
+          {
+            "name": "capacity",
+            "type": "size_t"
+          }
+        ],
+        "is_definition": false,
+        "callees": [],
+        "line": 30,
+        "raw_comment": null,
+        "source_code": "rb_status_t rb_init(RingBuffer *rb, size_t capacity);\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_free",
+        "return_type": "void",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "RingBuffer *"
+          }
+        ],
+        "is_definition": false,
+        "callees": [],
+        "line": 31,
+        "raw_comment": null,
+        "source_code": "void rb_free(RingBuffer *rb);\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_push",
+        "return_type": "rb_status_t",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "RingBuffer *"
+          },
+          {
+            "name": "value",
+            "type": "int"
+          }
+        ],
+        "is_definition": false,
+        "callees": [],
+        "line": 34,
+        "raw_comment": null,
+        "source_code": "rb_status_t rb_push(RingBuffer *rb, int value);\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_pop",
+        "return_type": "rb_status_t",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "RingBuffer *"
+          },
+          {
+            "name": "out_value",
+            "type": "int *"
+          }
+        ],
+        "is_definition": false,
+        "callees": [],
+        "line": 35,
+        "raw_comment": null,
+        "source_code": "rb_status_t rb_pop(RingBuffer *rb, int *out_value);\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_is_full",
+        "return_type": "bool",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "const RingBuffer *"
+          }
+        ],
+        "is_definition": false,
+        "callees": [],
+        "line": 38,
+        "raw_comment": null,
+        "source_code": "bool rb_is_full(const RingBuffer *rb);\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_is_empty",
+        "return_type": "bool",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "const RingBuffer *"
+          }
+        ],
+        "is_definition": false,
+        "callees": [],
+        "line": 39,
+        "raw_comment": null,
+        "source_code": "bool rb_is_empty(const RingBuffer *rb);\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_size",
+        "return_type": "size_t",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "const RingBuffer *"
+          }
+        ],
+        "is_definition": false,
+        "callees": [],
+        "line": 40,
+        "raw_comment": null,
+        "source_code": "size_t rb_size(const RingBuffer *rb);\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      }
+    ]
+  },
+  "ring_buffer.c": {
+    "file": "d:\\python\\TESI_Nicola_Flego\\Test_code\\Easy C\\ring_buffer.c",
+    "includes": [
+      {
+        "included_file": "ring_buffer.h",
+        "line": 1
+      },
+      {
+        "included_file": "stdlib.h",
+        "line": 2
+      }
+    ],
+    "enums": [],
+    "structs": [],
+    "classes": [],
+    "typedefs": [],
+    "macros": [
+      {
+        "name": "_WIN32",
+        "line": 356
+      },
+      {
+        "name": "_WIN64",
+        "line": 357
+      },
+      {
+        "name": "_M_FP_CONTRACT",
+        "line": 358
+      },
+      {
+        "name": "_M_FP_PRECISE",
+        "line": 359
+      },
+      {
+        "name": "_MSC_VER",
+        "line": 360
+      },
+      {
+        "name": "_MSC_FULL_VER",
+        "line": 361
+      },
+      {
+        "name": "_MSC_BUILD",
+        "line": 362
+      },
+      {
+        "name": "_MSVC_CONSTEXPR_ATTRIBUTE",
+        "line": 363
+      },
+      {
+        "name": "_MSC_EXTENSIONS",
+        "line": 364
+      },
+      {
+        "name": "_ISO_VOLATILE",
+        "line": 365
+      },
+      {
+        "name": "_INTEGRAL_MAX_BITS",
+        "line": 366
+      },
+      {
+        "name": "_MSVC_EXECUTION_CHARACTER_SET",
+        "line": 368
+      },
+      {
+        "name": "_M_X64",
+        "line": 369
+      },
+      {
+        "name": "_M_AMD64",
+        "line": 370
+      }
+    ],
+    "functions": [
+      {
+        "name": "rb_init",
+        "return_type": "rb_status_t",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "RingBuffer *"
+          },
+          {
+            "name": "capacity",
+            "type": "size_t"
+          }
+        ],
+        "is_definition": true,
+        "callees": [
+          "malloc"
+        ],
+        "line": 4,
+        "raw_comment": null,
+        "source_code": "rb_status_t rb_init(RingBuffer *rb, size_t capacity) {\n    if (rb == NULL || capacity == 0) {\n        return RB_ERR_NULL_PTR;\n    }\n\n    rb->data = (int *)malloc(capacity * sizeof(int));\n    if (rb->data == NULL) {\n        return RB_ERR_NO_MEM;\n    }\n\n    rb->capacity = capacity;\n    rb->head = 0;\n    rb->tail = 0;\n    rb->count = 0;\n\n    return RB_OK;\n}\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(N) (allocazione/copia dinamica)"
+      },
+      {
+        "name": "rb_free",
+        "return_type": "void",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "RingBuffer *"
+          }
+        ],
+        "is_definition": true,
+        "callees": [
+          "free"
+        ],
+        "line": 22,
+        "raw_comment": null,
+        "source_code": "void rb_free(RingBuffer *rb) {\n    if (rb != NULL && rb->data != NULL) {\n        free(rb->data);\n        rb->data = NULL;\n        rb->capacity = 0;\n        rb->head = 0;\n        rb->tail = 0;\n        rb->count = 0;\n    }\n}\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_push",
+        "return_type": "rb_status_t",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "RingBuffer *"
+          },
+          {
+            "name": "value",
+            "type": "int"
+          }
+        ],
+        "is_definition": true,
+        "callees": [
+          "rb_is_full"
+        ],
+        "line": 33,
+        "raw_comment": null,
+        "source_code": "rb_status_t rb_push(RingBuffer *rb, int value) {\n    if (rb == NULL || rb->data == NULL) {\n        return RB_ERR_NULL_PTR;\n    }\n\n    if (rb_is_full(rb)) {\n        return RB_ERR_FULL;\n    }\n\n    rb->data[rb->head] = value;\n    rb->head = (rb->head + 1) % rb->capacity;\n    rb->count++;\n\n    return RB_OK;\n}\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_pop",
+        "return_type": "rb_status_t",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "RingBuffer *"
+          },
+          {
+            "name": "out_value",
+            "type": "int *"
+          }
+        ],
+        "is_definition": true,
+        "callees": [
+          "rb_is_empty"
+        ],
+        "line": 49,
+        "raw_comment": null,
+        "source_code": "rb_status_t rb_pop(RingBuffer *rb, int *out_value) {\n    if (rb == NULL || rb->data == NULL || out_value == NULL) {\n        return RB_ERR_NULL_PTR;\n    }\n\n    if (rb_is_empty(rb)) {\n        return RB_ERR_EMPTY;\n    }\n\n    *out_value = rb->data[rb->tail];\n    rb->tail = (rb->tail + 1) % rb->capacity;\n    rb->count--;\n\n    return RB_OK;\n}\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_is_full",
+        "return_type": "bool",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "const RingBuffer *"
+          }
+        ],
+        "is_definition": true,
+        "callees": [],
+        "line": 65,
+        "raw_comment": null,
+        "source_code": "bool rb_is_full(const RingBuffer *rb) {\n    return (rb != NULL) && (rb->count == rb->capacity);\n}\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_is_empty",
+        "return_type": "bool",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "const RingBuffer *"
+          }
+        ],
+        "is_definition": true,
+        "callees": [],
+        "line": 69,
+        "raw_comment": null,
+        "source_code": "bool rb_is_empty(const RingBuffer *rb) {\n    return (rb != NULL) && (rb->count == 0);\n}\n",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      },
+      {
+        "name": "rb_size",
+        "return_type": "size_t",
+        "parameters": [
+          {
+            "name": "rb",
+            "type": "const RingBuffer *"
+          }
+        ],
+        "is_definition": true,
+        "callees": [],
+        "line": 73,
+        "raw_comment": null,
+        "source_code": "size_t rb_size(const RingBuffer *rb) {\n    return (rb != NULL) ? rb->count : 0;\n}",
+        "time_complexity": "O(1)",
+        "space_complexity": "O(1) (spazio ausiliario)"
+      }
+    ]
+  }
+}
