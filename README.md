@@ -95,17 +95,39 @@ Il programma principale si avvia tramite `main.py` e supporta sia l'interfaccia 
 
 ### Sintassi dei Comandi
 
+Il programma principale si avvia tramite `main.py` e supporta sia l'interfaccia guidata interattiva sia l'esecuzione diretta con argomenti standard da riga di comando (`argparse`).
+
 ```bash
-python main.py [NUMERO_PROGETTO] [FLAG_OPZIONALI]
+# Modalità guidata con menu a selezione:
+python main.py
+
+# Esecuzione diretta con opzioni da terminale:
+python main.py -p <PROGETTO> [-m {single,multiagent}] [-f] [-e] [--lang {en,it}]
 ```
 
-### Tabella dei Flag Disponibili
+### Tabella dei Parametri Disponibili
 
-| Flag CLI | Flag Breve | Descrizione |
-| :--- | :--- | :--- |
-| `--export` | `-e` o `e` | **Export Rapido**: rigenera istantaneamente il file `DOCUMENTATION.md`, il portale `FULL_DOCUMENTATION.html` ed il grafo interattivo Cytoscape.js leggendo i dati già presenti in SQLite **senza effettuare chiamate LLM** (tempo: ~1 secondo). |
-| `--multiagent` | `-m` o `m` | **Pipeline Multi-Agente**: attiva la cooperazione completa tra 4 agenti dedicati (*Reader* $\rightarrow$ *Searcher* $\rightarrow$ *Writer* $\rightarrow$ *Verifier*) invece del generatore ibrido singolo. |
-| `--force` | `-f` o `f` | **Rigenerazione Forzata (Clear DB)**: svuota il database SQLite (`documentation.db`) forzando la ri-generazione completa da zero di tutte le funzioni, struct e sintesi. |
+| Parametro Lungo | Parametro Breve | Valori Ammessi | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `--project` | `-p` | Nome (es: `"Easy C"`) o Numero | Specifica direttamente il progetto da documentare saltando il menu interattivo. |
+| `--mode` | `-m` | `single`, `multiagent` | Seleziona la pipeline di generazione: `single` (Ibrido Standard) o `multiagent` (Pipeline a 5 agenti: *Reader $\rightarrow$ Searcher $\rightarrow$ Writer $\rightarrow$ Verifier $\rightarrow$ Judge*). |
+| `--force` | `-f` | *(flag booleano)* | **Rigenerazione Forzata (Clear DB)**: svuota il database SQLite (`documentation.db`) forzando la ri-generazione completa da zero di tutte le funzioni, struct e sintesi. |
+| `--export` | `-e` | *(flag booleano)* | **Export Rapido**: rigenera istantaneamente il file `DOCUMENTATION.md`, il portale HTML ed il grafo interattivo Cytoscape.js leggendo i dati già presenti in SQLite **senza effettuare chiamate LLM** (~1 secondo). |
+| `--lang` | | `en`, `it` | Lingua della documentazione tecnica e dei commenti Doxygen (default: `en`). |
+
+---
+
+### 🗂️ Storicizzazione Automatica delle Esecuzioni (`run_<timestamp>_<mode>`)
+
+Per consentire audit scientifici, tracciamento storico e analisi comparative delle differenze nel tempo:
+1. Ogni esecuzione genera una cartella dedicata con timestamp in `results/<progetto>/run_YYYYMMDD_HHMMSS_<mode>/` contenente:
+   - `DOCUMENTATION.md`: Documentazione completa generata.
+   - `interactive_call_graph.html`: Applicazione Cytoscape.js per la navigazione interattiva del grafo.
+   - `extracted_metadata.json`: Metadati AST estratti dal codice C/C++.
+   - `topological_execution_order.json`: Ordine bottom-up di visita.
+   - `mmd_diagrams/`: Diagrammi AST e delle chiamate in sintassi Mermaid.
+   - `execution_config.json`: File contenente tutte le impostazioni, i parametri e i flag passati da riga di comando.
+2. Per comodità di consultazione rapida, una copia dell'ultima esecuzione è sempre disponibile e sincronizzata in `results/<progetto>/latest/`.
 
 ---
 
@@ -115,46 +137,20 @@ python main.py [NUMERO_PROGETTO] [FLAG_OPZIONALI]
 ```bash
 python main.py
 ```
-Mostra l'elenco dei progetti disponibili in `Test_code/` e attende la scelta dell'utente:
-```text
-Progetti disponibili trovati in 'Test_code':
-  [1] Easy C
-  [2] Hard C
-  [3] Medium C
-  [4] ring_buffer
-  [5] tesi triennale C++
 
-Seleziona il progetto (o 'q' per uscire): 5
-```
-
-#### 2. Esecuzione Rapida con Argomenti Diretti
-* **Analisi standard del Progetto 5**:
+#### 2. Esecuzione Diretta da Terminale
+* **Analisi standard del progetto "Easy C"**:
   ```bash
-  python main.py 5
+  python main.py -p "Easy C"
   ```
-* **Rigenerazione Forzata da Zero (Clear Cache) per il Progetto 5**:
+* **Esecuzione Multi-Agente con Giudice e rigenerazione forzata da zero**:
   ```bash
-  python main.py 5 -f
-  # oppure
-  python main.py 5 f
+  python main.py -p "Easy C" -m multiagent -f
   ```
-* **Esecuzione in Modalità Multi-Agente per il Progetto 2**:
+* **Export rapido di grafici e Markdown senza chiamate API (da dati SQLite)**:
   ```bash
-  python main.py 2 -m
-  # oppure
-  python main.py 2 m
+  python main.py -p "Easy C" -e
   ```
-* **Multi-Agente con Rigenerazione Forzata da Zero**:
-  ```bash
-  python main.py 5 -m -f
-  # oppure
-  python main.py 5 m f
-  ```
-* **Export Istantaneo di Report e Grafi (senza consumare token LLM)**:
-  ```bash
-  python main.py 5 -e
-  # oppure
-  python main.py 5 e
   ```
 
 ---
@@ -261,45 +257,144 @@ Il framework integra un'architettura scientifica di **benchmark automatizzato** 
 
 ---
 
-### 2. Comandi CLI per l'Esecuzione dei Test
+### 2. Comandi CLI per l'Esecuzione del Benchmark
 
-#### A. Benchmark Standard (Semantica, AST, Retrieval ed LLM-Judge)
+Il benchmark può essere eseguito in modalità **guidata interattiva** oppure direttamente tramite **parametri da terminale**, integrando sia le metriche quantitative sia il Round-Trip Differential Testing in un unico comando:
+
 ```bash
-# Esecuzione completa su cJSON (ad es. 25 funzioni)
-python utils/benchmark_eval.py -l cJSON -n 25 -m single --lang en
+# Modalità guidata con menu a selezione (libreria, numero funzioni, pipeline, strategia campionamento e Round-Trip):
+python utils/benchmark_eval.py
 
-# Esecuzione su TinyXML-2 (C++)
-python utils/benchmark_eval.py -l TinyXML-2 -n 20 --lang en
+# Esecuzione diretta completa con Round-Trip integrato (default abilitato):
+python utils/benchmark_eval.py -l cJSON -n 10 --roundtrip
 
-# Esecuzione offline con MockLLM (senza consumo quote API)
-python utils/benchmark_eval.py -l cJSON -n 3 --mock
+# Campionamento Stratificato con vincoli di complessità (copertura da 1 a 100+ LOC, riproducibile al 100%):
+python utils/benchmark_eval.py -l all -n 10 --sampling stratified --seed 42 -m multiagent --roundtrip
+
+# Campionamento Stratificato con filtro su funzioni complesse (es. almeno 15 LOC):
+python utils/benchmark_eval.py -l all -n 8 --sampling stratified --min-loc 15 --seed 42 --roundtrip
+
+# Esecuzione casuale pura con seed:
+python utils/benchmark_eval.py -l http-parser -n 5 --sampling random --seed 123 --no-roundtrip
+
+# Esecuzione offline con MockLLM (senza consumo token API):
+python utils/benchmark_eval.py -l miniz -n 5 --mock --no-roundtrip
 ```
 
-#### B. Benchmark con Dual Round-Trip Differential Testing Integrato
-Aggiungendo il flag `--roundtrip`, il benchmark esegue sia la pipeline completa di metriche che la doppia sintesi di codice (Doc vs Reference C/C++) con esecuzione di `pytest` e `hypothesis`:
-```bash
-python utils/benchmark_eval.py -l cJSON -n 25 -m single --lang en --roundtrip
-```
+#### Tabella Parametri CLI del Benchmark
 
-#### C. Esecuzione Separata del Round-Trip Dual Differential Testing
-È possibile validare il comportamento a valle in modo completamente indipendente leggendo un qualsiasi file `eval_report_*.json` già prodotto:
-```bash
-# Esecuzione adattiva libera con test di robustezza Hypothesis (Default consigliato)
-python utils/roundtrip_eval.py -j results/benchmark_cjson/eval_report_single.json -n 25
-
-# Esecuzione con numero fisso di test semantici (es. 15 test per funzione)
-python utils/roundtrip_eval.py -j results/benchmark_cjson/eval_report_single.json -n 25 -t 15
-```
+| Flag Lungo | Flag Breve | Default | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `--library` | `-l` | `cJSON` | Libreria target (`cJSON`, `OpenCV`, `TinyXML-2`, `sds`, `fmt`, `miniz`, `http-parser`, `all`). |
+| `--limit` | `-n` | `5` | Numero massimo di funzioni da documentare e confrontare. |
+| `--sampling` | `-s` | `sequential` | **Strategia di selezione**: `sequential` (prime N per ID), `random` (casuale puro uniforme), `stratified` (casuale con vincoli: partizioni di quantili LOC logaritmici per coprire funzioni brevi, medie ed estese). |
+| `--stratified` | | `False` | Scorciatoia per `--sampling stratified`. |
+| `--random` | `-r` | `False` | Scorciatoia per `--sampling random`. |
+| `--seed` | | `None` | Seed numerico per rendere riproducibile al 100% il campionamento casuale o stratificato. |
+| `--min-loc` | | `None` | Filtro opzionale di complessità: considera solo funzioni con almeno $N$ righe di codice sorgente C/C++. |
+| `--mode` | `-m` | `single` | Pipeline: `single` (Ibrido Standard) o `multiagent` (Pipeline Multi-Agente con Judge). |
+| `--roundtrip` / `--no-roundtrip` | | `True` | Esegue o salta la validazione automatica Round-Trip a valle della generazione. |
+| `--lang` | | `en` | Lingua della documentazione generata (`en` o `it`). |
+| `--mock` | | `False` | Utilizza il MockLLM per collaudi rapidi senza consumo quote API. |
 
 ---
 
-### 3. Output Prodotti dal Benchmark
-Tutti gli artefatti vengono salvati in `results/benchmark_<libreria>/`:
-- `eval_report_<mode>.md`: Report Markdown scientifico con riepilogo globale, tabella comparativa e schede dettagliate per ogni funzione con le motivazioni del Giudice e i rank di Retrieval.
-- `eval_charts_<mode>.png`: Dashboard visiva a due pannelli ad alta risoluzione:
-  1. Bar chart orizzontale multi-barra (Param F1, SBERT, BERTScore, CodeBERT, Code Retrieval RR, LLM-Judge, ROUGE-L).
-  2. Bar chart di sintesi con le medie normalizzate e il punteggio del Judge.
-- `eval_report_<mode>.json`: Archivio JSON strutturato per ulteriori elaborazioni o per alimentare il runner di Round-Trip.
+### 3. Storicizzazione Automatica ed Output Prodotti
+
+Tutti gli artefatti di ciascuna esecuzione vengono salvati in una directory storicizzata con timestamp:
+`results/benchmark_<libreria>/run_YYYYMMDD_HHMMSS_<mode>/` (e specchiati nella cartella `results/benchmark_<libreria>/latest/`):
+
+- `execution_config.json`: File contenente tutte le impostazioni e i parametri passati da riga di comando o selezionati da menu (incluso il comando CLI completo per la riproducibilità esatta).
+- `eval_report_<mode>.md`: Report Markdown scientifico con riepilogo globale, tabella comparativa, metriche AST/neurali, galleria completa di grafici e resoconto del Round-Trip.
+- `eval_report_<mode>.json`: Archivio JSON strutturato con tutti i risultati grezzi e le metriche calcolate.
+- `eval_charts_<mode>.png`: Dashboard visiva a barre ad alta risoluzione delle metriche globali del benchmark.
+- `roundtrip_results.json`: *(Se attivo il Round-Trip)* Risultati dettagliati per-funzione della sintesi duale e delle asserzioni `pytest`.
+- `eval_chart_roundtrip.png`: *(Se attivo il Round-Trip)* Dashboard a 3 pannelli per la validazione comportamentale (Pass Rate Doc, Dual Agreement, medie per categoria tassonomica e sintesi globale).
+
+---
+
+### 4. 🔬 Suite Completa di Grafici Diagnostici e Guida all'Interpretazione
+
+Per ogni esecuzione del benchmark, la pipeline genera automaticamente una **suite di 9 grafici scientifici ad alta risoluzione (DPI 200)** studiata per l'analisi accademica comparativa, l'audit di affidabilità formale e la validazione empirica:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                      SUITE SCIENTIFICA DI GRAFICI DIAGNOSTICI (9 ARTEFATTI)                     │
+├────────────────────────────────┬────────────────────────────────┬───────────────────────────────┤
+│ 1. Profilo di Qualità (Radar)  │ 2. Semantica vs Round-Trip     │ 3. Dispersione & Varianza     │
+│    (6 Dimensioni Normalizzate) │    (Scatter con Pearson r)     │    (Violin Plot + Jitter)     │
+├────────────────────────────────┼────────────────────────────────┼───────────────────────────────┤
+│ 4. Matrice di Confidenza       │ 5. Cause di Scarto Verifier    │ 6. Cross-Correlation Matrice  │
+│    (Heatmap Funzione x Metrica)│    (Breakdown Omissioni & AST) │    (Pearson N x N Heatmap)    │
+├────────────────────────────────┼────────────────────────────────┼───────────────────────────────┤
+│ 7. Residui & Allucinazioni     │ 8. Pareto Complessità (LOC)    │ 9. Imbuto di Validazione      │
+│    (Delta SBERT vs Round-Trip) │    (LOC vs Performance Rate)   │    (Pipeline Stage Flow)      │
+└────────────────────────────────┴────────────────────────────────┴───────────────────────────────┘
+```
+
+#### 🕸️ 1. Profilo Multi-Dimensionale di Qualità (`eval_chart_radar.png`)
+* **Cosa rappresenta**: Sintetizza le prestazioni dell'approccio lungo i **6 macro-pilastri** della documentazione tecnica:
+  1. *Aderenza Contratti AST* (Media armonica Param F1 e Return Match).
+  2. *Semantica Neurale Continua* (Ensemble normalizzato SBERT, BERTScore, CodeBERT).
+  3. *Actionability* (Presenza di esempi di compilazione, comandi CLI, tipi ed enum d'uso pratico).
+  4. *Copertura Eccezioni & Edge Cases* (EDR ed ECC su casi limite e codici di errore).
+  5. *Affidabilità Formale* ($1.0 - \text{Hallucination Rate}$, garanzia anti-allucinazione AST).
+  6. *Downstream Utility* (Doc-to-Code Retrieval MRR e Pass Rate Round-Trip).
+* **Come leggerlo**: Un'area estesa e bilanciata verso l'esterno ($1.0$) denota un modello a tutto tondo. Asimmetrie evidenti evidenziano immediatamente se un modello è solo "eloquente" (alta semantica neurale) ma debole sui contratti software formali.
+
+#### 🔀 2. Correlazione Semantica vs Round-Trip Pass Rate (`eval_chart_semantic_vs_roundtrip.png`)
+* **Cosa rappresenta**: Scatter plot bidimensionale che mette in relazione la **Similarità Semantica Neurale** (asse X, SBERT Cosine Similarity $[0.0 - 1.0]$) con l'**Efficacia Comportamentale Reale** (asse Y, Round-Trip Pass Rate $\%$ su test `pytest`). Include la retta dei minimi quadrati (OLS) e l'indice di correlazione di Pearson ($r$).
+* **Come leggerlo e interpretarlo**:
+  - **$r > 0.70$ (Forte Correlazione Positiva)**: La qualità semantica percepita dai modelli linguistici riflette fedelmente la correttezza logica del codice rigenerato.
+  - **$r \approx 0.00$ (Ortogonalità / Indipendenza)**: Dimostra empiricamente che le metriche NLP classiche non sono sufficienti per valutare il codice software: una documentazione apparentemente perfetta in linguaggio naturale può contenere sottili errori logici che causano il fallimento dei test funzionali.
+  - **Quadrante Alto a Sinistra (Bassa SBERT, Alto Pass Rate)**: *"Parafrasi Sintetica Robusta"*. Il modello ha usato parole diverse dal Ground Truth originario, ma la semantica tecnica è ineccepibile.
+  - **Quadrante Basso a Destra (Alta SBERT, Basso Pass Rate)**: *"Allucinazione Plausibile"*. Testo fluente e accademico che inganna gli embedding neurali ma nasconde difetti algoritmici.
+
+#### 🎻 3. Distribuzione Statistica & Varianza delle Metriche (`eval_chart_distributions.png`)
+* **Cosa rappresenta**: Diagramma combinato a violino (Kernel Density Estimation) e strip plot con jittering che illustra la dispersione di ciascuna metrica sull'intero corpus di funzioni valutate.
+* **Legenda Scientifica Incorporata**:
+  - **Area Colorata (Violino)**: Stima della densità di probabilità (forma della distribuzione).
+  - **Linea Rossa Orizzontale**: Valore mediano della metrica ($50^\circ$ percentile), robusto agli outlier.
+  - **Pallini Scuri (Jitter Points)**: Singole funzioni campionate. Permette di rilevare bimodalità o raggruppamenti anomali.
+
+#### 🎯 4. Matrice di Confidenza Funzione $\times$ Metriche (`eval_chart_heatmap.png`)
+* **Cosa rappresenta**: Heatmap rettangolare con griglia netta e palette divergente/continua ad alto contrasto (`YlGnBu`):
+  - Ogni riga rappresenta una funzione esaminata.
+  - Ogni colonna rappresenta una metrica specifica (Verifier, Param F1, Return Match, SBERT, METEOR, Actionability, Judge, RoundTrip).
+  - Ogni cella riporta il punteggio numerico normalizzato $[0.0 - 1.0]$ stampato al centro con contrasto dinamico.
+* **Come leggerlo**: Permette di individuare a colpo d'occhio i singoli punti deboli della codebase: righe dominate da sfumature chiare/gialle denotano funzioni critiche complesse che necessitano di maggiore attenzione o scomposizione modulare.
+
+#### 🛡️ 5. Breakdown Cause di Scarto Verifier & Rigetti Giudice (`eval_chart_verifier_breakdown.png`)
+* **Cosa rappresenta**: Istogramma orizzontale categorizzato che quantifica l'incidenza di ciascuna regola di violazione formale rilevata durante la pipeline:
+  - *Superato al 1° Tentativo* (Generazione perfetta immediata).
+  - *Parametri Mancanti / Discrepanti* (Disallineamento con l'AST Clang).
+  - *Tipo di Ritorno Errato / Mancante* (`@return` su void o omesso su non-void).
+  - *Simboli Non Validi o Allucinati* (Citazione di variabili o costanti inesistenti).
+  - *Rigetto Giudice LLM* (Punteggio di fedeltà $< 4.0/5.0$).
+* **Come leggerlo**: Valuta l'efficacia del *Deterministic Verifier* come scudo protettivo contro le allucinazioni prima del deployment della documentazione.
+
+#### 🔗 6. Matrice di Cross-Correlazione delle Metriche (`eval_chart_cross_correlation.png`)
+* **Cosa rappresenta**: Matrice simmetrica $N \times N$ dei coefficienti di correlazione lineare di Pearson ($r \in [-1.0, +1.0]$) tra tutte le coppie di metriche valutate (con mappa termica divergente `coolwarm`).
+* **Valore per la Tesi**:
+  - Individua le metriche ridondanti o collinearie (es. SBERT vs BERTScore se $r > 0.90$).
+  - Dimostra l'indipendenza e la complementarietà tra metriche puramente sintattiche (Param F1), semantiche (SBERT/CodeBERT) e funzionali (Round-Trip / Giudice).
+
+#### ⚖️ 7. Analisi dei Residui: Allucinazione Plausibile vs Parafrasi Robusta (`eval_chart_discrepancy_residuals.png`)
+* **Cosa rappresenta**: Grafico a barre orizzontali divergenti incentrato sullo scostamento differenziale:
+  $$\Delta = \mathrm{SBERT} - \left(\frac{\mathrm{RoundTrip\ Pass\ Rate}}{100}\right)$$
+* **Classificazione dei Casi**:
+  - **Barra Rossa ($\Delta > +0.05$) - Sovrastima Semantica / Allucinazione Plausibile**: Il testo della documentazione sembra eccellente agli occhi dei modelli di embedding, ma l'implementazione derivata fallisce i test esecutivi.
+  - **Barra Verde ($|\Delta| \le 0.05$) - Coerenza Ideale**: Perfetta corrispondenza tra leggibilità testuale ed esecuzione algoritmica.
+  - **Barra Blu ($\Delta < -0.05$) - Sottostima Semantica / Parafrasi Robusta**: Il modello ha usato termini e stili differenti dal Ground Truth (penalizzato da SBERT), ma il significato tecnico è così rigoroso che il codice derivato supera il $100\%$ dei test funzionali.
+
+#### 📈 8. Scalabilità e Complessità del Codice sorgente (`eval_chart_complexity_pareto.png`)
+* **Cosa rappresenta**: Scatter plot con linea di tendenza (OLS) che correla la complessità strutturale della funzione (Linee di Codice Sorgente C/C++ - LOC) con la performance a valle (Round-Trip Pass Rate o Similarità Semantica).
+* **Valore per la Tesi**: Consente di verificare se la qualità della documentazione degrada all'aumentare delle dimensioni e della complessità della logica C/C++, comprovando la robustezza del contesto bottom-up (*Dependencies-First*).
+
+#### ⏳ 9. Imbuto di Validazione e Transizioni della Pipeline (`eval_chart_pipeline_flow.png`)
+* **Cosa rappresenta**: Diagramma a barre dell'imbuto di filtraggio progressivo a più stadi:
+  $$\text{Draft LLM Generato} \longrightarrow \text{Superamento Verifier AST} \longrightarrow \text{Approvazione Giudice LLM} \longrightarrow \text{Certificazione Round-Trip}$$
+* **Come leggerlo**: Illustra quantitativamente la capacità del sistema di filtrare e correggere le imperfezioni ad ogni livello, garantendo che solo la documentazione che supera l'intero percorso di certificazione formale ed empirica venga inclusa nel report finale.
 
 
 ---

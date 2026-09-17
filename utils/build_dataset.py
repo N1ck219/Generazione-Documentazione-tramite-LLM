@@ -75,6 +75,58 @@ SOURCES = [
                 "url": "https://raw.githubusercontent.com/leethomason/tinyxml2/master/tinyxml2.cpp"
             }
         ]
+    },
+    {
+        "library": "sds",
+        "language": "c",
+        "files": [
+            {
+                "filename": "sds.h",
+                "url": "https://raw.githubusercontent.com/antirez/sds/master/sds.h"
+            },
+            {
+                "filename": "sds.c",
+                "url": "https://raw.githubusercontent.com/antirez/sds/master/sds.c"
+            }
+        ]
+    },
+    {
+        "library": "fmt",
+        "language": "cpp",
+        "files": [
+            {
+                "filename": "format.h",
+                "url": "https://raw.githubusercontent.com/fmtlib/fmt/master/include/fmt/format.h"
+            }
+        ]
+    },
+    {
+        "library": "miniz",
+        "language": "c",
+        "files": [
+            {
+                "filename": "miniz.h",
+                "url": "https://raw.githubusercontent.com/richgel999/miniz/master/miniz.h"
+            },
+            {
+                "filename": "miniz.c",
+                "url": "https://raw.githubusercontent.com/richgel999/miniz/master/miniz.c"
+            }
+        ]
+    },
+    {
+        "library": "http-parser",
+        "language": "c",
+        "files": [
+            {
+                "filename": "http_parser.h",
+                "url": "https://raw.githubusercontent.com/nodejs/http-parser/master/http_parser.h"
+            },
+            {
+                "filename": "http_parser.c",
+                "url": "https://raw.githubusercontent.com/nodejs/http-parser/master/http_parser.c"
+            }
+        ]
     }
 ]
 
@@ -130,54 +182,90 @@ def is_valid_ground_truth(cleaned: str) -> bool:
             
     return True
 
-def extract_c_header_comments(header_path: str) -> Dict[str, str]:
+def extract_c_comments_from_file(file_path: str) -> Dict[str, str]:
     """
-    Estrae i blocchi di commento posti prima delle dichiarazioni
-    di funzione in un file header C (es. cJSON.h).
-    Mantiene il blocco anche per funzioni adiacenti correlate.
+    Estrae i blocchi di commento posti prima delle dichiarazioni o definizioni
+    di funzione in un file C (header o file .c, es. cJSON.h, sds.c).
     """
     comments = {}
-    if not os.path.exists(header_path):
+    if not os.path.exists(file_path):
         return comments
     
-    with open(header_path, "r", encoding="utf-8", errors="ignore") as f:
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
     
     current_comments = []
     inside_block_comment = False
     
-    for line in lines:
+    for i, line in enumerate(lines):
         s = line.strip()
         
-        # Inizio blocco o commento singola riga: resettiamo il commento precedente solo se non siamo già dentro un blocco
+        # Commento su singola riga /* ... */
+        if s.startswith("/*") and s.endswith("*/") and len(s) > 4:
+            current_comments = [s]
+            inside_block_comment = False
+            # Ispezioniamo le righe successive (entro 8 righe) per trovare la funzione
+            cmt_text = s
+            next_block = " ".join([lines[k].strip() for k in range(i + 1, min(i + 9, len(lines))) if lines[k].strip()])
+            
+            m_cjson = re.search(r"CJSON_PUBLIC\([^)]+\)\s*([a-zA-Z0-9_]+)", next_block)
+            if m_cjson:
+                comments[m_cjson.group(1)] = cmt_text
+                continue
+            
+            m_miniz = re.search(r"MINIZ_EXPORT\s+(?:[a-zA-Z0-9_*]+\s+)+([a-zA-Z0-9_]+)\s*\(", next_block)
+            if m_miniz:
+                comments[m_miniz.group(1)] = cmt_text
+                continue
+
+            m_func = re.search(r"^(?:(?:static|inline|extern|const|unsigned|signed|size_t|uint[0-9]+_t|int[0-9]+_t|void|struct\s+[a-zA-Z0-9_]+|[a-zA-Z0-9_]+)\s+[*&]*)+([a-zA-Z0-9_]+)\s*\(", next_block)
+            if m_func:
+                fn = m_func.group(1)
+                if fn not in ("if", "for", "while", "switch", "return", "sizeof"):
+                    comments[fn] = cmt_text
+                    continue
+            continue
+
+        # Inizio blocco commento multi-riga
         if s.startswith("/*"):
-            current_comments = []
+            current_comments = [s]
             inside_block_comment = True
-            current_comments.append(s)
-            if s.endswith("*/") and len(s) > 4:
-                inside_block_comment = False
             continue
             
         if inside_block_comment:
             current_comments.append(s)
             if s.endswith("*/"):
                 inside_block_comment = False
+                # Ispezioniamo le righe successive (entro 8 righe) per trovare il nome della funzione
+                cmt_text = "\n".join(current_comments)
+                # Combina le prossime righe per gestire dichiarazioni su più righe
+                next_block = " ".join([lines[k].strip() for k in range(i + 1, min(i + 9, len(lines))) if lines[k].strip()])
+                
+                # 1. Match macro CJSON_PUBLIC
+                m_cjson = re.search(r"CJSON_PUBLIC\([^)]+\)\s*([a-zA-Z0-9_]+)", next_block)
+                if m_cjson:
+                    comments[m_cjson.group(1)] = cmt_text
+                    continue
+                
+                # 2. Match macro MINIZ_EXPORT
+                m_miniz = re.search(r"MINIZ_EXPORT\s+(?:[a-zA-Z0-9_*]+\s+)+([a-zA-Z0-9_]+)\s*\(", next_block)
+                if m_miniz:
+                    comments[m_miniz.group(1)] = cmt_text
+                    continue
+
+                # 3. Match generico definizione/dichiarazione funzione C (anche multi-linea)
+                m_func = re.search(r"^(?:(?:static|inline|extern|const|unsigned|signed|size_t|uint[0-9]+_t|int[0-9]+_t|void|struct\s+[a-zA-Z0-9_]+|[a-zA-Z0-9_]+)\s+[*&]*)+([a-zA-Z0-9_]+)\s*\(", next_block)
+                if m_func:
+                    fn = m_func.group(1)
+                    if fn not in ("if", "for", "while", "switch", "return", "sizeof"):
+                        comments[fn] = cmt_text
+                        continue
             continue
             
-        # Se incontriamo codice strutturale che non è una dichiarazione di funzione, resettiamo
-        if s and not s.startswith("#") and not s.startswith("//") and not inside_block_comment:
-            if any(k in s for k in ("typedef", "struct", "{", "}")):
-                current_comments = []
-            
-        # Controllo riga con firma CJSON_PUBLIC
-        if "CJSON_PUBLIC" in line:
-            m = re.search(r"CJSON_PUBLIC\([^)]+\)\s*([a-zA-Z0-9_]+)", line)
-            if m:
-                func_name = m.group(1)
-                if current_comments:
-                    comments[func_name] = "\n".join(current_comments)
-            
     return comments
+
+def extract_c_header_comments(header_path: str) -> Dict[str, str]:
+    return extract_c_comments_from_file(header_path)
 
 def init_database(db_path: str):
     conn = sqlite3.connect(db_path)
@@ -258,14 +346,12 @@ def build_dataset():
         # 2. Estrazione commenti preliminare dagli header
         for f_info in src_group["files"]:
             target_path = os.path.join(lib_dir, f_info["filename"])
-            if target_path.endswith((".h", ".hpp")):
-                # Estrazione euristica per file C come cJSON.h
-                if lib == "cJSON":
-                    c_comments = extract_c_header_comments(target_path)
-                    for fn, cmt in c_comments.items():
-                        doc_registry[(lib, fn)] = cmt
-                
-                # Estrazione AST Clang per file C++ (OpenCV, TinyXML-2)
+            if lang == "c":
+                c_comments = extract_c_comments_from_file(target_path)
+                for fn, cmt in c_comments.items():
+                    doc_registry[(lib, fn)] = cmt
+            elif target_path.endswith((".h", ".hpp")):
+                # Estrazione AST Clang per file C++ (OpenCV, TinyXML-2, fmt)
                 try:
                     extra_args = ['-x', 'c++'] if target_path.endswith('.h') and lang == 'cpp' else None
                     meta = extractor.extract_metadata(target_path, include_dirs=[lib_dir], extra_args=extra_args)

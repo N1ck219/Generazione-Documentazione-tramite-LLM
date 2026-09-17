@@ -249,6 +249,220 @@ def calculate_bleurt_score(reference: str, candidate: str) -> float:
     bleurt_est = 0.65 * sbert + 0.25 * rouge + 0.10 * bp
     return round(float(min(1.0, max(0.0, bleurt_est))), 4)
 
+def calculate_meteor_score(reference: str, candidate: str) -> float:
+    """
+    Calcola il METEOR Score tra reference e candidate usando NLTK (con stemmer e WordNet synsets).
+    METEOR e' significativamente piu' tollerante a sinonimi, lemmi e ristrutturazioni sintattiche rispetto a BLEU/ROUGE.
+    """
+    if not reference or not candidate:
+        return 0.0
+    try:
+        from nltk.translate.meteor_score import single_meteor_score
+        from nltk.tokenize import word_tokenize
+        ref_tokens = word_tokenize(reference.lower())
+        cand_tokens = word_tokenize(candidate.lower())
+        if not ref_tokens or not cand_tokens:
+            return 0.0
+        score = single_meteor_score(ref_tokens, cand_tokens)
+        return round(float(max(0.0, min(1.0, score))), 4)
+    except Exception as e:
+        # Fallback euristico su token overlap + sbert
+        sbert = calculate_sbert_similarity(reference, candidate)
+        rouge = calculate_rouge_l(reference, candidate)
+        return round(float(0.5 * sbert + 0.5 * rouge), 4)
+
+def calculate_frechet_embedding_distance(ref_embeddings: np.ndarray, cand_embeddings: np.ndarray, eps: float = 1e-6) -> float:
+    """
+    Calcola la Fréchet Inception Distance (FID / 2-Wasserstein Distance) sulle distribuzioni multivariate
+    degli embedding semantici SBERT tra il corpus di documentazione Ground Truth e quello generato.
+    Misura la discrepanza distribuzionale: d^2 = ||mu_1 - mu_2||^2 + Tr(C1 + C2 - 2*(C1*C2)^0.5).
+    Piu' il valore e' vicino a 0.0, piu' lo stile distribuzionale rispecchia la Ground Truth reale.
+    """
+    try:
+        from scipy import linalg
+        if len(ref_embeddings) < 2 or len(cand_embeddings) < 2:
+            return 0.0
+        mu1 = np.mean(ref_embeddings, axis=0)
+        sigma1 = np.cov(ref_embeddings, rowvar=False)
+        mu2 = np.mean(cand_embeddings, axis=0)
+        sigma2 = np.cov(cand_embeddings, rowvar=False)
+
+        diff = mu1 - mu2
+        covmean, _ = linalg.sqrtm(sigma1.dot(sigma2), disp=False)
+        if not np.isfinite(covmean).all():
+            offset = np.eye(sigma1.shape[0]) * eps
+            covmean = linalg.sqrtm((sigma1 + offset).dot(sigma2 + offset))
+
+        if np.iscomplexobj(covmean):
+            covmean = covmean.real
+
+        tr_covmean = np.trace(covmean)
+        fid = diff.dot(diff) + np.trace(sigma1) + np.trace(sigma2) - 2 * tr_covmean
+        return round(float(max(0.0, fid)), 4)
+    except Exception as e:
+        return 0.0
+
+def evaluate_semantic_checklist(reference_text: str, candidate_text: str) -> Dict[str, Any]:
+    """
+    Custom Semantic Concept Checklist:
+    Valuta la presenza di concetti tecnici chiave (non solo singole parole) estratti o inferiti:
+    - Ownership / Memory Allocation (chi alloca e dealloca)
+    - Null / Pointer Safety (gestione puntatori nulli / terminatori)
+    - Error Condition & Return Codes
+    - Mutation & Immutability (const, in-place modify vs create new)
+    - Range / Bounds validation
+    """
+    concepts = {
+        "ownership_memory": [r"\ballocat", r"\bdeallocat", r"\bfree\b", r"\bdelete\b", r"\bownership\b", r"\bleak\b", r"\bheap\b"],
+        "null_safety": [r"\bnull\b", r"\bnullptr\b", r"\bnull-terminated\b", r"\bvalid pointer\b", r"\binvalid pointer\b"],
+        "error_contract": [r"\berror\b", r"\bfail", r"\bsuccess\b", r"\bstatus\b", r"\breturn code\b", r"\bcode\b"],
+        "mutation_const": [r"\bmodif", r"\bmutat", r"\bconst\b", r"\bread-only\b", r"\bin-place\b", r"\bappend\b", r"\binsert\b"],
+        "bounds_range": [r"\bbound", r"\brange\b", r"\blimit\b", r"\bcapacity\b", r"\bsize\b", r"\blength\b", r"\boverflow\b"]
+    }
+    ref_lower = reference_text.lower()
+    cand_lower = candidate_text.lower()
+
+    active_in_ref = []
+    matched_in_cand = []
+
+    for c_name, patterns in concepts.items():
+        ref_has = any(re.search(pat, ref_lower) for pat in patterns)
+        if ref_has:
+            active_in_ref.append(c_name)
+            cand_has = any(re.search(pat, cand_lower) for pat in patterns)
+            if cand_has:
+                matched_in_cand.append(c_name)
+
+    checklist_score = round(len(matched_in_cand) / len(active_in_ref), 4) if active_in_ref else 1.0
+    return {
+        "checklist_score": checklist_score,
+        "ref_concepts": active_in_ref,
+        "matched_concepts": matched_in_cand,
+        "total_active": len(active_in_ref),
+        "total_matched": len(matched_in_cand)
+    }
+
+def calculate_error_documentation_rate(source_code: str, documented_returns: List[str], details_text: str) -> Dict[str, Any]:
+    """
+    Error Documentation Rate (EDR):
+    Determina se il codice C/C++ contiene rami fisici di errore (es. 'if (...) return NULL;', 'return -1;', 'return XML_ERROR;')
+    e calcola se la documentazione dichiara e descrive esplicitamente tali scenari di fallimento.
+    """
+    has_code_error_branch = False
+    if source_code:
+        error_patterns = [
+            r"return\s+NULL\b", r"return\s+nullptr\b", r"return\s+0\b", r"return\s+-1\b",
+            r"return\s+false\b", r"return\s+[A-Z_]+(?:ERROR|FAIL|INVALID|ERR)\b"
+        ]
+        has_code_error_branch = any(re.search(pat, source_code) for pat in error_patterns)
+
+    full_doc = (" ".join(documented_returns) + " " + (details_text or "")).lower()
+    doc_mentions_error = any(kw in full_doc for kw in ["null", "error", "fail", "failure", "invalid", "0 upon failure", "-1", "false if"])
+
+    if not has_code_error_branch:
+        # Nessun ramo di errore nel sorgente: la documentazione non è tenuta a menzionarlo
+        return {"has_code_error": False, "is_documented": True, "score": 1.0}
+    else:
+        score = 1.0 if doc_mentions_error else 0.0
+        return {"has_code_error": True, "is_documented": doc_mentions_error, "score": score}
+
+def calculate_edge_case_coverage(source_code: str, doc_text: str) -> Dict[str, Any]:
+    """
+    Edge Case Coverage (ECC):
+    Estrae le guardie sui casi limite dal sorgente C/C++ (es. controlli '== NULL', '!ptr', '<= 0', '== \'\\0\'')
+    e calcola la frazione di essi menzionata e documentata nel testo Doxygen generato.
+    """
+    if not source_code:
+        return {"code_guard_count": 0, "doc_guard_count": 0, "coverage": 1.0}
+
+    # Trova guardie tipiche nel codice C/C++
+    guards_in_code = []
+    if re.search(r"(?:==\s*NULL|![\w\->\.]+|\bNULL\b)", source_code):
+        guards_in_code.append("null_guard")
+    if re.search(r"(?:<=\s*0|<\s*0|==\s*0)", source_code):
+        guards_in_code.append("zero_negative_guard")
+    if re.search(r"(?:\\0|empty|len\s*==\s*0)", source_code, re.IGNORECASE):
+        guards_in_code.append("empty_boundary_guard")
+
+    if not guards_in_code:
+        return {"code_guard_count": 0, "doc_guard_count": 0, "coverage": 1.0}
+
+    doc_lower = doc_text.lower()
+    covered = 0
+    if "null_guard" in guards_in_code and ("null" in doc_lower or "nullptr" in doc_lower):
+        covered += 1
+    if "zero_negative_guard" in guards_in_code and any(w in doc_lower for w in ["zero", "negative", "0", "< 0", "positive"]):
+        covered += 1
+    if "empty_boundary_guard" in guards_in_code and any(w in doc_lower for w in ["empty", "boundary", "null-terminated", "end of string"]):
+        covered += 1
+
+    cov = round(covered / len(guards_in_code), 4)
+    return {
+        "code_guard_count": len(guards_in_code),
+        "doc_guard_count": covered,
+        "coverage": cov
+    }
+
+def calculate_actionability_score(parsed_doc: Dict[str, Any], formal_params: List[Dict[str, Any]]) -> float:
+    """
+    Actionability Score (AS):
+    Misura se uno sviluppatore ha tutte le informazioni per chiamare la funzione correttamente:
+    1. Direzionalita' dei parametri ([in], [out], [in,out]) per tutti i parametri formali (peso: 35%)
+    2. Presenza di tag @brief chiaro (peso: 20%)
+    3. Presenza di clausola @return dettagliata (se non-void) o assenza pulita (se void) (peso: 25%)
+    4. Menzione di pre-condizioni o sicurezza (pre, warning, ownership) (peso: 20%)
+    """
+    score = 0.0
+    # 1. Direzionalita' parametri
+    doc_params = parsed_doc.get("params", [])
+    if not formal_params:
+        score += 0.35
+    elif doc_params:
+        with_direction = [p for p in doc_params if p.get("direction")]
+        dir_ratio = len(with_direction) / len(formal_params)
+        score += min(0.35, 0.35 * dir_ratio)
+
+    # 2. Brief chiaro
+    brief = parsed_doc.get("brief", "").strip()
+    if len(brief) >= 15:
+        score += 0.20
+    elif len(brief) > 0:
+        score += 0.10
+
+    # 3. Return clause
+    returns = parsed_doc.get("returns", [])
+    if returns and len(" ".join(returns).strip()) >= 10:
+        score += 0.25
+    elif not returns and not formal_params:
+        score += 0.25
+    elif returns:
+        score += 0.15
+
+    # 4. Precondizioni / warnings / note
+    pre = parsed_doc.get("pre", [])
+    warns = parsed_doc.get("warnings", [])
+    details = parsed_doc.get("details", "")
+    has_pre_or_safety = len(pre) > 0 or len(warns) > 0 or any(w in details.lower() for w in ["must", "ensure", "caller", "ownership", "valid"])
+    if has_pre_or_safety:
+        score += 0.20
+    else:
+        score += 0.05
+
+    return round(float(min(1.0, max(0.0, score))), 4)
+
+def calculate_hallucination_rate(verifier_errors: List[str], documented_tokens_count: int) -> float:
+    """
+    Hallucination Rate (%):
+    Frazione di simboli/enum/parametri allucinati intercettati rispetto al totale dei simboli menzionati.
+    Se verifier_errors e' vuoto, il rate e' esattamente 0.0%.
+    """
+    if not verifier_errors or documented_tokens_count <= 0:
+        return 0.0
+    hallucination_count = sum(1 for e in verifier_errors if "allucinazione" in e.lower() or "non esiste" in e.lower())
+    rate = round((hallucination_count / max(1, documented_tokens_count)) * 100.0, 2)
+    return min(100.0, rate)
+
+
 def calculate_code_retrieval_mrr(
     generated_query: str,
     target_function_name: str,
@@ -337,11 +551,31 @@ def calculate_parameter_slot_metrics(ast_parameters: List[Dict[str, Any]], docum
     ast_param_names = set(p.get("name", "").strip() for p in ast_parameters if p.get("name"))
     doc_param_names = set(p.get("name", "").strip() for p in documented_params if p.get("name"))
 
-    if not ast_param_names:
-        if not doc_param_names:
+    # Gestione di parametri C/C++ anonimi/senza nome (es. LoadFile(FILE*) in header)
+    unnamed_ast_count = sum(1 for p in ast_parameters if not p.get("name", "").strip())
+    total_ast_count = len(ast_parameters)
+    total_doc_count = len(documented_params)
+
+    # Caso 1: Nessun parametro formale nell'AST
+    if total_ast_count == 0:
+        if total_doc_count == 0:
             return {"precision": 1.0, "recall": 1.0, "f1": 1.0}
         else:
             return {"precision": 0.0, "recall": 1.0, "f1": 0.0}
+
+    # Caso 2: Alcuni o tutti i parametri formali dell'AST sono anonimi (senza nome nei prototipi .h)
+    if unnamed_ast_count > 0:
+        named_matches = len(ast_param_names.intersection(doc_param_names))
+        # Se il conteggio complessivo coincide e i parametri con nome matchano
+        matched_slots = named_matches + min(unnamed_ast_count, max(0, total_doc_count - len(ast_param_names)))
+        precision = min(1.0, matched_slots / max(1, total_doc_count))
+        recall = min(1.0, matched_slots / max(1, total_ast_count))
+        f1 = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
+        return {
+            "precision": round(precision, 4),
+            "recall": round(recall, 4),
+            "f1": round(f1, 4)
+        }
 
     intersection = ast_param_names.intersection(doc_param_names)
     precision = len(intersection) / len(doc_param_names) if doc_param_names else 0.0

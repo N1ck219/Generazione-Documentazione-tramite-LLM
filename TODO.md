@@ -1,0 +1,2 @@
+- tempi
+- grafico voto rispetto a lunghezza riga

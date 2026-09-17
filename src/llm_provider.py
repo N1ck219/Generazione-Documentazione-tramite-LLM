@@ -58,6 +58,18 @@ class LLMProvider(ABC):
         pass
 
     @abstractmethod
+    def evaluate_documentation(
+        self,
+        func_name: str,
+        signature: str,
+        source_code: str,
+        doxygen_doc: str,
+        brief_summary: str = "",
+        language: str = "en"
+    ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
     def classify_function(
         self,
         func_name: str,
@@ -74,6 +86,23 @@ class MockLLMProvider(LLMProvider):
     """
     def __init__(self):
         super().__init__()
+
+    def evaluate_documentation(
+        self,
+        func_name: str,
+        signature: str,
+        source_code: str,
+        doxygen_doc: str,
+        brief_summary: str = "",
+        language: str = "en"
+    ) -> Dict[str, Any]:
+        res = {
+            "score": 5,
+            "critique": "",
+            "suggestions": []
+        }
+        self.log_interaction("judge_evaluation_mock", func_name, "Mock Judge Prompt", str(res), res)
+        return res
 
     def classify_function(
         self,
@@ -94,7 +123,9 @@ class MockLLMProvider(LLMProvider):
         source_code: str, 
         callees_summaries: List[Dict[str, str]], 
         raw_comment: str = None,
-        language: str = "en"
+        language: str = "en",
+        validation_feedback: str = None,
+        **kwargs
     ) -> Dict[str, str]:
         brief = f"Funzione `{func_name}` che gestisce le operazioni sul buffer o strutture dati correlate."
         
@@ -749,6 +780,158 @@ REGOLE TASSATIVE:
             return "Manipolazione e Inserimento Dati"
         elif "pop" in func_name or "get" in func_name:
             return "Estrazione e Lettura Dati"
-        elif "main" in func_name:
+        if "main" in func_name:
             return "Entry Point ed Esecuzione Test"
         return "Elaborazione e Gestione Dati"
+
+    def evaluate_documentation(
+        self,
+        func_name: str,
+        signature: str,
+        source_code: str,
+        doxygen_doc: str,
+        brief_summary: str = "",
+        language: str = "en"
+    ) -> Dict[str, Any]:
+        """
+        Judge / Critic evaluation method:
+        Valuta la documentazione generata (Doxygen + brief summary) a confronto
+        con il codice sorgente C/C++ originale, assegnando un punteggio da 1 a 5.
+        Se score < 4, fornisce motivazione dettagliata (critique) e suggerimenti correttivi.
+        """
+        if language == "en":
+            prompt = f"""You are a strict, senior Technical Auditor and C/C++ documentation Judge.
+Evaluate the technical accuracy, completeness, and rigor of the generated documentation against the actual source code.
+
+Target Function: `{func_name}`
+Signature: `{signature}`
+
+Original Source Code:
+```c
+{source_code}
+```
+
+Generated Documentation to Evaluate:
+Brief Summary:
+"{brief_summary}"
+
+Doxygen Comment:
+{doxygen_doc}
+
+--- EVALUATION RUBRIC (SCALE 1 TO 5) ---
+- Score 5 (Exceptional / Production Grade): Complete and flawless. Explains edge cases, memory contracts (@pre/@post), correct null-check behavior, exact error codes matching the source.
+- Score 4 (Good / Solid): Technically accurate with no factual errors. Minor omissions that do not compromise safety or understanding.
+- Score 3 (Marginal / Needs Improvement): Factual omissions (e.g., misses memory ownership/cleanup, unmentioned error return codes, imprecise null pointer conditions).
+- Score 2 (Poor): Highly vague, tautological (merely repeats function name), or misses critical preconditions causing misleading usage.
+- Score 1 (Unacceptable): Blatant hallucinations, factual contradictions with source logic (e.g., claiming it returns true on NULL when code does not, or inventing non-existent parameters/enums).
+
+CRITICAL RULE:
+- If score >= 4, the critique can be empty or brief praise.
+- If score < 4, you MUST provide an actionable, precise, and constructive 'critique' and specific 'suggestions' explaining exactly what facts from the source code were missed or misrepresented, so the Writer Agent can fix them.
+
+Respond EXCLUSIVELY with valid JSON in this exact structure:
+{{
+  "score": 4,
+  "critique": "Explanation of score...",
+  "suggestions": [
+    "Specific suggestion 1",
+    "Specific suggestion 2"
+  ]
+}}
+Respond ONLY with the JSON (no markdown fences).
+"""
+        else:
+            prompt = f"""Sei un rigoroso Senior Technical Auditor e Giudice di documentazione C/C++.
+Valuta l'accuratezza tecnica, la completezza e il rigore della documentazione generata confrontandola con il codice sorgente reale.
+
+Funzione: `{func_name}`
+Firma: `{signature}`
+
+Codice Sorgente Reale:
+```c
+{source_code}
+```
+
+Documentazione Generata da Valutare:
+Sommario sintetico:
+"{brief_summary}"
+
+Blocco Doxygen:
+{doxygen_doc}
+
+--- RUBRICA DI VALUTAZIONE (SCALA DA 1 A 5) ---
+- Punteggio 5 (Eccellente / Production Grade): Impeccabile e completa. Dettaglia edge cases, contratti di memoria (@pre/@post), gestione corretta puntatori NULL, codici di ritorno ed enum esatti.
+- Punteggio 4 (Buono / Solido): Tecnicamente accurata senza errori fattuali. Solo dettagli stilistici o minori non bloccanti.
+- Punteggio 3 (Sufficiente ma Migliorabile): Omissioni fattuali (es. non specifica chi alloca/libera memoria, omette un codice di errore, o spiegazione incompleta su NULL).
+- Punteggio 2 (Insufficiente): Troppo generica, tautologica (ripete solo il nome della funzione) o ambigua sui parametri/comportamento.
+- Punteggio 1 (Gravemente Errata): Allucinazioni evidenti, contraddizioni palesi con il codice (es. asserisce che restituisce true su NULL mentre restituisce false, o inventa parametri).
+
+REGOLA CRUCIALE:
+- Se il voto è >= 4, la critique può essere vuota o breve.
+- Se il voto è < 4, DEVI fornire una 'critique' analitica e costruttiva e una lista di 'suggestions' chiarendo esattamente cosa correggere rispetto al codice sorgente per permettere al Writer Agent di riscriverla correttamente.
+
+Rispondi ESCLUSIVAMENTE con un JSON valido con questa struttura:
+{{
+  "score": 4,
+  "critique": "Motivazione del voto...",
+  "suggestions": [
+    "Suggerimento specifico 1",
+    "Suggerimento specifico 2"
+  ]
+}}
+Rispondi SOLO con il JSON (senza marcatori markdown).
+"""
+
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                self._wait_for_rate_limit()
+                if self.use_new_sdk:
+                    with SuppressStderr():
+                        response = self.client.models.generate_content(
+                            model=self.model_name,
+                            contents=prompt
+                        )
+                    raw_text = response.text.strip()
+                else:
+                    with SuppressStderr():
+                        response = self.model.generate_content(prompt)
+                    raw_text = response.text.strip()
+
+                clean_text = raw_text
+                if clean_text.startswith("```json"): clean_text = clean_text[7:]
+                if clean_text.startswith("```"): clean_text = clean_text[3:]
+                if clean_text.endswith("```"): clean_text = clean_text[:-3]
+                clean_text = clean_text.strip()
+
+                parsed = json.loads(clean_text)
+                score = int(parsed.get("score", 5))
+                # Clamping tra 1 e 5
+                score = max(1, min(5, score))
+                critique = str(parsed.get("critique", "")).strip()
+                suggestions = parsed.get("suggestions", [])
+                if not isinstance(suggestions, list):
+                    suggestions = [str(suggestions)]
+
+                res_obj = {
+                    "score": score,
+                    "critique": critique,
+                    "suggestions": suggestions
+                }
+                self.log_interaction("judge_evaluation", func_name, prompt, raw_text, res_obj)
+                return res_obj
+            except Exception as e:
+                err_msg = str(e)
+                if "QuotaExceeded" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
+                    if self._rotate_to_next_key():
+                        continue
+                if attempt == max_retries - 1:
+                    # In caso di errore API, concediamo un punteggio neutro conservativo per non bloccare la pipeline
+                    return {
+                        "score": 4,
+                        "critique": f"Valutazione automatica non completata per timeout/errore di rete: {err_msg}",
+                        "suggestions": []
+                    }
+                time.sleep((attempt + 1) * 2)
+
+        return {"score": 4, "critique": "", "suggestions": []}

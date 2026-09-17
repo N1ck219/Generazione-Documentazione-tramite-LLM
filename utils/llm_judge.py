@@ -294,3 +294,37 @@ Respond strictly in JSON format with two keys:
             },
             "combined_score": combined_mean
         }
+
+    def generate_naive_baseline_doc(self, func_name: str, signature: str, source_code: str) -> str:
+        """
+        Baseline 1: Genera documentazione con un prompt 'naive' zero-shot senza analisi AST,
+        senza Big-O deterministico e senza contesto delle callee bottom-up.
+        Serve come termine di paragone per quantificare l'incremento di qualità (delta).
+        """
+        prompt = f"""Write standard Doxygen documentation for the following C/C++ function:
+
+Function: {func_name}
+Signature: {signature}
+Code:
+```c
+{source_code}
+```
+Return only the Doxygen comment block.
+"""
+        self._wait_rate_limit()
+        try:
+            if self.use_new_sdk and self.client:
+                from google.genai import types
+                resp = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(temperature=0.7)
+                )
+                return resp.text.strip()
+            elif hasattr(self, 'model') and self.model:
+                resp = self.model.generate_content(prompt)
+                return resp.text.strip()
+        except Exception:
+            pass
+        return f"/**\n * @brief {func_name}\n */"
+

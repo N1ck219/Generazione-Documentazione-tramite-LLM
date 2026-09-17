@@ -55,7 +55,7 @@ class DocOrchestrator:
                         "file_path": rel_path
                     }
 
-        mode_desc = "MULTI-AGENTE (Reader -> Searcher -> Writer -> Verifier)" if mode == "multiagent" else "IBRIDO STANDARD"
+        mode_desc = "MULTI-AGENTE (Reader -> Searcher -> Writer -> Verifier -> Judge)" if mode == "multiagent" else "IBRIDO STANDARD"
         print(f"\n=== AVVIO GENERAZIONE DOCUMENTAZIONE BOTTOM-UP [{mode_desc}] ===")
         from src.verifier import DocumentationVerifier
         verifier = DocumentationVerifier(all_metadata)
@@ -65,10 +65,12 @@ class DocOrchestrator:
             from src.agents.reader_agent import ReaderAgent
             from src.agents.searcher_agent import SearcherAgent
             from src.agents.writer_agent import WriterAgent
+            from src.agents.judge_agent import JudgeAgent
             
             reader_agent = ReaderAgent(self.llm)
             searcher_agent = SearcherAgent(self.db)
             writer_agent = WriterAgent(self.llm)
+            judge_agent = JudgeAgent(self.llm)
 
         # Lista piatta di tutte le funzioni da documentare in ordine topologico
         all_funcs_in_order = []
@@ -131,6 +133,7 @@ class DocOrchestrator:
             max_validation_attempts = 3
             llm_result = None
             validation_feedback = None
+            critic_feedback = None
             attempts_log = []
 
             for attempt in range(max_validation_attempts):
@@ -146,11 +149,12 @@ class DocOrchestrator:
                     # 2. SEARCHER AGENT: Arricchimento contesto dipendenze
                     enriched_ctx = searcher_agent.enrich_context(reader_facts, callees)
 
-                    # 3. WRITER AGENT: Redazione bozza Doxygen
+                    # 3. WRITER AGENT: Redazione bozza Doxygen (con feedback AST e del Judge)
                     llm_result = writer_agent.write_documentation(
                         enriched_context=enriched_ctx,
                         source_code=source_code,
-                        validation_feedback=validation_feedback
+                        validation_feedback=validation_feedback,
+                        critic_feedback=critic_feedback
                     )
                 else:
                     # Modalità Ibrida Standard Single-Prompt
@@ -167,21 +171,48 @@ class DocOrchestrator:
                 # 4. VERIFIER AGENT: Validazione Programmatica ed AST
                 val_res = verifier.verify_function_doc(fn_info, llm_result)
                 
+                judge_res = None
+                # 5. JUDGE / CRITIC AGENT (Solo in modalità multi-agente e solo se il Verifier AST passa)
+                if mode == "multiagent" and val_res.get("is_valid", False):
+                    judge_res = judge_agent.evaluate_documentation(
+                        func_name=func_name,
+                        signature=signature,
+                        source_code=source_code,
+                        doxygen_doc=llm_result.get("full_doxygen_doc", ""),
+                        brief_summary=llm_result.get("brief_summary", "")
+                    )
+                    score = judge_res.get("score", 5)
+                    critique = judge_res.get("critique", "")
+
+                    if score < 4 and attempt < max_validation_attempts - 1:
+                        # Punteggio sotto il 4: rigenerazione guidata dalla critica del Giudice
+                        critic_feedback = f"Punteggio assegnato: {score}/5. Critica: {critique}"
+                        val_res["is_valid"] = False
+                        val_res["errors"].append(f"[JUDGE CRITIC REJECT - Score {score}/5]: {critique}")
+                        print(f"\n  [JUDGE REJECT] {func_name} (Tentativo {attempt+1}, Voto: {score}/5): {critique}")
+                    else:
+                        print(f"\n  [JUDGE APPROVED] {func_name} (Tentativo {attempt+1}, Voto: {score}/5)")
+                        critic_feedback = None
+
                 # Registra l'esito del tentativo corrente
                 attempts_log.append({
                     "attempt": attempt + 1,
                     "validation_feedback_sent": validation_feedback,
+                    "critic_feedback_sent": critic_feedback,
                     "generated_brief": llm_result.get("brief_summary") if llm_result else None,
                     "generated_doxygen": llm_result.get("full_doxygen_doc") if llm_result else None,
                     "is_valid": val_res.get("is_valid", False),
-                    "errors": val_res.get("errors", [])
+                    "errors": val_res.get("errors", []),
+                    "judge_score": judge_res.get("score") if judge_res else None,
+                    "judge_critique": judge_res.get("critique") if judge_res else None
                 })
 
                 if val_res["is_valid"]:
                     break
                 else:
                     validation_feedback = " ".join(val_res["errors"])
-                    print(f"\n  [VERIFIER REJECT] {func_name} (Tentativo {attempt+1}): {validation_feedback}")
+                    if not judge_res or judge_res.get("score", 5) >= 4:
+                        print(f"\n  [VERIFIER REJECT] {func_name} (Tentativo {attempt+1}): {validation_feedback}")
 
             # Registra nel file di log di debug per l'ispezione scientifica
             debug_log_path = os.path.join(self.results_dir, "verifier_debug_log.json")

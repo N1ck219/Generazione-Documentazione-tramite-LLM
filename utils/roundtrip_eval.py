@@ -10,6 +10,7 @@ Flusso di valutazione:
 
 import os
 import sys
+import ast
 import json
 import time
 import re
@@ -23,6 +24,28 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
 from src.llm_provider import GeminiLLMProvider
+
+
+def classify_function_type(func_name: str, signature: str) -> str:
+    """
+    Classifica deterministicamente una funzione C/C++ in una delle 3 categorie tassonomiche:
+    1. 'Stateful / Object-Graph': Metodi di classe C++ (::) o funzioni che operano su grafi/strutture complesse.
+    2. 'Pointer / Buffer-Driven': Funzioni con puntatori a buffer, stringhe mutabili o puntatori void.
+    3. 'Stateless / Primitive': Funzioni pure senza stato, operanti su tipi scalari o primitive.
+    """
+    is_class_method = "::" in func_name
+    sig_lower = signature.lower()
+    
+    # Se è un metodo membro di classe C++ o manipola esplicitamente alberi di nodi (cJSON, XMLNode, AST)
+    if is_class_method or any(t in sig_lower for t in ["cjson *", "xmlnode", "xmlattribute", "xmldocument", "xmlhandle"]):
+        return "Stateful / Object-Graph"
+    
+    # Se manipola puntatori di memoria, buffer o I/O
+    if any(p in signature for p in ["*", "buf", "char *", "void *", "size_t"]):
+        return "Pointer / Buffer-Driven"
+    
+    # Altrimenti pura/stateless
+    return "Stateless / Primitive"
 
 
 class RoundTripEvaluator:
@@ -117,14 +140,16 @@ NOTE: The target is a C++ class method `{method_name}` inside class `{class_name
 2. Include a simple constructor `def __init__(self, ...):` with default/optional arguments so the object can be instantiated easily in unit tests.
 3. Implement the method `def {method_name}(self, ...):` strictly adhering to the documentation and signature.
 4. Also implement minimal getter/setter or state properties if mentioned in the docstring.
-5. Define any return codes, enums, or constants mentioned in the docstring (e.g., XML_SUCCESS = 0, XML_WRONG_ATTRIBUTE_TYPE = 1) at the module top level or class level.
-6. Provide self-contained helper functions/classes if referenced (e.g. if XMLUtil.ToStr or ToInt is used, define a simple mock XMLUtil class).
+5. If the method takes an output pointer parameter (e.g. `int64_t * value` or `type *`), support accepting a mutable container (like a list `value: list`, updating `value[0] = result`).
+6. Define any return codes, enums, or constants mentioned in the docstring (e.g., XML_SUCCESS = 0, XML_WRONG_ATTRIBUTE_TYPE = 1) at the module top level or class level.
+7. Provide self-contained helper functions/classes if referenced (e.g. if XMLUtil.ToStr or ToInt is used, define a simple mock XMLUtil class).
 """
         else:
             c_instructions = f"""
 NOTE: The target is a C free function.
 1. Implement the Python function `def {func_name}(...):` strictly matching the inputs, return values, and behavior described in the documentation.
-2. Define any constants, enums, or error codes mentioned in the documentation at the module top level.
+2. If the C function takes an output pointer parameter (e.g. `int * out`), support accepting a mutable list container (e.g. `out[0] = ...`) or returning the appropriate value.
+3. Define any constants, enums, or error codes mentioned in the documentation at the module top level.
 """
 
         prompt = f"""You are an expert Software Engineer writing self-contained Python code strictly based on technical documentation.
@@ -138,15 +163,34 @@ C/C++ Signature: `{signature}`
 
 === IMPLEMENTATION REQUIREMENTS ===
 {c_instructions}
-- Ensure the code is 100% self-contained, syntactically valid Python.
-- Do NOT use external C libraries or require uninstalled third-party packages.
+- Ensure the code is 100% self-contained, syntactically valid Python 3.
+- STRICTLY FORBIDDEN: Do NOT import or use `ctypes` or `ctypes.CDLL(None)`. Implement pure Python logic or pure Python mocks for memory allocation (e.g. bytearray or integer IDs).
 - Return ONLY valid Python code inside a single ```python ... ``` block without conversational filler.
 """
         response = self._call_gemini(prompt)
         match = re.search(r"```python\s*(.*?)\s*```", response, re.DOTALL)
-        if match:
-            return match.group(1).strip()
-        return response.strip()
+        code = match.group(1).strip() if match else response.strip()
+
+        # Validazione sintattica con ast.parse
+        try:
+            ast.parse(code)
+            return code
+        except SyntaxError as e:
+            # Tentativo di recupero tramite LLM fornendo l'errore di sintassi
+            fix_prompt = f"""The following Python code has a SyntaxError: {e}.
+Please fix the syntax error and return the corrected, complete, self-contained Python code in a single ```python ... ``` block.
+
+Code:
+{code}
+"""
+            fixed_response = self._call_gemini(fix_prompt)
+            fixed_match = re.search(r"```python\s*(.*?)\s*```", fixed_response, re.DOTALL)
+            fixed_code = fixed_match.group(1).strip() if fixed_match else fixed_response.strip()
+            try:
+                ast.parse(fixed_code)
+                return fixed_code
+            except SyntaxError:
+                return code
 
     def synthesize_reference_from_code(self, func_name: str, signature: str, source_code: str) -> str:
         """
@@ -189,20 +233,38 @@ C/C++ Signature: `{signature}`
 
 === IMPLEMENTATION REQUIREMENTS ===
 {c_instructions}
-- Ensure the code is 100% self-contained, syntactically valid Python.
+- Ensure the code is 100% self-contained, syntactically valid Python 3.
+- STRICTLY FORBIDDEN: Do NOT import or use `ctypes` or `ctypes.CDLL(None)`. Implement pure Python logic or pure Python mocks for memory allocation.
 - Return ONLY valid Python code inside a single ```python ... ``` block without conversational filler.
 """
         response = self._call_gemini(prompt)
         match = re.search(r"```python\s*(.*?)\s*```", response, re.DOTALL)
-        if match:
-            return match.group(1).strip()
-        return response.strip()
+        code = match.group(1).strip() if match else response.strip()
 
-    def generate_pytest_suite(self, func_name: str, docstring: str, synth_code: str = "", num_tests: Optional[int] = None) -> str:
+        try:
+            ast.parse(code)
+            return code
+        except SyntaxError as e:
+            fix_prompt = f"""The following Python code has a SyntaxError: {e}.
+Please fix the syntax error and return the corrected, complete, self-contained Python code in a single ```python ... ``` block.
+
+Code:
+{code}
+"""
+            fixed_response = self._call_gemini(fix_prompt)
+            fixed_match = re.search(r"```python\s*(.*?)\s*```", fixed_response, re.DOTALL)
+            fixed_code = fixed_match.group(1).strip() if fixed_match else fixed_response.strip()
+            try:
+                ast.parse(fixed_code)
+                return fixed_code
+            except SyntaxError:
+                return code
+
+    def generate_pytest_suite(self, func_name: str, signature: str, docstring: str, num_tests: Optional[int] = None) -> str:
         """
-        Passaggio 2: Genera una suite di test Pytest esaustiva derivata dai contratti specificati nella documentazione.
-        Se num_tests è None o <= 0, Gemini ha piena libertà adattiva per decidere quanti test servono.
-        Inoltre, istruisce Gemini a includere un test basato su Hypothesis per il property/fuzz testing.
+        Passaggio 2: Genera una suite di test Pytest esaustiva derivata ESCLUSIVAMENTE dai contratti
+        specificati nella documentazione tecnica e nella firma C/C++ (Pure Black-Box Testing).
+        Non ispeziona l'implementazione interna, evitando accoppiamento su variabili private.
         """
         is_method = "::" in func_name
         class_name = func_name.split("::")[0] if is_method else None
@@ -212,37 +274,32 @@ C/C++ Signature: `{signature}`
         if is_method:
             invocation_guidance = f"""
 - The target is a class method `{method_name}` of `{class_name}`.
-- In each test function, instantiate the object directly: `obj = {class_name}(...)` and then call `obj.{method_name}(...)`.
-- Check the exact signature of `__init__` and `{method_name}` in the SYNTHESIZED IMPLEMENTATION below. Do not pass wrong number of arguments to `__init__` or `{method_name}`.
-- Do NOT call unmentioned methods that are not implemented in the provided code.
+- In each test function, instantiate the object directly: `obj = {class_name}()` or `obj = {class_name}(...)` using only documented public arguments, then call `obj.{method_name}(...)`.
+- BLACK-BOX RULE: Test ONLY public documented behavior, return values, and error contracts.
+- DO NOT access or assert on private internal fields (e.g. NEVER assert `obj._attributes`, `obj.child`, `obj.valuestring`, etc.), as internal representations may vary across implementations.
 """
         else:
             invocation_guidance = f"""
 - The target is a free function `{func_name}`.
-- Call `{func_name}(...)` directly inside the tests matching its arguments.
-"""
-
-        synth_section = ""
-        if synth_code:
-            synth_section = f"""
-=== SYNTHESIZED IMPLEMENTATION UNDER TEST ===
-```python
-{synth_code}
-```
+- Call `{func_name}(...)` directly inside the tests matching the documented signature arguments.
+- If the function accepts an output pointer parameter (e.g. `int * out`), pass a mutable list `out = [0]` to receive the result.
 """
 
         if num_tests and num_tests > 0:
             quantity_instruction = f"1. Write exactly {num_tests} standalone pytest test functions (named `test_semantic_1_...`, `test_semantic_2_...`, etc.)."
         else:
-            quantity_instruction = """1. ADAPTIVE TEST COUNT: Decide autonomously how many tests are needed (typically between 4 and 12) to thoroughly cover the specification without redundancy.
+            quantity_instruction = """1. ADAPTIVE TEST COUNT: Decide autonomously how many tests are needed (typically between 4 and 10) to thoroughly cover the specification without redundancy.
    - Name each standard semantic test starting with `test_semantic_...`."""
 
         prompt = f"""You are a Senior QA Automation & Verification Engineer writing a comprehensive pytest test suite.
-You are given the specification of: `{func_name}` and its synthesized implementation.
+You are given the specification and C/C++ signature of: `{func_name}`.
 
-=== FUNCTION SPECIFICATION ===
+=== FUNCTION SPECIFICATION (DOCUMENTATION) ===
+Target Symbol: `{func_name}`
+C/C++ Signature: `{signature}`
+
 {docstring}
-{synth_section}
+
 === CRITICAL RULES ===
 {quantity_instruction}
 2. Test categories to cover:
@@ -252,18 +309,44 @@ You are given the specification of: `{func_name}` and its synthesized implementa
 3. AUTOMATED FUZZ / PROPERTY-BASED TEST (Hypothesis):
    - In addition to the semantic tests, include 1 or 2 property-based test functions named `test_auto_property_...` using `from hypothesis import given, strategies as st, settings`.
    - Use `@settings(max_examples=50, deadline=None)` on each property test.
-   - Pass random inputs from appropriate strategies (e.g. `st.integers()`, `st.text()`, `st.none()`) to verify that the implementation does not crash unexpectedly or violate fundamental contracts.
+   - Pass random inputs from appropriate strategies (e.g. `st.integers()`, `st.text()`, `st.none()`).
+   - If using `st.floats()`, NEVER pass `allow_inf=False` (it is deprecated/invalid in modern Hypothesis). Use `allow_infinity=False` or simply `st.floats(allow_nan=False, allow_infinity=False)`.
 4. NEVER USE OR ASSUME PYTEST FIXTURES. Semantic test functions MUST have zero parameters: `def test_semantic_name():`. Property tests use `@given(...)`.
-5. All objects, instances, and inputs MUST be created directly inside each test function.
-6. Strictly respect the constructor and method arguments of the synthesized implementation shown above.
+5. DO NOT IMPORT the function or class from any external module (e.g. NEVER write `from implementation import ...` or `import implementation`). The code under test will be injected automatically into the global scope.
+6. STRICTLY FORBIDDEN: DO NOT import or use `ctypes` or `ctypes.CDLL(None)` in the test suite. All mocks and test inputs must be pure Python objects/primitives.
+7. All objects, instances, and inputs MUST be created directly inside each test function.
+8. PURE BLACK-BOX TESTING: Test strictly through the public interface, parameters, and return values. Do NOT test internal private variables or mock object properties.
 {invocation_guidance}
 Return ONLY executable Python code inside a single ```python ... ``` block.
 """
         response = self._call_gemini(prompt)
         match = re.search(r"```python\s*(.*?)\s*```", response, re.DOTALL)
-        if match:
-            return match.group(1).strip()
-        return response.strip()
+        raw_test = match.group(1).strip() if match else response.strip()
+        # Rimuove import errati generati dal modello (es. from implementation import ..., import implementation)
+        cleaned_lines = []
+        for line in raw_test.splitlines():
+            if re.match(r"^\s*(from|import)\s+implementation\b", line):
+                continue
+            # Sostituisce eventuali allow_inf= con allow_infinity= per robustezza
+            line = re.sub(r"\ballow_inf\s*=", "allow_infinity=", line)
+            cleaned_lines.append(line)
+        cleaned_test = "\n".join(cleaned_lines).strip()
+
+        try:
+            ast.parse(cleaned_test)
+            return cleaned_test
+        except SyntaxError as e:
+            fix_prompt = f"""The following pytest test suite has a SyntaxError: {e}.
+Please fix the syntax error and return the corrected, complete Python test code in a single ```python ... ``` block.
+
+Code:
+{cleaned_test}
+"""
+            fixed_response = self._call_gemini(fix_prompt)
+            fixed_match = re.search(r"```python\s*(.*?)\s*```", fixed_response, re.DOTALL)
+            fixed_test = fixed_match.group(1).strip() if fixed_match else fixed_response.strip()
+            fixed_lines = [re.sub(r"\ballow_inf\s*=", "allow_infinity=", l) for l in fixed_test.splitlines() if not re.match(r"^\s*(from|import)\s+implementation\b", l)]
+            return "\n".join(fixed_lines).strip()
 
     def run_differential_test(self, synthesized_code: str, test_code: str, reference_code: str = "", timeout_sec: int = 25) -> Dict[str, Any]:
         """
@@ -277,6 +360,15 @@ import pytest
 try:
     from hypothesis import given, strategies as st, settings
 except ImportError:
+    pass
+
+# --- Global Test Helpers & Mocks for C Standard Library / Common Idioms ---
+try:
+    if 'cJSON_free' not in globals():
+        def cJSON_free(ptr): pass
+    if 'cJSON_Delete' not in globals():
+        def cJSON_Delete(item): pass
+except Exception:
     pass
 
 # --- Code Under Test ---
@@ -398,15 +490,19 @@ except ImportError:
         if source_code:
             ref_code = self.synthesize_reference_from_code(func_name, signature, source_code)
 
-        # 3. Generazione della Suite di Test
-        test_suite = self.generate_pytest_suite(func_name, docstring, synth_code=synth_code, num_tests=num_tests)
+        # 3. Generazione della Suite di Test Black-Box (basata su docstring e signature)
+        test_suite = self.generate_pytest_suite(func_name, signature, docstring, num_tests=num_tests)
         
         # 4. Esecuzione Differenziale su entrambe le implementazioni
         test_results = self.run_differential_test(synth_code, test_suite, reference_code=ref_code)
 
+        # 5. Tassonomia della funzione
+        category = classify_function_type(func_name, signature)
+
         return {
             "function_name": func_name,
             "signature": signature,
+            "function_type": category,
             "synthesized_code": synth_code,
             "reference_code": ref_code,
             "test_suite": test_suite,
@@ -420,6 +516,7 @@ def main():
     parser.add_argument("-j", "--json", default="results/benchmark_cjson/eval_report_single.json", help="Percorso del file eval_report.json da testare")
     parser.add_argument("-n", "--limit", type=int, default=3, help="Numero di funzioni da sottoporre a test comportamentale (default: 3)")
     parser.add_argument("-t", "--tests-per-func", type=int, default=0, help="Numero di test semantici da generare (default: 0 = adattivo libero a cura di Gemini)")
+    parser.add_argument("-o", "--output-suffix", default="", help="Suffisso per i file di output (es. 'single' o 'multiagent')")
     args = parser.parse_args()
 
     json_path = os.path.join(ROOT_DIR, args.json) if not os.path.isabs(args.json) else args.json
@@ -503,7 +600,8 @@ def main():
 
     # Salvataggio dei risultati ed esportazione del grafico
     target_dir = os.path.dirname(json_path)
-    output_json = os.path.join(target_dir, "roundtrip_results.json")
+    suffix = f"_{args.output_suffix}" if args.output_suffix else ""
+    output_json = os.path.join(target_dir, f"roundtrip_results{suffix}.json")
     with open(output_json, "w", encoding="utf-8") as f:
         json.dump({
             "avg_pass_rate": avg_pass_rate,
@@ -512,19 +610,55 @@ def main():
         }, f, indent=2)
     print(f"[OK] Risultati dettagliati salvati in: {output_json}")
 
+    # Salva anche il file delle impostazioni del roundtrip
+    rt_config_path = os.path.join(target_dir, f"roundtrip_config{suffix}.json")
+    with open(rt_config_path, "w", encoding="utf-8") as f:
+        json.dump({
+            "json_source": args.json,
+            "limit": args.limit,
+            "tests_per_func": args.tests_per_func,
+            "output_suffix": args.output_suffix,
+            "avg_pass_rate": avg_pass_rate,
+            "avg_differential_agreement": avg_diff_rate
+        }, f, indent=2)
+
+    # Statistiche disaggregate per categoria tassonomica
+    cat_stats = {}
+    for r in summary_results:
+        c = r.get("function_type", "Stateless / Primitive")
+        if c not in cat_stats:
+            cat_stats[c] = {"doc_rates": [], "diff_rates": []}
+        cat_stats[c]["doc_rates"].append(r["execution"]["pass_rate"])
+        if "differential" in r["execution"]:
+            cat_stats[c]["diff_rates"].append(r["execution"]["differential"]["differential_agreement_rate"])
+
+    if cat_stats:
+        print("\n  ANALISI DISAGGREGATA PER CATEGORIA:")
+        for c, st in cat_stats.items():
+            avg_d = round(sum(st["doc_rates"]) / len(st["doc_rates"]), 1) if st["doc_rates"] else 0.0
+            avg_df = round(sum(st["diff_rates"]) / len(st["diff_rates"]), 1) if st["diff_rates"] else 0.0
+            print(f"  - [{c}] ({len(st['doc_rates'])} func): Doc Pass: {avg_d}% | Dual Agreement: {avg_df}%")
+
     try:
         from utils.plot_roundtrip import generate_roundtrip_charts
         formatted_for_plot = [
             {
                 "name": r["function_name"],
+                "function_type": r.get("function_type", "Stateless / Primitive"),
                 "pass_rate": r["execution"]["pass_rate"],
+                "diff_agreement": r["execution"].get("differential", {}).get("differential_agreement_rate", 0.0),
                 "passed": r["execution"]["passed"],
                 "total": r["execution"]["total_tests"]
             }
             for r in summary_results
         ]
-        out_png = os.path.join(target_dir, "roundtrip_charts.png")
-        generate_roundtrip_charts(formatted_for_plot, out_png, avg_pass_rate=avg_pass_rate)
+        out_png = os.path.join(target_dir, f"eval_chart_roundtrip{suffix}.png")
+        generate_roundtrip_charts(
+            formatted_for_plot,
+            out_png,
+            avg_pass_rate=avg_pass_rate,
+            avg_differential_agreement=avg_diff_rate
+        )
         print(f"[OK] Grafico Round-Trip generato con successo in: {out_png}")
     except Exception as e:
         print(f"[WARN] Impossibile generare il grafico: {e}")
