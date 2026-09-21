@@ -33,6 +33,7 @@ Rispondi ESCLUSIVAMENTE con un JSON contenente queste chiavi:
 {{
   "preconditions": ["Lista di controlli sui parametri, es: rb != NULL, capacity > 0"],
   "operations": ["Lista delle operazioni principali, es: malloc di capacity * sizeof(int), azzeramento head/tail"],
+  "edge_cases": ["Comportamento esatto per valori limite o anomalie, es: stringa vuota, NULL, numeri negativi, divisione per zero, buffer esaurito"],
   "error_conditions": ["Lista esatta delle condizioni di fallimento e relativi valori restituiti"],
   "success_return": "Valore o stato restituito in caso di successo"
 }}

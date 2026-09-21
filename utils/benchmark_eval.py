@@ -29,6 +29,10 @@ from src.agents.reader_agent import ReaderAgent
 from src.agents.searcher_agent import SearcherAgent
 from src.agents.writer_agent import WriterAgent
 from src.verifier import DocumentationVerifier
+from utils.roundtrip_error_analysis import (
+    analyze_roundtrip_errors,
+    save_roundtrip_error_report,
+)
 
 DB_PATH = os.path.join(ROOT_DIR, "dataset", "benchmark.db")
 RESULTS_DIR = os.path.join(ROOT_DIR, "results")
@@ -532,7 +536,8 @@ def run_evaluation(
             sig = r["signature"]
             doc = f"{r['generated_summary']}\n{r['generated_doxygen']}"
             print(f"\n[{idx_rt}/{len(eval_results)}] Dual Round-Trip test per: {fname}...")
-            rt_res = rt_evaluator.evaluate_function_roundtrip(fname, sig, doc, source_code=r.get("source_code", ""))
+            lib_val = r.get("library") or library
+            rt_res = rt_evaluator.evaluate_function_roundtrip(fname, sig, doc, source_code=r.get("source_code", ""), library=lib_val)
             r["roundtrip"] = rt_res
             r["metrics"]["roundtrip_pass_rate"] = rt_res["execution"]["pass_rate"]
             diff = rt_res["execution"].get("differential", {})
@@ -629,10 +634,45 @@ def run_evaluation(
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(eval_results, f, indent=2, ensure_ascii=False)
 
+    rt_error_analysis = None
+    rt_error_report_path = os.path.join(benchmark_dir, "roundtrip_error_report.md")
+    rt_err_chart_path = os.path.join(benchmark_dir, "eval_chart_roundtrip_errors.png")
+
     # Salvataggio e grafici del Round-Trip se eseguito
     if roundtrip_summary:
+        # Analisi diagnostica delle cause di errore
+        rt_error_analysis = analyze_roundtrip_errors(roundtrip_summary.get("results", []))
+        roundtrip_summary["error_analysis"] = {
+            "summary": rt_error_analysis["summary"],
+            "categories": rt_error_analysis["categories"],
+            "subtypes": rt_error_analysis["subtypes"]
+        }
+
+        # Salva roundtrip_results.json arricchito
         with open(rt_json_path, "w", encoding="utf-8") as f:
             json.dump(roundtrip_summary, f, indent=2, ensure_ascii=False)
+
+        # Genera il grafico visivo dedicato agli errori se ci sono errori
+        try:
+            from utils.plot_roundtrip_errors import generate_roundtrip_error_charts
+            generate_roundtrip_error_charts(
+                rt_error_analysis,
+                rt_err_chart_path,
+                library_name=library
+            )
+            print(f"[OK] Grafico Diagnostico Errori Round-Trip generato in: {rt_err_chart_path}")
+        except Exception as e:
+            print(f"[WARN] Impossibile generare il grafico errori Round-Trip: {e}")
+
+        # Salva report diagnostico dedicato in Markdown (includendo il riferimento al grafico)
+        save_roundtrip_error_report(
+            rt_error_analysis,
+            output_md_path=rt_error_report_path,
+            title=f"Round-Trip Error Diagnostic Report - {library} ({mode})",
+            chart_filename=os.path.basename(rt_err_chart_path) if os.path.exists(rt_err_chart_path) else ""
+        )
+        print(f"[OK] Report diagnostico errori Round-Trip salvato in: {rt_error_report_path}")
+
         try:
             from utils.plot_roundtrip import generate_roundtrip_charts
             formatted_for_plot = [
@@ -668,7 +708,8 @@ def run_evaluation(
         roundtrip_summary=roundtrip_summary,
         rt_chart_filename=os.path.basename(rt_chart_path) if roundtrip_summary and os.path.exists(rt_chart_path) else "",
         reproduction_command=reproduction_command,
-        advanced_chart_filenames=advanced_chart_filenames
+        advanced_chart_filenames=advanced_chart_filenames,
+        rt_error_analysis=rt_error_analysis
     )
 
     # Sincronizza una copia nella cartella 'latest' per consultazione rapida
@@ -682,6 +723,10 @@ def run_evaluation(
         artifacts_to_mirror.append(("roundtrip_results.json", rt_json_path))
         if os.path.exists(rt_chart_path):
             artifacts_to_mirror.append(("eval_chart_roundtrip.png", rt_chart_path))
+        if os.path.exists(rt_error_report_path):
+            artifacts_to_mirror.append(("roundtrip_error_report.md", rt_error_report_path))
+        if os.path.exists(rt_err_chart_path):
+            artifacts_to_mirror.append(("eval_chart_roundtrip_errors.png", rt_err_chart_path))
 
     for p in advanced_chart_paths:
         if os.path.exists(p):
@@ -706,7 +751,7 @@ def run_evaluation(
     print("=" * 65)
 
 
-def write_markdown_report(md_path: str, library: str, mode: str, results: List[Dict[str, Any]], chart_filename: str = "", roundtrip_summary: Dict[str, Any] = None, rt_chart_filename: str = "", reproduction_command: str = "", advanced_chart_filenames: List[str] = None):
+def write_markdown_report(md_path: str, library: str, mode: str, results: List[Dict[str, Any]], chart_filename: str = "", roundtrip_summary: Dict[str, Any] = None, rt_chart_filename: str = "", reproduction_command: str = "", advanced_chart_filenames: List[str] = None, rt_error_analysis: Dict[str, Any] = None):
     n_res = len(results)
     avg_param_f1 = round(sum(r["metrics"]["param_f1"] for r in results) / n_res, 4) if n_res else 0
     avg_return_match = round(sum(r["metrics"]["return_match"] for r in results) / n_res, 4) if n_res else 0
@@ -815,6 +860,29 @@ def write_markdown_report(md_path: str, library: str, mode: str, results: List[D
         if rt_chart_filename:
             f.write("## 🧪 Dashboard Round-Trip Differential Testing (Pytest Assertions)\n\n")
             f.write(f"![Metriche Round-Trip]({rt_chart_filename})\n\n")
+
+        if rt_error_analysis and rt_error_analysis.get("categories"):
+            f.write("## 🩺 Diagnostica Tipologie di Errore Round-Trip\n\n")
+            f.write("> Sintesi delle cause di fallimento dei test di validazione Doc-to-Code. Il report completo è disponibile in `roundtrip_error_report.md`.\n\n")
+            f.write("| Tipologia Errore | Occorrenze | Percentuale (%) | Descrizione Operativa |\n")
+            f.write("|---|:---:|:---:|---|\n")
+            for c in rt_error_analysis.get("categories", []):
+                cat_name = c["category"]
+                desc = ""
+                if "Missing Symbol" in cat_name:
+                    desc = "Dipendenze, costanti o helper mancanti nello scaffold."
+                elif "Interface" in cat_name:
+                    desc = "Mismatch di firma, parametri mancanti o incompatibilità di tipi."
+                elif "Behavioral" in cat_name:
+                    desc = "La logica non produce il valore atteso dal test (discrepanza contrattuale)."
+                elif "Test Harness" in cat_name:
+                    desc = "Mancata eccezione attesa o anomalia harness."
+                elif "Syntax" in cat_name:
+                    desc = "Errore di sintassi nel codice generato dall'LLM."
+                else:
+                    desc = "Altro errore di runtime o timeout."
+                f.write(f"| **{cat_name}** | `{c['count']}` | **{c['percentage']}%** | {desc} |\n")
+            f.write("\n")
 
         f.write("## 📋 Tabella Comparativa Completa (SBERT, BERTScore, METEOR, LLM-Judge & AST)\n\n")
         rt_col_header = " | Round-Trip (Doc/Dual)" if roundtrip_summary else ""

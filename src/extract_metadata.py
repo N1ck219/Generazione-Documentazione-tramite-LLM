@@ -21,10 +21,18 @@ class CCodeExtractor:
     def parse_file(self, filepath: str, include_dirs: List[str] = None, extra_args: List[str] = None) -> clang.cindex.TranslationUnit:
         ext = os.path.splitext(filepath)[1].lower()
         is_cpp = ext in ['.cpp', '.hpp', '.cc', '.cxx', '.hxx', '.hh', '.c++']
+        if not is_cpp and ext == '.h' and os.path.exists(filepath):
+            try:
+                with open(filepath, "r", encoding="utf-8", errors="ignore") as f_check:
+                    content_head = f_check.read(40960)
+                    if any(kw in content_head for kw in ["namespace ", "class ", "template<", "template <", "public:", "private:", "protected:"]):
+                        is_cpp = True
+            except Exception:
+                pass
         if extra_args and ('-x' in extra_args and 'c++' in extra_args):
             is_cpp = True
         
-        args = ['-x', 'c++', '-std=c++17', '-DCV_EXPORTS='] if is_cpp else ['-x', 'c', '-std=c11']
+        args = ['-x', 'c++', '-std=c++17', '-DCV_EXPORTS=', '-D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH'] if is_cpp else ['-x', 'c', '-std=c11']
         if extra_args:
             for a in extra_args:
                 if a not in args and a != '-x' and a != 'c++':

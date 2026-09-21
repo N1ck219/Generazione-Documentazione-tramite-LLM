@@ -1,2 +1,4 @@
 - tempi
 - grafico voto rispetto a lunghezza riga
+- Fornire contesto/codice delle parti esterne/helper agli LLM durante la sintesi o il testing per ridurre NameError e AttributeError
+- Self-Refinement / Loop di correzione automatica: fornire al coder il traceback/failure dei test pytest per tentare un ri-allineamento automatico (Doc-to-Code feedback loop)

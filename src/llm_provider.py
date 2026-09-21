@@ -291,7 +291,10 @@ Required JSON output structure:
 6. Design by Contract:
    - `@pre`: Essential preconditions (or 'None, arguments validated at runtime').
    - `@post`: Guarantees on state and memory after execution.
-7. Do NOT use speculative phrases ('may depend on implementation'). Be technically precise.
+7. Edge Cases & Boundary Handling:
+   - In @details, explicitly state the exact behavior on boundary inputs (e.g. empty string, 0, negative values, NULL pointer, malformed input).
+   - If applicable, include a brief @note or example with concrete input/output values illustrating the expected return value.
+8. Do NOT use speculative phrases ('may depend on implementation'). Be technically precise.
 
 Now generate the documentation for the following function:
 
@@ -339,7 +342,10 @@ Struttura e stile di risposta JSON richiesti (esempio astratto):
    - `@post`: Postcondizioni e garanzie formali sullo stato della memoria e delle strutture al termine dell'esecuzione (incluso in caso di errore o successo).
    - `@warning`: Specificare la Thread-Safety solo se rilevante per funzioni di libreria che manipolano puntatori condivisi. ATTENZIONE: per funzioni di entry-point come `main()` o funzioni che usano esclusivamente variabili locali sullo stack senza concorrenza, NON inserire falsi warning di thread-safety (scrivi 'Non applicabile (funzione di entry-point o isolata sullo stack)' oppure ometti il warning).
 
-6. NON usare mai frasi ipotetiche o speculative (es. "dipende dall'implementazione", "generalmente"). Descrivi con certezza matematica la logica del codice sorgente fornito.
+6. Gestione Casi Limite ed Edge Cases:
+   - In @details, specifica chiaramente il comportamento esatto su input limite (es. stringa vuota, zero, valori negativi, puntatore NULL, token malformati).
+   - Se applicabile, includi una breve nota con un esempio di input/output atteso (@note o nel testo).
+7. NON usare mai frasi ipotetiche o speculative (es. "dipende dall'implementazione", "generalmente"). Descrivi con certezza matematica la logica del codice sorgente fornito.
 
 Ora genera la documentazione per la seguente funzione:
 

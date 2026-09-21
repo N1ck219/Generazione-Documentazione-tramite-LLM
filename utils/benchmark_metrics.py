@@ -212,14 +212,18 @@ def calculate_batch_bert_scores(references: List[str], candidates: List[str], mo
     """
     try:
         import bert_score
-        P, R, F1 = bert_score.score(
-            candidates, 
-            references, 
-            model_type=model_type, 
-            lang="en", 
-            verbose=False,
-            device="cpu"
-        )
+        kwargs = {
+            "cands": candidates,
+            "refs": references,
+            "model_type": model_type,
+            "lang": "en",
+            "verbose": False,
+            "device": "cpu"
+        }
+        if "codebert" in model_type.lower():
+            kwargs["num_layers"] = 10
+
+        P, R, F1 = bert_score.score(**kwargs)
         scores = []
         for p, r, f in zip(P.tolist(), R.tolist(), F1.tolist()):
             scores.append({

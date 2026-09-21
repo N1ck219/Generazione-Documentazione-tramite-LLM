@@ -252,6 +252,16 @@ Il framework genera automaticamente una suite completa di **grafici scientifici 
   2. **Pannello Inferiore Sinistro**: Medie aggregate disaggregate per categoria funzionale, evidenziando il differenziale di resa esecutiva tra funzioni pure, manipolazioni a buffer e metodi ad albero di oggetti/stato interno.
   3. **Pannello Inferiore Destro**: Sintesi globale a 3 indicatori cardine: **Pass Rate Doc**, **Dual Agreement Rate** e **Media Finale Combinata**, offrendo un quadro immediato e oggettivo della solidità della documentazione generata.
 
+### 🩺 Dashboard Diagnostica Cause di Errore Round-Trip (`eval_chart_roundtrip_errors.png`)
+* **Architettura a 2 Pannelli Coordinati**:
+  1. **Pannello Sinistro (Distribuzione Tassonomica degli Errori)**: Grafico a barre orizzontali ad alto contrasto con color-coding semantico per classificare la causa prima dei fallimenti dei test:
+     - *Missing Symbol / Environment*: funzioni ausiliarie, tipi o costanti non forniti nello scaffold generato.
+     - *Interface / Signature Mismatch*: discrepanze su numero/nomi dei parametri o tipi.
+     - *Behavioral / Contract Failure*: il calcolo o la logica non rispetta le asserzioni di contratto.
+     - *Test Harness / Generator Bug*: anomalie interne dei test generati (es. `DID NOT RAISE` o parametri errati di Hypothesis).
+  2. **Pannello Destro (Top Funzioni con Errori)**: Classifica delle funzioni critiche che hanno registrato il maggior numero di test falliti, indicando chiaramente il tasso $k/N$ e la tipologia di errore prevalente.
+* **Report Separato Dettagliato (`roundtrip_error_report.md`)**: File Markdown dedicato generato automaticamente a ogni run, completo di tabelle di riepilogo e sezioni a scomparsa con il messaggio di errore completo e testuale per ogni singolo test fallito.
+
 ### 1. 🕸️ Radar / Spider Chart Multi-Dimensionale (`eval_chart_radar.png`)
 - **Assi**: Aderenza AST, Semantica Neurale, Actionability, Copertura Eccezioni, Affidabilità Formale, Downstream Utility.
 - **Scopo**: Visualizzare il bilanciamento globale del generatore: un poligono regolare e prossimo a $1.0$ comprova l'eccellenza simultanea sia sintattica che semantica.
