@@ -1,0 +1,22 @@
+{
+    "generation_info": {
+        "timestamp": "2026-10-01T15:08:47.668995",
+        "main_model": "gemini-2.5-flash",
+        "generator_version": "1.0.1",
+        "repo_path": "D:\\python\\CodeWiki\\src_code\\sources\\TinyXML-2",
+        "commit_id": "4c18face91c6a634a86b3e9aebb1af6c78d66e76"
+    },
+    "statistics": {
+        "total_components": 223,
+        "leaf_nodes": 20,
+        "max_depth": 2
+    },
+    "files_generated": [
+        "overview.md",
+        "module_tree.json",
+        "first_module_tree.json",
+        "TinyXML-2_Core_XML_Structures.md",
+        "TinyXML-2_Parsing_and_Utility.md",
+        "TinyXML-2_Serialization_and_Printing.md"
+    ]
+}

@@ -1,0 +1,210 @@
+{
+  "n_common": 47,
+  "n_codewiki_documented": 47,
+  "pipeline_runs": [
+    "results\\benchmark_tinyxml-2\\run_20261001_180647_multiagent\\eval_report_multiagent.json"
+  ],
+  "missing_in_pipeline": [],
+  "metrics": [
+    {
+      "metric": "sbert_similarity",
+      "label": "SBERT",
+      "group": "nlp",
+      "n": 47,
+      "codewiki_mean": 0.5506,
+      "pipeline_mean": 0.5847,
+      "delta": 0.0341,
+      "p_value": 0.12440802178115007
+    },
+    {
+      "metric": "bertscore_f1",
+      "label": "BERTScore F1",
+      "group": "nlp",
+      "n": 47,
+      "codewiki_mean": 0.5813,
+      "pipeline_mean": 0.5813,
+      "delta": 0.0,
+      "p_value": 0.4091365007832668
+    },
+    {
+      "metric": "bleurt_estimate",
+      "label": "BLEURT (stima)",
+      "group": "nlp",
+      "n": 47,
+      "codewiki_mean": 0.4795,
+      "pipeline_mean": 0.5177,
+      "delta": 0.0382,
+      "p_value": 0.12705697769484914
+    },
+    {
+      "metric": "meteor_score",
+      "label": "METEOR",
+      "group": "nlp",
+      "n": 47,
+      "codewiki_mean": 0.3905,
+      "pipeline_mean": 0.3693,
+      "delta": -0.0212,
+      "p_value": 0.8135301153625676
+    },
+    {
+      "metric": "tfidf_cosine",
+      "label": "TF-IDF cosine",
+      "group": "nlp",
+      "n": 47,
+      "codewiki_mean": 0.2983,
+      "pipeline_mean": 0.4424,
+      "delta": 0.144,
+      "p_value": 0.001066717478624045
+    },
+    {
+      "metric": "rouge_l",
+      "label": "ROUGE-L",
+      "group": "nlp",
+      "n": 47,
+      "codewiki_mean": 0.2304,
+      "pipeline_mean": 0.1539,
+      "delta": -0.0766,
+      "p_value": 0.14733917672949182
+    },
+    {
+      "metric": "concept_checklist_score",
+      "label": "Concept checklist",
+      "group": "nlp",
+      "n": 47,
+      "codewiki_mean": 0.7447,
+      "pipeline_mean": 0.9326,
+      "delta": 0.1879,
+      "p_value": 0.0029807046202068393
+    },
+    {
+      "metric": "actionability_score",
+      "label": "Actionability",
+      "group": "nlp",
+      "n": 47,
+      "codewiki_mean": 0.5181,
+      "pipeline_mean": 0.8362,
+      "delta": 0.3181,
+      "p_value": 7.959328677460248e-07
+    },
+    {
+      "metric": "error_doc_rate",
+      "label": "Error doc. rate",
+      "group": "nlp",
+      "n": 12,
+      "codewiki_mean": 0.0,
+      "pipeline_mean": 1.0,
+      "delta": 1.0,
+      "p_value": 0.00048828125
+    },
+    {
+      "metric": "edge_case_coverage",
+      "label": "Edge case coverage",
+      "group": "nlp",
+      "n": 7,
+      "codewiki_mean": 0.0,
+      "pipeline_mean": 0.7143,
+      "delta": 0.7143,
+      "p_value": 0.0625
+    },
+    {
+      "metric": "length_ratio",
+      "label": "Length ratio",
+      "group": "nlp",
+      "n": 47,
+      "codewiki_mean": 1.1654,
+      "pipeline_mean": 10.1805,
+      "delta": 9.0151,
+      "p_value": null
+    },
+    {
+      "metric": "codebert_f1",
+      "label": "CodeBERTScore F1",
+      "group": "advanced",
+      "n": 47,
+      "codewiki_mean": 0.7745,
+      "pipeline_mean": 0.769,
+      "delta": -0.0054,
+      "p_value": 0.7710425998350314
+    },
+    {
+      "metric": "retrieval_rr",
+      "label": "Retrieval MRR",
+      "group": "advanced",
+      "n": 47,
+      "codewiki_mean": 0.4429,
+      "pipeline_mean": 0.6496,
+      "delta": 0.2066,
+      "p_value": 0.0009834242265228436
+    },
+    {
+      "metric": "hit_at_1",
+      "label": "Retrieval Hit@1",
+      "group": "advanced",
+      "n": 47,
+      "codewiki_mean": 0.2979,
+      "pipeline_mean": 0.4894,
+      "delta": 0.1915,
+      "p_value": 0.02013675155034634
+    },
+    {
+      "metric": "hit_at_5",
+      "label": "Retrieval Hit@5",
+      "group": "advanced",
+      "n": 47,
+      "codewiki_mean": 0.5745,
+      "pipeline_mean": 0.8936,
+      "delta": 0.3191,
+      "p_value": 0.0002747267638079423
+    },
+    {
+      "metric": "judge_a",
+      "label": "Judge A - Faithfulness",
+      "group": "advanced",
+      "n": 47,
+      "codewiki_mean": 3.3128,
+      "pipeline_mean": 4.2511,
+      "delta": 0.9383,
+      "p_value": 5.55948780205249e-07
+    },
+    {
+      "metric": "judge_b",
+      "label": "Judge B - Alignment",
+      "group": "advanced",
+      "n": 47,
+      "codewiki_mean": 2.4681,
+      "pipeline_mean": 4.6553,
+      "delta": 2.1872,
+      "p_value": 1.6077073996162656e-08
+    },
+    {
+      "metric": "judge_combined",
+      "label": "Judge combinato",
+      "group": "advanced",
+      "n": 47,
+      "codewiki_mean": 2.8904,
+      "pipeline_mean": 4.4532,
+      "delta": 1.5628,
+      "p_value": 1.4578195290227309e-08
+    },
+    {
+      "metric": "roundtrip_pass_rate",
+      "label": "Round-trip pass rate (%)",
+      "group": "advanced",
+      "n": 47,
+      "codewiki_mean": 64.1298,
+      "pipeline_mean": 60.1851,
+      "delta": -3.9447,
+      "p_value": 0.5704869370886854
+    },
+    {
+      "metric": "roundtrip_dual_agreement",
+      "label": "Dual agreement (%)",
+      "group": "advanced",
+      "n": 47,
+      "codewiki_mean": 40.7809,
+      "pipeline_mean": 39.3191,
+      "delta": -1.4617,
+      "p_value": 0.8903452962420233
+    }
+  ]
+}

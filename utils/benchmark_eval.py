@@ -78,7 +78,8 @@ def get_benchmark_candidates(
     require_ground_truth: bool = True,
     sampling: str = "sequential",
     seed: Optional[int] = None,
-    min_loc: Optional[int] = None
+    min_loc: Optional[int] = None,
+    function_names: Optional[List[str]] = None
 ) -> List[Dict[str, Any]]:
     """
     Estrae le funzioni candidate per il benchmark dal database SQLite secondo 3 strategie:
@@ -125,6 +126,24 @@ def get_benchmark_candidates(
             r["parameters"] = []
         code = r.get("source_code", "")
         r["loc"] = len(code.splitlines()) if code else 1
+
+    # Filtro opzionale su un elenco esplicito di funzioni (es. confronto con CodeWiki).
+    # Le varianti .h/.cpp della stessa funzione hanno lo stesso Ground Truth:
+    # se ne tiene una sola, preferendo la .cpp che contiene il corpo completo.
+    if function_names:
+        wanted = set(function_names)
+        by_name: Dict[str, Dict[str, Any]] = {}
+        for r in sorted(all_rows, key=lambda x: x["id"]):
+            if r["function_name"] not in wanted:
+                continue
+            prev = by_name.get(r["function_name"])
+            if prev is None or ("_cpp_" in r["id"] and "_cpp_" not in prev["id"]):
+                by_name[r["function_name"]] = r
+        missing = wanted - set(by_name)
+        if missing:
+            print(f"[WARN] {len(missing)} funzioni dell'elenco non trovate nel DB: {sorted(missing)}")
+        all_rows = list(by_name.values())
+        limit = len(all_rows)
 
     # Filtro opzionale su min_loc
     if min_loc is not None and min_loc > 1:
@@ -193,8 +212,15 @@ def run_evaluation(
     roundtrip: bool = False,
     sampling: str = "sequential",
     seed: Optional[int] = None,
-    min_loc: Optional[int] = None
+    min_loc: Optional[int] = None,
+    functions_file: Optional[str] = None
 ):
+    function_names = None
+    if functions_file:
+        with open(functions_file, "r", encoding="utf-8") as f:
+            function_names = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+        limit = len(function_names)
+        sampling = "sequential"
     print("=" * 65)
     print(f"  BENCHMARK EVALUATION: {library.upper()} (Language: {language.upper()})")
     strat_desc = f"STRATIFICATA PER LOC (Vincoli di complessita', seed={seed})" if sampling == "stratified" else (f"CASUALE (seed={seed})" if sampling == "random" else "SEQUENZIALE (Prime N)")
@@ -205,7 +231,8 @@ def run_evaluation(
         print("  Round-Trip Differential Testing (Pytest): ATTIVO")
     print("=" * 65)
 
-    candidates = get_benchmark_candidates(library, limit, sampling=sampling, seed=seed, min_loc=min_loc)
+    candidates = get_benchmark_candidates(library, limit, sampling=sampling, seed=seed, min_loc=min_loc,
+                                          function_names=function_names)
     if not candidates:
         print(f"[ERRORE] Nessuna funzione trovata per {library} con documentazione originale.")
         return
@@ -594,6 +621,8 @@ def run_evaluation(
             cmd_parts.append(f"--seed {seed}")
     if min_loc:
         cmd_parts.append(f"--min-loc {min_loc}")
+    if functions_file:
+        cmd_parts.append(f"--functions {os.path.relpath(functions_file, ROOT_DIR)}")
     if roundtrip:
         cmd_parts.append("--roundtrip")
     else:
@@ -614,6 +643,7 @@ def run_evaluation(
         "sampling": sampling,
         "seed": seed,
         "min_loc": min_loc,
+        "functions_file": functions_file,
         "use_mock": use_mock
     }
     with open(config_path, "w", encoding="utf-8") as f:
@@ -968,6 +998,7 @@ def main():
     parser.add_argument("--roundtrip", dest="roundtrip", action="store_true", default=None, help="Esegue anche la validazione Round-Trip (Doc-to-Code Synthesis & Dual Pytest)")
     parser.add_argument("--no-roundtrip", dest="roundtrip", action="store_false", help="Disabilita la validazione Round-Trip a fine benchmark")
     parser.add_argument("--mock", action="store_true", help="Forza l'uso del MockLLM senza effettuare chiamate API reali")
+    parser.add_argument("--functions", default=None, help="File di testo con un nome canonico per riga (es. 'XMLNode::Value'): valuta esattamente quelle funzioni, ignorando -n e il campionamento")
 
     args = parser.parse_args()
 
@@ -979,7 +1010,7 @@ def main():
         sampling_strategy = "random"
 
     # Se non sono stati passati argomenti espliciti da riga di comando (es. solo `python utils/benchmark_eval.py`), avviamo il menu interattivo
-    if args.library is None and args.limit is None:
+    if args.library is None and args.limit is None and args.functions is None:
         print("==================================================")
         print("  BENCHMARK & VALUTAZIONE GROUND TRUTH (C/C++)    ")
         print("==================================================")
@@ -1060,7 +1091,8 @@ def main():
         roundtrip=chosen_roundtrip,
         sampling=sampling_strategy,
         seed=args.seed,
-        min_loc=args.min_loc
+        min_loc=args.min_loc,
+        functions_file=args.functions
     )
 
 

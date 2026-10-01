@@ -1,0 +1,2500 @@
+[
+  {
+    "function_name": "XMLNode::GetDocument",
+    "class_name": "XMLNode",
+    "method_name": "GetDocument",
+    "raw_method_signature": "GetDocument()",
+    "codewiki_doc": "Returns a pointer to the `XMLDocument` that owns this node.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_GetDocument",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_GetDocument"
+    ],
+    "db_function_name": "XMLNode::GetDocument",
+    "signature": "XMLDocument * XMLNode::GetDocument(void)",
+    "return_type": "XMLDocument *",
+    "parameters": [],
+    "source_code": "XMLDocument* GetDocument()\t\t\t\t{\n        TIXMLASSERT( _document );\n        return _document;\n    }",
+    "cleaned_doc": "Get the XMLDocument that owns this XMLNode."
+  },
+  {
+    "function_name": "XMLNode::Value",
+    "class_name": "XMLNode",
+    "method_name": "Value",
+    "raw_method_signature": "Value()",
+    "codewiki_doc": "Access and modify the string value associated with the node (e.g., element name, comment text).",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_Value",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_Value",
+      "tinyxml-2_tinyxml2_h_XMLNode_Value"
+    ],
+    "db_function_name": "XMLNode::Value",
+    "signature": "const char * XMLNode::Value(void)",
+    "return_type": "const char *",
+    "parameters": [],
+    "source_code": "const char* XMLNode::Value() const\n{\n    // Edge case: XMLDocuments don't have a Value. Return null.\n    if ( this->ToDocument() )\n        return 0;\n    return _value.GetStr();\n}",
+    "cleaned_doc": "The meaning of 'value' changes for the specific type.\n@verbatim\nDocument:\tempty (NULL is returned, not an empty string)\nElement:\tname of the element\nComment:\tthe comment text\nUnknown:\tthe tag contents\nText:\t\tthe text string\n@endverbatim"
+  },
+  {
+    "function_name": "XMLNode::SetValue",
+    "class_name": "XMLNode",
+    "method_name": "SetValue",
+    "raw_method_signature": "SetValue()",
+    "codewiki_doc": "Access and modify the string value associated with the node (e.g., element name, comment text).",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_SetValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_SetValue",
+      "tinyxml-2_tinyxml2_h_XMLNode_SetValue"
+    ],
+    "db_function_name": "XMLNode::SetValue",
+    "signature": "void XMLNode::SetValue(const char * val, bool staticMem)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "val",
+        "type": "const char *"
+      },
+      {
+        "name": "staticMem",
+        "type": "bool"
+      }
+    ],
+    "source_code": "void XMLNode::SetValue( const char* str, bool staticMem )\n{\n    if ( staticMem ) {\n        _value.SetInternedStr( str );\n    }\n    else {\n        _value.SetStr( str );\n    }\n}",
+    "cleaned_doc": "Set the Value of an XML node.\n@sa Value()"
+  },
+  {
+    "function_name": "XMLNode::Parent",
+    "class_name": "XMLNode",
+    "method_name": "Parent",
+    "raw_method_signature": "Parent()",
+    "codewiki_doc": "Methods for traversing the DOM tree.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_Parent",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_Parent"
+    ],
+    "db_function_name": "XMLNode::Parent",
+    "signature": "XMLNode * XMLNode::Parent(void)",
+    "return_type": "XMLNode *",
+    "parameters": [],
+    "source_code": "XMLNode* Parent()\t\t\t\t\t\t{\n        return _parent;\n    }",
+    "cleaned_doc": "Get the parent of this node on the DOM."
+  },
+  {
+    "function_name": "XMLNode::FirstChild",
+    "class_name": "XMLNode",
+    "method_name": "FirstChild",
+    "raw_method_signature": "FirstChild()",
+    "codewiki_doc": "Methods for traversing the DOM tree.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_FirstChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_FirstChild"
+    ],
+    "db_function_name": "XMLNode::FirstChild",
+    "signature": "XMLNode * XMLNode::FirstChild(void)",
+    "return_type": "XMLNode *",
+    "parameters": [],
+    "source_code": "XMLNode*\t\tFirstChild()\t\t\t{\n        return _firstChild;\n    }",
+    "cleaned_doc": "Get the first child node, or null if none exists."
+  },
+  {
+    "function_name": "XMLNode::LastChild",
+    "class_name": "XMLNode",
+    "method_name": "LastChild",
+    "raw_method_signature": "LastChild()",
+    "codewiki_doc": "Methods for traversing the DOM tree.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_LastChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_LastChild"
+    ],
+    "db_function_name": "XMLNode::LastChild",
+    "signature": "XMLNode * XMLNode::LastChild(void)",
+    "return_type": "XMLNode *",
+    "parameters": [],
+    "source_code": "XMLNode*\t\tLastChild()\t\t\t\t\t\t\t\t{\n        return _lastChild;\n    }",
+    "cleaned_doc": "Get the last child node, or null if none exists."
+  },
+  {
+    "function_name": "XMLNode::NextSibling",
+    "class_name": "XMLNode",
+    "method_name": "NextSibling",
+    "raw_method_signature": "NextSibling()",
+    "codewiki_doc": "Methods for traversing the DOM tree.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_NextSibling",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_NextSibling"
+    ],
+    "db_function_name": "XMLNode::NextSibling",
+    "signature": "XMLNode * XMLNode::NextSibling(void)",
+    "return_type": "XMLNode *",
+    "parameters": [],
+    "source_code": "XMLNode*\tNextSibling()\t\t\t\t\t\t\t\t{\n        return _next;\n    }",
+    "cleaned_doc": "Get the next (right) sibling node of this node."
+  },
+  {
+    "function_name": "XMLNode::PreviousSibling",
+    "class_name": "XMLNode",
+    "method_name": "PreviousSibling",
+    "raw_method_signature": "PreviousSibling()",
+    "codewiki_doc": "Methods for traversing the DOM tree.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_PreviousSibling",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_PreviousSibling"
+    ],
+    "db_function_name": "XMLNode::PreviousSibling",
+    "signature": "XMLNode * XMLNode::PreviousSibling(void)",
+    "return_type": "XMLNode *",
+    "parameters": [],
+    "source_code": "XMLNode*\tPreviousSibling()\t\t\t\t\t\t\t{\n        return _prev;\n    }",
+    "cleaned_doc": "Get the previous (left) sibling node of this node."
+  },
+  {
+    "function_name": "XMLNode::FirstChildElement",
+    "class_name": "XMLNode",
+    "method_name": "FirstChildElement",
+    "raw_method_signature": "FirstChildElement()",
+    "codewiki_doc": "Convenience methods for navigating to specific child or sibling elements, optionally by name.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_FirstChildElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_FirstChildElement",
+      "tinyxml-2_tinyxml2_h_XMLNode_FirstChildElement"
+    ],
+    "db_function_name": "XMLNode::FirstChildElement",
+    "signature": "XMLElement * XMLNode::FirstChildElement(const char * name)",
+    "return_type": "XMLElement *",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "const XMLElement* XMLNode::FirstChildElement( const char* name ) const\n{\n    for( const XMLNode* node = _firstChild; node; node = node->_next ) {\n        const XMLElement* element = node->ToElementWithName( name );\n        if ( element ) {\n            return element;\n        }\n    }\n    return 0;\n}",
+    "cleaned_doc": "Get the first child element, or optionally the first child\nelement with the specified name."
+  },
+  {
+    "function_name": "XMLNode::LastChildElement",
+    "class_name": "XMLNode",
+    "method_name": "LastChildElement",
+    "raw_method_signature": "LastChildElement()",
+    "codewiki_doc": "Convenience methods for navigating to specific child or sibling elements, optionally by name.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_LastChildElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_LastChildElement",
+      "tinyxml-2_tinyxml2_h_XMLNode_LastChildElement"
+    ],
+    "db_function_name": "XMLNode::LastChildElement",
+    "signature": "XMLElement * XMLNode::LastChildElement(const char * name)",
+    "return_type": "XMLElement *",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "const XMLElement* XMLNode::LastChildElement( const char* name ) const\n{\n    for( const XMLNode* node = _lastChild; node; node = node->_prev ) {\n        const XMLElement* element = node->ToElementWithName( name );\n        if ( element ) {\n            return element;\n        }\n    }\n    return 0;\n}",
+    "cleaned_doc": "Get the last child element or optionally the last child\nelement with the specified name."
+  },
+  {
+    "function_name": "XMLNode::NextSiblingElement",
+    "class_name": "XMLNode",
+    "method_name": "NextSiblingElement",
+    "raw_method_signature": "NextSiblingElement()",
+    "codewiki_doc": "Convenience methods for navigating to specific child or sibling elements, optionally by name.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_NextSiblingElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_NextSiblingElement",
+      "tinyxml-2_tinyxml2_h_XMLNode_NextSiblingElement"
+    ],
+    "db_function_name": "XMLNode::NextSiblingElement",
+    "signature": "XMLElement * XMLNode::NextSiblingElement(const char * name)",
+    "return_type": "XMLElement *",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "const XMLElement* XMLNode::NextSiblingElement( const char* name ) const\n{\n    for( const XMLNode* node = _next; node; node = node->_next ) {\n        const XMLElement* element = node->ToElementWithName( name );\n        if ( element ) {\n            return element;\n        }\n    }\n    return 0;\n}",
+    "cleaned_doc": "Get the next (right) sibling element of this node, with an optionally supplied name."
+  },
+  {
+    "function_name": "XMLNode::PreviousSiblingElement",
+    "class_name": "XMLNode",
+    "method_name": "PreviousSiblingElement",
+    "raw_method_signature": "PreviousSiblingElement()",
+    "codewiki_doc": "Convenience methods for navigating to specific child or sibling elements, optionally by name.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_PreviousSiblingElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_PreviousSiblingElement",
+      "tinyxml-2_tinyxml2_h_XMLNode_PreviousSiblingElement"
+    ],
+    "db_function_name": "XMLNode::PreviousSiblingElement",
+    "signature": "XMLElement * XMLNode::PreviousSiblingElement(const char * name)",
+    "return_type": "XMLElement *",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "const XMLElement* XMLNode::PreviousSiblingElement( const char* name ) const\n{\n    for( const XMLNode* node = _prev; node; node = node->_prev ) {\n        const XMLElement* element = node->ToElementWithName( name );\n        if ( element ) {\n            return element;\n        }\n    }\n    return 0;\n}",
+    "cleaned_doc": "Get the previous (left) sibling element of this node, with an optionally supplied name."
+  },
+  {
+    "function_name": "XMLNode::InsertEndChild",
+    "class_name": "XMLNode",
+    "method_name": "InsertEndChild",
+    "raw_method_signature": "InsertEndChild()",
+    "codewiki_doc": "Methods for adding child nodes to the current node.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_InsertEndChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_InsertEndChild",
+      "tinyxml-2_tinyxml2_h_XMLNode_InsertEndChild"
+    ],
+    "db_function_name": "XMLNode::InsertEndChild",
+    "signature": "XMLNode * XMLNode::InsertEndChild(XMLNode * addThis)",
+    "return_type": "XMLNode *",
+    "parameters": [
+      {
+        "name": "addThis",
+        "type": "XMLNode *"
+      }
+    ],
+    "source_code": "XMLNode* XMLNode::InsertEndChild( XMLNode* addThis )\n{\n    TIXMLASSERT( addThis );\n    if ( addThis->_document != _document ) {\n        TIXMLASSERT( false );\n        return 0;\n    }\n    InsertChildPreamble( addThis );\n\n    if ( _lastChild ) {\n        TIXMLASSERT( _firstChild );\n        TIXMLASSERT( _lastChild->_next == 0 );\n        _lastChild->_next = addThis;\n        addThis->_prev = _lastChild;\n        _lastChild = addThis;\n\n        addThis->_next = 0;\n    }\n    else {\n        TIXMLASSERT( _firstChild == 0 );\n        _firstChild = _lastChild = addThis;\n\n        addThis->_prev = 0;\n        addThis->_next = 0;\n    }\n    addThis->_parent = this;\n    return addThis;\n}",
+    "cleaned_doc": "Add a child node as the last (right) child.\nIf the child node is already part of the document,\nit is moved from its old location to the new location.\nReturns the addThis argument or 0 if the node does not\nbelong to the same document."
+  },
+  {
+    "function_name": "XMLNode::InsertFirstChild",
+    "class_name": "XMLNode",
+    "method_name": "InsertFirstChild",
+    "raw_method_signature": "InsertFirstChild()",
+    "codewiki_doc": "Methods for adding child nodes to the current node.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_InsertFirstChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_InsertFirstChild",
+      "tinyxml-2_tinyxml2_h_XMLNode_InsertFirstChild"
+    ],
+    "db_function_name": "XMLNode::InsertFirstChild",
+    "signature": "XMLNode * XMLNode::InsertFirstChild(XMLNode * addThis)",
+    "return_type": "XMLNode *",
+    "parameters": [
+      {
+        "name": "addThis",
+        "type": "XMLNode *"
+      }
+    ],
+    "source_code": "XMLNode* XMLNode::InsertFirstChild( XMLNode* addThis )\n{\n    TIXMLASSERT( addThis );\n    if ( addThis->_document != _document ) {\n        TIXMLASSERT( false );\n        return 0;\n    }\n    InsertChildPreamble( addThis );\n\n    if ( _firstChild ) {\n        TIXMLASSERT( _lastChild );\n        TIXMLASSERT( _firstChild->_prev == 0 );\n\n        _firstChild->_prev = addThis;\n        addThis->_next = _firstChild;\n        _firstChild = addThis;\n\n        addThis->_prev = 0;\n    }\n    else {\n        TIXMLASSERT( _lastChild == 0 );\n        _firstChild = _lastChild = addThis;\n\n        addThis->_prev = 0;\n        addThis->_next = 0;\n    }\n    addThis->_parent = this;\n    return addThis;\n}",
+    "cleaned_doc": "Add a child node as the first (left) child.\nIf the child node is already part of the document,\nit is moved from its old location to the new location.\nReturns the addThis argument or 0 if the node does not\nbelong to the same document."
+  },
+  {
+    "function_name": "XMLNode::InsertAfterChild",
+    "class_name": "XMLNode",
+    "method_name": "InsertAfterChild",
+    "raw_method_signature": "InsertAfterChild()",
+    "codewiki_doc": "Methods for adding child nodes to the current node.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_InsertAfterChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_InsertAfterChild",
+      "tinyxml-2_tinyxml2_h_XMLNode_InsertAfterChild"
+    ],
+    "db_function_name": "XMLNode::InsertAfterChild",
+    "signature": "XMLNode * XMLNode::InsertAfterChild(XMLNode * afterThis, XMLNode * addThis)",
+    "return_type": "XMLNode *",
+    "parameters": [
+      {
+        "name": "afterThis",
+        "type": "XMLNode *"
+      },
+      {
+        "name": "addThis",
+        "type": "XMLNode *"
+      }
+    ],
+    "source_code": "XMLNode* XMLNode::InsertAfterChild( XMLNode* afterThis, XMLNode* addThis )\n{\n    TIXMLASSERT( addThis );\n    if ( addThis->_document != _document ) {\n        TIXMLASSERT( false );\n        return 0;\n    }\n\n    TIXMLASSERT( afterThis );\n\n    if ( afterThis->_parent != this ) {\n        TIXMLASSERT( false );\n        return 0;\n    }\n    if ( afterThis == addThis ) {\n        // Current state: BeforeThis -> AddThis -> OneAfterAddThis\n        // Now AddThis must disappear from it's location and then\n        // reappear between BeforeThis and OneAfterAddThis.\n        // So just leave it where it is.\n        return addThis;\n    }\n\n    if ( afterThis->_next == 0 ) {\n        // The last node or the only node.\n        return InsertEndChild( addThis );\n    }\n    InsertChildPreamble( addThis );\n    addThis->_prev = afterThis;\n    addThis->_next = afterThis->_next;\n    afterThis->_next->_prev = addThis;\n    afterThis->_next = addThis;\n    addThis->_parent = this;\n    return addThis;\n}",
+    "cleaned_doc": "Add a node after the specified child node.\nIf the child node is already part of the document,\nit is moved from its old location to the new location.\nReturns the addThis argument or 0 if the afterThis node\nis not a child of this node, or if the node does not\nbelong to the same document."
+  },
+  {
+    "function_name": "XMLNode::DeleteChildren",
+    "class_name": "XMLNode",
+    "method_name": "DeleteChildren",
+    "raw_method_signature": "DeleteChildren()",
+    "codewiki_doc": "Methods for removing child nodes.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_DeleteChildren",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_DeleteChildren",
+      "tinyxml-2_tinyxml2_h_XMLNode_DeleteChildren"
+    ],
+    "db_function_name": "XMLNode::DeleteChildren",
+    "signature": "void XMLNode::DeleteChildren(void)",
+    "return_type": "void",
+    "parameters": [],
+    "source_code": "void XMLNode::DeleteChildren()\n{\n    while( _firstChild ) {\n        TIXMLASSERT( _lastChild );\n        DeleteChild( _firstChild );\n    }\n    _firstChild = _lastChild = 0;\n}",
+    "cleaned_doc": "Delete all the children of this node."
+  },
+  {
+    "function_name": "XMLNode::DeleteChild",
+    "class_name": "XMLNode",
+    "method_name": "DeleteChild",
+    "raw_method_signature": "DeleteChild()",
+    "codewiki_doc": "Methods for removing child nodes.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_DeleteChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_DeleteChild",
+      "tinyxml-2_tinyxml2_h_XMLNode_DeleteChild"
+    ],
+    "db_function_name": "XMLNode::DeleteChild",
+    "signature": "void XMLNode::DeleteChild(XMLNode * node)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "node",
+        "type": "XMLNode *"
+      }
+    ],
+    "source_code": "void XMLNode::DeleteChild( XMLNode* node )\n{\n    TIXMLASSERT( node );\n    TIXMLASSERT( node->_document == _document );\n    TIXMLASSERT( node->_parent == this );\n    Unlink( node );\n\tTIXMLASSERT(node->_prev == 0);\n\tTIXMLASSERT(node->_next == 0);\n\tTIXMLASSERT(node->_parent == 0);\n    DeleteNode( node );\n}",
+    "cleaned_doc": "Delete a child of this node."
+  },
+  {
+    "function_name": "XMLNode::ShallowClone",
+    "class_name": "XMLNode",
+    "method_name": "ShallowClone",
+    "raw_method_signature": "ShallowClone()",
+    "codewiki_doc": "Create copies of the node, either just the node itself or the node and all its children.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_ShallowClone",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_ShallowClone"
+    ],
+    "db_function_name": "XMLNode::ShallowClone",
+    "signature": "XMLNode * XMLNode::ShallowClone(XMLDocument * document)",
+    "return_type": "XMLNode *",
+    "parameters": [
+      {
+        "name": "document",
+        "type": "XMLDocument *"
+      }
+    ],
+    "source_code": "virtual XMLNode* ShallowClone( XMLDocument* document ) const = 0;",
+    "cleaned_doc": "Make a copy of this node, but not its children.\nYou may pass in a Document pointer that will be\nthe owner of the new Node. If the 'document' is\nnull, then the node returned will be allocated\nfrom the current Document. (this->GetDocument())\nNote: if called on a XMLDocument, this will return null."
+  },
+  {
+    "function_name": "XMLNode::DeepClone",
+    "class_name": "XMLNode",
+    "method_name": "DeepClone",
+    "raw_method_signature": "DeepClone()",
+    "codewiki_doc": "Create copies of the node, either just the node itself or the node and all its children.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_DeepClone",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_DeepClone",
+      "tinyxml-2_tinyxml2_h_XMLNode_DeepClone"
+    ],
+    "db_function_name": "XMLNode::DeepClone",
+    "signature": "XMLNode * XMLNode::DeepClone(XMLDocument * target)",
+    "return_type": "XMLNode *",
+    "parameters": [
+      {
+        "name": "target",
+        "type": "XMLDocument *"
+      }
+    ],
+    "source_code": "XMLNode* XMLNode::DeepClone(XMLDocument* target) const\n{\n\tXMLNode* clone = this->ShallowClone(target);\n\tif (!clone) return 0;\n\n\tfor (const XMLNode* child = this->FirstChild(); child; child = child->NextSibling()) {\n\t\tXMLNode* childClone = child->DeepClone(target);\n\t\tTIXMLASSERT(childClone);\n\t\tclone->InsertEndChild(childClone);\n\t}\n\treturn clone;\n}",
+    "cleaned_doc": "Make a copy of this node and all its children.\nIf the 'target' is null, then the nodes will\nbe allocated in the current document. If 'target'\nis specified, the memory will be allocated in the\nspecified XMLDocument.\nNOTE: This is probably not the correct tool to\ncopy a document, since XMLDocuments can have multiple\ntop level XMLNodes. You probably want to use\nXMLDocument::DeepCopy()"
+  },
+  {
+    "function_name": "XMLNode::ShallowEqual",
+    "class_name": "XMLNode",
+    "method_name": "ShallowEqual",
+    "raw_method_signature": "ShallowEqual()",
+    "codewiki_doc": "Compares two nodes for equality without comparing their children.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLNode`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_ShallowEqual",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_ShallowEqual"
+    ],
+    "db_function_name": "XMLNode::ShallowEqual",
+    "signature": "bool XMLNode::ShallowEqual(const XMLNode * compare)",
+    "return_type": "bool",
+    "parameters": [
+      {
+        "name": "compare",
+        "type": "const XMLNode *"
+      }
+    ],
+    "source_code": "virtual bool ShallowEqual( const XMLNode* compare ) const = 0;",
+    "cleaned_doc": "Test if 2 nodes are the same, but don't test children.\nThe 2 nodes do not need to be in the same Document.\nNote: if called on a XMLDocument, this will return false."
+  },
+  {
+    "function_name": "XMLElement::Name",
+    "class_name": "XMLElement",
+    "method_name": "Name",
+    "raw_method_signature": "Name()",
+    "codewiki_doc": "Access and modify the name of the element.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_Name",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLElement_Name"
+    ],
+    "db_function_name": "XMLElement::Name",
+    "signature": "const char * XMLElement::Name(void)",
+    "return_type": "const char *",
+    "parameters": [],
+    "source_code": "const char* Name() const\t\t{\n        return Value();\n    }",
+    "cleaned_doc": "Get the name of an element (which is the Value() of the node.)"
+  },
+  {
+    "function_name": "XMLElement::SetName",
+    "class_name": "XMLElement",
+    "method_name": "SetName",
+    "raw_method_signature": "SetName()",
+    "codewiki_doc": "Access and modify the name of the element.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_SetName",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLElement_SetName"
+    ],
+    "db_function_name": "XMLElement::SetName",
+    "signature": "void XMLElement::SetName(const char * str, bool staticMem)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "str",
+        "type": "const char *"
+      },
+      {
+        "name": "staticMem",
+        "type": "bool"
+      }
+    ],
+    "source_code": "void SetName( const char* str, bool staticMem=false )\t{\n        SetValue( str, staticMem );\n    }",
+    "cleaned_doc": "Set the name of the element."
+  },
+  {
+    "function_name": "XMLElement::Attribute",
+    "class_name": "XMLElement",
+    "method_name": "Attribute",
+    "raw_method_signature": "Attribute()",
+    "codewiki_doc": "Retrieve the value of an attribute by name, with various type conversions.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_Attribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_Attribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_Attribute"
+    ],
+    "db_function_name": "XMLElement::Attribute",
+    "signature": "const char * XMLElement::Attribute(const char * name, const char * value)",
+    "return_type": "const char *",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      },
+      {
+        "name": "value",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "const char* XMLElement::Attribute( const char* name, const char* value ) const\n{\n    const XMLAttribute* a = FindAttribute( name );\n    if ( !a ) {\n        return 0;\n    }\n    if ( !value || XMLUtil::StringEqual( a->Value(), value )) {\n        return a->Value();\n    }\n    return 0;\n}",
+    "cleaned_doc": "Given an attribute name, Attribute() returns the value\nfor the attribute of that name, or null if none\nexists. For example:\n@verbatim\nconst char* value = ele->Attribute( \"foo\" );\n@endverbatim\nThe 'value' parameter is normally null. However, if specified,\nthe attribute will only be returned if the 'name' and 'value'\nmatch. This allow you to write code:\n@verbatim\nif ( ele->Attribute( \"foo\", \"bar\" ) ) callFooIsBar();\n@endverbatim\nrather than:\n@verbatim\nif ( ele->Attribute( \"foo\" ) ) {\nif ( strcmp( ele->Attribute( \"foo\" ), \"bar\" ) == 0 ) callFooIsBar();\n}\n@endverbatim"
+  },
+  {
+    "function_name": "XMLElement::IntAttribute",
+    "class_name": "XMLElement",
+    "method_name": "IntAttribute",
+    "raw_method_signature": "IntAttribute()",
+    "codewiki_doc": "Retrieve the value of an attribute by name, with various type conversions.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_IntAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_IntAttribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_IntAttribute"
+    ],
+    "db_function_name": "XMLElement::IntAttribute",
+    "signature": "int XMLElement::IntAttribute(const char * name, int defaultValue)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      },
+      {
+        "name": "defaultValue",
+        "type": "int"
+      }
+    ],
+    "source_code": "int XMLElement::IntAttribute(const char* name, int defaultValue) const\n{\n\tint i = defaultValue;\n\tQueryIntAttribute(name, &i);\n\treturn i;\n}",
+    "cleaned_doc": "Given an attribute name, IntAttribute() returns the value\nof the attribute interpreted as an integer. The default\nvalue will be returned if the attribute isn't present,\nor if there is an error. (For a method with error\nchecking, see QueryIntAttribute())."
+  },
+  {
+    "function_name": "XMLElement::UnsignedAttribute",
+    "class_name": "XMLElement",
+    "method_name": "UnsignedAttribute",
+    "raw_method_signature": "UnsignedAttribute()",
+    "codewiki_doc": "Retrieve the value of an attribute by name, with various type conversions.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": false,
+    "match_score": 0.9206,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLElement::QueryUnsignedAttribute",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLElement::BoolAttribute",
+    "class_name": "XMLElement",
+    "method_name": "BoolAttribute",
+    "raw_method_signature": "BoolAttribute()",
+    "codewiki_doc": "Retrieve the value of an attribute by name, with various type conversions.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": false,
+    "match_score": 0.913,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLElement::Attribute",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLElement::DoubleAttribute",
+    "class_name": "XMLElement",
+    "method_name": "DoubleAttribute",
+    "raw_method_signature": "DoubleAttribute()",
+    "codewiki_doc": "Retrieve the value of an attribute by name, with various type conversions.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": false,
+    "match_score": 0.9153,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLElement::QueryDoubleAttribute",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLElement::FloatAttribute",
+    "class_name": "XMLElement",
+    "method_name": "FloatAttribute",
+    "raw_method_signature": "FloatAttribute()",
+    "codewiki_doc": "Retrieve the value of an attribute by name, with various type conversions.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": false,
+    "match_score": 0.9123,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLElement::QueryFloatAttribute",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLElement::SetAttribute",
+    "class_name": "XMLElement",
+    "method_name": "SetAttribute",
+    "raw_method_signature": "SetAttribute()",
+    "codewiki_doc": "Set the value of an attribute, creating it if it doesn't exist. Overloaded for various data types.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_SetAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLElement_SetAttribute"
+    ],
+    "db_function_name": "XMLElement::SetAttribute",
+    "signature": "void XMLElement::SetAttribute(const char * name, float value)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      },
+      {
+        "name": "value",
+        "type": "float"
+      }
+    ],
+    "source_code": "void SetAttribute( const char* name, float value )\t\t{\n        XMLAttribute* a = FindOrCreateAttribute( name );\n        a->SetAttribute( value );\n    }",
+    "cleaned_doc": "Sets the named attribute to value."
+  },
+  {
+    "function_name": "XMLElement::DeleteAttribute",
+    "class_name": "XMLElement",
+    "method_name": "DeleteAttribute",
+    "raw_method_signature": "DeleteAttribute()",
+    "codewiki_doc": "Remove an attribute by name.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_DeleteAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_DeleteAttribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_DeleteAttribute"
+    ],
+    "db_function_name": "XMLElement::DeleteAttribute",
+    "signature": "void XMLElement::DeleteAttribute(XMLAttribute * attribute)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "attribute",
+        "type": "XMLAttribute *"
+      }
+    ],
+    "source_code": "void XMLElement::DeleteAttribute( XMLAttribute* attribute )\n{\n    if ( attribute == 0 ) {\n        return;\n    }\n    MemPool* pool = attribute->_memPool;\n    attribute->~XMLAttribute();\n    pool->Free( attribute );\n}",
+    "cleaned_doc": "Delete an attribute."
+  },
+  {
+    "function_name": "XMLElement::FirstAttribute",
+    "class_name": "XMLElement",
+    "method_name": "FirstAttribute",
+    "raw_method_signature": "FirstAttribute()",
+    "codewiki_doc": "Access attributes directly.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_FirstAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLElement_FirstAttribute"
+    ],
+    "db_function_name": "XMLElement::FirstAttribute",
+    "signature": "const XMLAttribute * XMLElement::FirstAttribute(void)",
+    "return_type": "const XMLAttribute *",
+    "parameters": [],
+    "source_code": "const XMLAttribute* FirstAttribute() const {\n        return _rootAttribute;\n    }",
+    "cleaned_doc": "Return the first attribute in the list."
+  },
+  {
+    "function_name": "XMLElement::FindAttribute",
+    "class_name": "XMLElement",
+    "method_name": "FindAttribute",
+    "raw_method_signature": "FindAttribute()",
+    "codewiki_doc": "Access attributes directly.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_FindAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_FindAttribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_FindAttribute"
+    ],
+    "db_function_name": "XMLElement::FindAttribute",
+    "signature": "const XMLAttribute * XMLElement::FindAttribute(const char * name)",
+    "return_type": "const XMLAttribute *",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "const XMLAttribute* XMLElement::FindAttribute( const char* name ) const\n{\n    for( XMLAttribute* a = _rootAttribute; a; a = a->_next ) {\n        if ( XMLUtil::StringEqual( a->Name(), name ) ) {\n            return a;\n        }\n    }\n    return 0;\n}",
+    "cleaned_doc": "Query a specific attribute in the list."
+  },
+  {
+    "function_name": "XMLElement::GetText",
+    "class_name": "XMLElement",
+    "method_name": "GetText",
+    "raw_method_signature": "GetText()",
+    "codewiki_doc": "Convenience methods for accessing and setting the text content of a simple element.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_GetText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_GetText",
+      "tinyxml-2_tinyxml2_h_XMLElement_GetText"
+    ],
+    "db_function_name": "XMLElement::GetText",
+    "signature": "const char * XMLElement::GetText(void)",
+    "return_type": "const char *",
+    "parameters": [],
+    "source_code": "const char* XMLElement::GetText() const\n{\n    /* skip comment node */\n    const XMLNode* node = FirstChild();\n    while (node) {\n        if (node->ToComment()) {\n            node = node->NextSibling();\n            continue;\n        }\n        break;\n    }\n\n    if ( node && node->ToText() ) {\n        return node->Value();\n    }\n    return 0;\n}",
+    "cleaned_doc": "Convenience function for easy access to the text inside an element. Although easy\nand concise, GetText() is limited compared to getting the XMLText child\nand accessing it directly.\nIf the first child of 'this' is a XMLText, the GetText()\nreturns the character string of the Text node, else null is returned.\nThis is a convenient method for getting the text of simple contained text:\n@verbatim\n<foo>This is text</foo>\nconst char* str = fooElement->GetText();\n@endverbatim\n'str' will be a pointer to \"This is text\".\nNote that this function can be misleading. If the element foo was created from\nthis XML:\n@verbatim\n<foo><b>This is text</b></foo>\n@endverbatim\nthen the value of str would be null. The first child node isn't a text node, it is\nanother element. From this XML:\n@verbatim\n<foo>This is <b>text</b></foo>\n@endverbatim\nGetText() will return \"This is \"."
+  },
+  {
+    "function_name": "XMLElement::SetText",
+    "class_name": "XMLElement",
+    "method_name": "SetText",
+    "raw_method_signature": "SetText()",
+    "codewiki_doc": "Convenience methods for accessing and setting the text content of a simple element.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_SetText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_SetText",
+      "tinyxml-2_tinyxml2_h_XMLElement_SetText"
+    ],
+    "db_function_name": "XMLElement::SetText",
+    "signature": "void XMLElement::SetText(float value)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "float"
+      }
+    ],
+    "source_code": "void XMLElement::SetText( double v )\n{\n    char buf[BUF_SIZE];\n    XMLUtil::ToStr( v, buf, BUF_SIZE );\n    SetText( buf );\n}",
+    "cleaned_doc": "Convenience method for setting text inside an element. See SetText() for important limitations."
+  },
+  {
+    "function_name": "XMLElement::InsertNewChildElement",
+    "class_name": "XMLElement",
+    "method_name": "InsertNewChildElement",
+    "raw_method_signature": "InsertNewChildElement()",
+    "codewiki_doc": "Convenience methods for creating and inserting new child nodes.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_InsertNewChildElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_InsertNewChildElement",
+      "tinyxml-2_tinyxml2_h_XMLElement_InsertNewChildElement"
+    ],
+    "db_function_name": "XMLElement::InsertNewChildElement",
+    "signature": "XMLElement * XMLElement::InsertNewChildElement(const char * name)",
+    "return_type": "XMLElement *",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "XMLElement* XMLElement::InsertNewChildElement(const char* name)\n{\n    XMLElement* node = _document->NewElement(name);\n    return InsertEndChild(node) ? node : 0;\n}",
+    "cleaned_doc": "Convenience method to create a new XMLElement and add it as last (right)\nchild of this node. Returns the created and inserted element."
+  },
+  {
+    "function_name": "XMLElement::InsertNewComment",
+    "class_name": "XMLElement",
+    "method_name": "InsertNewComment",
+    "raw_method_signature": "InsertNewComment()",
+    "codewiki_doc": "Convenience methods for creating and inserting new child nodes.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_InsertNewComment",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_InsertNewComment",
+      "tinyxml-2_tinyxml2_h_XMLElement_InsertNewComment"
+    ],
+    "db_function_name": "XMLElement::InsertNewComment",
+    "signature": "XMLComment * XMLElement::InsertNewComment(const char * comment)",
+    "return_type": "XMLComment *",
+    "parameters": [
+      {
+        "name": "comment",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "XMLComment* XMLElement::InsertNewComment(const char* comment)\n{\n    XMLComment* node = _document->NewComment(comment);\n    return InsertEndChild(node) ? node : 0;\n}",
+    "cleaned_doc": "See InsertNewChildElement()"
+  },
+  {
+    "function_name": "XMLElement::InsertNewText",
+    "class_name": "XMLElement",
+    "method_name": "InsertNewText",
+    "raw_method_signature": "InsertNewText()",
+    "codewiki_doc": "Convenience methods for creating and inserting new child nodes.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_InsertNewText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_InsertNewText",
+      "tinyxml-2_tinyxml2_h_XMLElement_InsertNewText"
+    ],
+    "db_function_name": "XMLElement::InsertNewText",
+    "signature": "XMLText * XMLElement::InsertNewText(const char * text)",
+    "return_type": "XMLText *",
+    "parameters": [
+      {
+        "name": "text",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "XMLText* XMLElement::InsertNewText(const char* text)\n{\n    XMLText* node = _document->NewText(text);\n    return InsertEndChild(node) ? node : 0;\n}",
+    "cleaned_doc": "See InsertNewChildElement()"
+  },
+  {
+    "function_name": "XMLElement::InsertNewDeclaration",
+    "class_name": "XMLElement",
+    "method_name": "InsertNewDeclaration",
+    "raw_method_signature": "InsertNewDeclaration()",
+    "codewiki_doc": "Convenience methods for creating and inserting new child nodes.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_InsertNewDeclaration",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_InsertNewDeclaration",
+      "tinyxml-2_tinyxml2_h_XMLElement_InsertNewDeclaration"
+    ],
+    "db_function_name": "XMLElement::InsertNewDeclaration",
+    "signature": "XMLDeclaration * XMLElement::InsertNewDeclaration(const char * text)",
+    "return_type": "XMLDeclaration *",
+    "parameters": [
+      {
+        "name": "text",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "XMLDeclaration* XMLElement::InsertNewDeclaration(const char* text)\n{\n    XMLDeclaration* node = _document->NewDeclaration(text);\n    return InsertEndChild(node) ? node : 0;\n}",
+    "cleaned_doc": "See InsertNewChildElement()"
+  },
+  {
+    "function_name": "XMLElement::InsertNewUnknown",
+    "class_name": "XMLElement",
+    "method_name": "InsertNewUnknown",
+    "raw_method_signature": "InsertNewUnknown()",
+    "codewiki_doc": "Convenience methods for creating and inserting new child nodes.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLElement`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_InsertNewUnknown",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_InsertNewUnknown",
+      "tinyxml-2_tinyxml2_h_XMLElement_InsertNewUnknown"
+    ],
+    "db_function_name": "XMLElement::InsertNewUnknown",
+    "signature": "XMLUnknown * XMLElement::InsertNewUnknown(const char * text)",
+    "return_type": "XMLUnknown *",
+    "parameters": [
+      {
+        "name": "text",
+        "type": "const char *"
+      }
+    ],
+    "source_code": "XMLUnknown* XMLElement::InsertNewUnknown(const char* text)\n{\n    XMLUnknown* node = _document->NewUnknown(text);\n    return InsertEndChild(node) ? node : 0;\n}",
+    "cleaned_doc": "See InsertNewChildElement()"
+  },
+  {
+    "function_name": "XMLAttribute::Name",
+    "class_name": "XMLAttribute",
+    "method_name": "Name",
+    "raw_method_signature": "Name()",
+    "codewiki_doc": "Returns the name of the attribute.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLAttribute`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_Name",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_Name",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_Name"
+    ],
+    "db_function_name": "XMLAttribute::Name",
+    "signature": "const char * XMLAttribute::Name(void)",
+    "return_type": "const char *",
+    "parameters": [],
+    "source_code": "const char* XMLAttribute::Name() const\n{\n    return _name.GetStr();\n}",
+    "cleaned_doc": "The name of the attribute."
+  },
+  {
+    "function_name": "XMLAttribute::Value",
+    "class_name": "XMLAttribute",
+    "method_name": "Value",
+    "raw_method_signature": "Value()",
+    "codewiki_doc": "Returns the string value of the attribute.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLAttribute`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_Value",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_Value",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_Value"
+    ],
+    "db_function_name": "XMLAttribute::Value",
+    "signature": "const char * XMLAttribute::Value(void)",
+    "return_type": "const char *",
+    "parameters": [],
+    "source_code": "const char* XMLAttribute::Value() const\n{\n    return _value.GetStr();\n}",
+    "cleaned_doc": "The value of the attribute."
+  },
+  {
+    "function_name": "XMLAttribute::GetLineNum",
+    "class_name": "XMLAttribute",
+    "method_name": "GetLineNum",
+    "raw_method_signature": "GetLineNum()",
+    "codewiki_doc": "Returns the line number where the attribute was parsed.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLAttribute`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_GetLineNum",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_GetLineNum"
+    ],
+    "db_function_name": "XMLAttribute::GetLineNum",
+    "signature": "int XMLAttribute::GetLineNum(void)",
+    "return_type": "int",
+    "parameters": [],
+    "source_code": "int GetLineNum() const { return _parseLineNum; }",
+    "cleaned_doc": "Gets the line number the attribute is in, if the document was parsed from a file."
+  },
+  {
+    "function_name": "XMLAttribute::Next",
+    "class_name": "XMLAttribute",
+    "method_name": "Next",
+    "raw_method_signature": "Next()",
+    "codewiki_doc": "Returns the next attribute in the `XMLElement`'s attribute list.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLAttribute`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_Next",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_Next"
+    ],
+    "db_function_name": "XMLAttribute::Next",
+    "signature": "const XMLAttribute * XMLAttribute::Next(void)",
+    "return_type": "const XMLAttribute *",
+    "parameters": [],
+    "source_code": "const XMLAttribute* Next() const {\n        return _next;\n    }",
+    "cleaned_doc": "The next attribute in the list."
+  },
+  {
+    "function_name": "XMLAttribute::IntValue",
+    "class_name": "XMLAttribute",
+    "method_name": "IntValue",
+    "raw_method_signature": "IntValue()",
+    "codewiki_doc": "Interpret the attribute's value as a specific primitive type.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLAttribute`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_IntValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_IntValue"
+    ],
+    "db_function_name": "XMLAttribute::IntValue",
+    "signature": "int XMLAttribute::IntValue(void)",
+    "return_type": "int",
+    "parameters": [],
+    "source_code": "int\tIntValue() const {\n\t\tint i = 0;\n\t\tQueryIntValue(&i);\n\t\treturn i;\n\t}",
+    "cleaned_doc": "IntValue interprets the attribute as an integer, and returns the value.\nIf the value isn't an integer, 0 will be returned. There is no error checking;\nuse QueryIntValue() if you need error checking."
+  },
+  {
+    "function_name": "XMLAttribute::UnsignedValue",
+    "class_name": "XMLAttribute",
+    "method_name": "UnsignedValue",
+    "raw_method_signature": "UnsignedValue()",
+    "codewiki_doc": "Interpret the attribute's value as a specific primitive type.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLAttribute`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_UnsignedValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_UnsignedValue"
+    ],
+    "db_function_name": "XMLAttribute::UnsignedValue",
+    "signature": "unsigned int XMLAttribute::UnsignedValue(void)",
+    "return_type": "unsigned int",
+    "parameters": [],
+    "source_code": "unsigned UnsignedValue() const\t\t\t{\n        unsigned i=0;\n        QueryUnsignedValue( &i );\n        return i;\n    }",
+    "cleaned_doc": "Query as an unsigned integer. See IntValue()"
+  },
+  {
+    "function_name": "XMLAttribute::BoolValue",
+    "class_name": "XMLAttribute",
+    "method_name": "BoolValue",
+    "raw_method_signature": "BoolValue()",
+    "codewiki_doc": "Interpret the attribute's value as a specific primitive type.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLAttribute`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_BoolValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_BoolValue"
+    ],
+    "db_function_name": "XMLAttribute::BoolValue",
+    "signature": "bool XMLAttribute::BoolValue(void)",
+    "return_type": "bool",
+    "parameters": [],
+    "source_code": "bool\t BoolValue() const\t\t\t\t{\n        bool b=false;\n        QueryBoolValue( &b );\n        return b;\n    }",
+    "cleaned_doc": "Query as a boolean. See IntValue()"
+  },
+  {
+    "function_name": "XMLAttribute::DoubleValue",
+    "class_name": "XMLAttribute",
+    "method_name": "DoubleValue",
+    "raw_method_signature": "DoubleValue()",
+    "codewiki_doc": "Interpret the attribute's value as a specific primitive type.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLAttribute`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_DoubleValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_DoubleValue"
+    ],
+    "db_function_name": "XMLAttribute::DoubleValue",
+    "signature": "double XMLAttribute::DoubleValue(void)",
+    "return_type": "double",
+    "parameters": [],
+    "source_code": "double \t DoubleValue() const\t\t\t{\n        double d=0;\n        QueryDoubleValue( &d );\n        return d;\n    }",
+    "cleaned_doc": "Query as a double. See IntValue()"
+  },
+  {
+    "function_name": "XMLAttribute::FloatValue",
+    "class_name": "XMLAttribute",
+    "method_name": "FloatValue",
+    "raw_method_signature": "FloatValue()",
+    "codewiki_doc": "Interpret the attribute's value as a specific primitive type.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLAttribute`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_FloatValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_FloatValue"
+    ],
+    "db_function_name": "XMLAttribute::FloatValue",
+    "signature": "float XMLAttribute::FloatValue(void)",
+    "return_type": "float",
+    "parameters": [],
+    "source_code": "float\t FloatValue() const\t\t\t\t{\n        float f=0;\n        QueryFloatValue( &f );\n        return f;\n    }",
+    "cleaned_doc": "Query as a float. See IntValue()"
+  },
+  {
+    "function_name": "XMLAttribute::SetAttribute",
+    "class_name": "XMLAttribute",
+    "method_name": "SetAttribute",
+    "raw_method_signature": "SetAttribute()",
+    "codewiki_doc": "Set the attribute's value. Overloaded for various data types.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLAttribute`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_SetAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_SetAttribute",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_SetAttribute"
+    ],
+    "db_function_name": "XMLAttribute::SetAttribute",
+    "signature": "void XMLAttribute::SetAttribute(float value)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "float"
+      }
+    ],
+    "source_code": "void XMLAttribute::SetAttribute( float v )\n{\n    char buf[BUF_SIZE];\n    XMLUtil::ToStr( v, buf, BUF_SIZE );\n    _value.SetStr( buf );\n}",
+    "cleaned_doc": "Set the attribute to value."
+  },
+  {
+    "function_name": "XMLText::SetCData",
+    "class_name": "XMLText",
+    "method_name": "SetCData",
+    "raw_method_signature": "SetCData()",
+    "codewiki_doc": "Sets whether the text should be treated as CDATA.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLText`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLText_SetCData",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLText_SetCData"
+    ],
+    "db_function_name": "XMLText::SetCData",
+    "signature": "void XMLText::SetCData(bool isCData)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "isCData",
+        "type": "bool"
+      }
+    ],
+    "source_code": "void SetCData( bool isCData )\t\t\t{\n        _isCData = isCData;\n    }",
+    "cleaned_doc": "Declare whether this should be CDATA or standard text."
+  },
+  {
+    "function_name": "XMLText::CData",
+    "class_name": "XMLText",
+    "method_name": "CData",
+    "raw_method_signature": "CData()",
+    "codewiki_doc": "Returns `true` if the text is CDATA.",
+    "doc_source": "bullet",
+    "codewiki_context": "`XMLText`",
+    "source_file": "TinyXML-2_Core_XML_Structures.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLText_CData",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLText_CData"
+    ],
+    "db_function_name": "XMLText::CData",
+    "signature": "bool XMLText::CData(void)",
+    "return_type": "bool",
+    "parameters": [],
+    "source_code": "bool CData() const\t\t\t\t\t\t{\n        return _isCData;\n    }",
+    "cleaned_doc": "Returns true if this is a CDATA text element."
+  },
+  {
+    "function_name": "XMLUtil::pattern",
+    "class_name": "XMLUtil",
+    "method_name": "pattern",
+    "raw_method_signature": "pattern",
+    "codewiki_doc": "The string representation of the entity (e.g., \"quot\").",
+    "doc_source": "bullet",
+    "codewiki_context": "Structure:",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.5882,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLDocument::Parse",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLUtil::length",
+    "class_name": "XMLUtil",
+    "method_name": "length",
+    "raw_method_signature": "length",
+    "codewiki_doc": "The length of the `pattern` string.",
+    "doc_source": "bullet",
+    "codewiki_context": "Structure:",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.5789,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLDocument::NewElement",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLUtil::value",
+    "class_name": "XMLUtil",
+    "method_name": "value",
+    "raw_method_signature": "value",
+    "codewiki_doc": "The actual character value the entity represents (e.g., `DOUBLE_QUOTE`).",
+    "doc_source": "bullet",
+    "codewiki_context": "Structure:",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.7273,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLAttribute::Value",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "StrPair::Set",
+    "class_name": "StrPair",
+    "method_name": "Set",
+    "raw_method_signature": "+Set(char*, char*, int)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Set` della classe `StrPair`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.4828,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLVisitor::Visit",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "StrPair::GetStr",
+    "class_name": "StrPair",
+    "method_name": "GetStr",
+    "raw_method_signature": "+GetStr() const char*",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `GetStr` della classe `StrPair`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.439,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLAttribute::SetAttribute",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "StrPair::ParseText",
+    "class_name": "StrPair",
+    "method_name": "ParseText",
+    "raw_method_signature": "+ParseText(char*, const char*, int, int*) char*",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `ParseText` della classe `StrPair`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.5263,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLPrinter::PushText",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "StrPair::ParseName",
+    "class_name": "StrPair",
+    "method_name": "ParseName",
+    "raw_method_signature": "+ParseName(char*) char*",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `ParseName` della classe `StrPair`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.5,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLAttribute::Name",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "StrPair::Reset",
+    "class_name": "StrPair",
+    "method_name": "Reset",
+    "raw_method_signature": "+Reset()",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Reset` della classe `StrPair`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.4516,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLVisitor::Visit",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "StrPair::TransferTo",
+    "class_name": "StrPair",
+    "method_name": "TransferTo",
+    "raw_method_signature": "+TransferTo(StrPair*)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `TransferTo` della classe `StrPair`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.3902,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLAttribute::IntValue",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLDocument::Parse",
+    "class_name": "XMLDocument",
+    "method_name": "Parse",
+    "raw_method_signature": "+Parse(const char*, size_t)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Parse` della classe `XMLDocument`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLDocument_Parse",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLDocument_Parse",
+      "tinyxml-2_tinyxml2_h_XMLDocument_Parse"
+    ],
+    "db_function_name": "XMLDocument::Parse",
+    "signature": "void XMLDocument::Parse(void)",
+    "return_type": "void",
+    "parameters": [],
+    "source_code": "void XMLDocument::Parse()\n{\n    TIXMLASSERT( NoChildren() ); // Clear() must have been called previously\n    TIXMLASSERT( _charBuffer );\n    _parseCurLineNum = 1;\n    _parseLineNum = 1;\n    char* p = _charBuffer;\n    p = XMLUtil::SkipWhiteSpace( p, &_parseCurLineNum );\n    p = const_cast<char*>( XMLUtil::ReadBOM( p, &_writeBOM ) );\n    if ( !*p ) {\n        SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );\n        return;\n    }\n    ParseDeep(p, 0, &_parseCurLineNum );\n}",
+    "cleaned_doc": "Parse an XML file from a character string.\nReturns XML_SUCCESS (0) on success, or\nan errorID.\nYou may optionally pass in the 'nBytes', which is\nthe number of bytes which will be parsed. If not\nspecified, TinyXML-2 will assume 'xml' points to a\nnull terminated string."
+  },
+  {
+    "function_name": "XMLDocument::Identify",
+    "class_name": "XMLDocument",
+    "method_name": "Identify",
+    "raw_method_signature": "+Identify(char*, XMLNode**, bool)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Identify` della classe `XMLDocument`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.8205,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLDocument::Print",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "StrPair::CollapseWhitespace",
+    "class_name": "StrPair",
+    "method_name": "CollapseWhitespace",
+    "raw_method_signature": "+CollapseWhitespace()",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `CollapseWhitespace` della classe `StrPair`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.4898,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLPrinter::PrintSpace",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLAttribute::QueryIntValue",
+    "class_name": "XMLAttribute",
+    "method_name": "QueryIntValue",
+    "raw_method_signature": "+QueryIntValue(int*)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `QueryIntValue` della classe `XMLAttribute`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_QueryIntValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_QueryIntValue",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_QueryIntValue"
+    ],
+    "db_function_name": "XMLAttribute::QueryIntValue",
+    "signature": "XMLError XMLAttribute::QueryIntValue(int * value)",
+    "return_type": "XMLError",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "int *"
+      }
+    ],
+    "source_code": "XMLError XMLAttribute::QueryIntValue( int* value ) const\n{\n    if ( XMLUtil::ToInt( Value(), value )) {\n        return XML_SUCCESS;\n    }\n    return XML_WRONG_ATTRIBUTE_TYPE;\n}",
+    "cleaned_doc": "QueryIntValue interprets the attribute as an integer, and returns the value\nin the provided parameter. The function will return XML_SUCCESS on success,\nand XML_WRONG_ATTRIBUTE_TYPE if the conversion is not successful."
+  },
+  {
+    "function_name": "XMLAttribute::SetAttribute",
+    "class_name": "XMLAttribute",
+    "method_name": "SetAttribute",
+    "raw_method_signature": "+SetAttribute(int)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `SetAttribute` della classe `XMLAttribute`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_SetAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_SetAttribute",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_SetAttribute"
+    ],
+    "db_function_name": "XMLAttribute::SetAttribute",
+    "signature": "void XMLAttribute::SetAttribute(float value)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "float"
+      }
+    ],
+    "source_code": "void XMLAttribute::SetAttribute( float v )\n{\n    char buf[BUF_SIZE];\n    XMLUtil::ToStr( v, buf, BUF_SIZE );\n    _value.SetStr( buf );\n}",
+    "cleaned_doc": "Set the attribute to value."
+  },
+  {
+    "function_name": "XMLElement::QueryIntText",
+    "class_name": "XMLElement",
+    "method_name": "QueryIntText",
+    "raw_method_signature": "+QueryIntText(int*)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `QueryIntText` della classe `XMLElement`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_QueryIntText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_QueryIntText",
+      "tinyxml-2_tinyxml2_h_XMLElement_QueryIntText"
+    ],
+    "db_function_name": "XMLElement::QueryIntText",
+    "signature": "XMLError XMLElement::QueryIntText(int * ival)",
+    "return_type": "XMLError",
+    "parameters": [
+      {
+        "name": "ival",
+        "type": "int *"
+      }
+    ],
+    "source_code": "XMLError XMLElement::QueryIntText( int* ival ) const\n{\n    if ( FirstChild() && FirstChild()->ToText() ) {\n        const char* t = FirstChild()->Value();\n        if ( XMLUtil::ToInt( t, ival ) ) {\n            return XML_SUCCESS;\n        }\n        return XML_CAN_NOT_CONVERT_TEXT;\n    }\n    return XML_NO_TEXT_NODE;\n}",
+    "cleaned_doc": "Convenience method to query the value of a child text node. This is probably best\nshown by example. Given you have a document is this form:\n@verbatim\n<point>\n<x>1</x>\n<y>1.4</y>\n</point>\n@endverbatim\nThe QueryIntText() and similar functions provide a safe and easier way to get to the\n\"value\" of x and y.\n@verbatim\nint x = 0;\nfloat y = 0;\t// types of x and y are contrived for example\nconst XMLElement* xElement = pointElement->FirstChildElement( \"x\" );\nconst XMLElement* yElement = pointElement->FirstChildElement( \"y\" );\nxElement->QueryIntText( &x );\nyElement->QueryFloatText( &y );\n@endverbatim\n@returns XML_SUCCESS (0) on success, XML_CAN_NOT_CONVERT_TEXT if the text cannot be converted\nto the requested type, and XML_NO_TEXT_NODE if there is no child text to query."
+  },
+  {
+    "function_name": "XMLElement::SetText",
+    "class_name": "XMLElement",
+    "method_name": "SetText",
+    "raw_method_signature": "+SetText(int)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `SetText` della classe `XMLElement`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLElement_SetText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_SetText",
+      "tinyxml-2_tinyxml2_h_XMLElement_SetText"
+    ],
+    "db_function_name": "XMLElement::SetText",
+    "signature": "void XMLElement::SetText(float value)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "float"
+      }
+    ],
+    "source_code": "void XMLElement::SetText( double v )\n{\n    char buf[BUF_SIZE];\n    XMLUtil::ToStr( v, buf, BUF_SIZE );\n    SetText( buf );\n}",
+    "cleaned_doc": "Convenience method for setting text inside an element. See SetText() for important limitations."
+  },
+  {
+    "function_name": "XMLPrinter::PushAttribute",
+    "class_name": "XMLPrinter",
+    "method_name": "PushAttribute",
+    "raw_method_signature": "+PushAttribute(const char*, int)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `PushAttribute` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLPrinter_PushAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_PushAttribute",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_PushAttribute"
+    ],
+    "db_function_name": "XMLPrinter::PushAttribute",
+    "signature": "void XMLPrinter::PushAttribute(const char * name, double value)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      },
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "void XMLPrinter::PushAttribute( const char* name, double v )\n{\n    char buf[BUF_SIZE];\n    XMLUtil::ToStr( v, buf, BUF_SIZE );\n    PushAttribute( name, buf );\n}",
+    "cleaned_doc": "If streaming, add an attribute to an open element."
+  },
+  {
+    "function_name": "XMLPrinter::PushText",
+    "class_name": "XMLPrinter",
+    "method_name": "PushText",
+    "raw_method_signature": "+PushText(int)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `PushText` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLPrinter_PushText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_PushText",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_PushText"
+    ],
+    "db_function_name": "XMLPrinter::PushText",
+    "signature": "void XMLPrinter::PushText(double value)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "void XMLPrinter::PushText( double value )\n{\n    char buf[BUF_SIZE];\n    XMLUtil::ToStr( value, buf, BUF_SIZE );\n    PushText( buf, false );\n}",
+    "cleaned_doc": "Add a text node from a double."
+  },
+  {
+    "function_name": "XMLPrinter::PrintString",
+    "class_name": "XMLPrinter",
+    "method_name": "PrintString",
+    "raw_method_signature": "+PrintString(const char*, bool)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `PrintString` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Parsing_and_Utility.md",
+    "matched": false,
+    "match_score": 0.8,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLPrinter::PrintSpace",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLNode::Accept",
+    "class_name": "XMLNode",
+    "method_name": "Accept",
+    "raw_method_signature": "+Accept(visitor: XMLVisitor*)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Accept` della classe `XMLNode`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_Accept",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_Accept"
+    ],
+    "db_function_name": "XMLNode::Accept",
+    "signature": "bool XMLNode::Accept(XMLVisitor * visitor)",
+    "return_type": "bool",
+    "parameters": [
+      {
+        "name": "visitor",
+        "type": "XMLVisitor *"
+      }
+    ],
+    "source_code": "virtual bool Accept( XMLVisitor* visitor ) const = 0;",
+    "cleaned_doc": "Accept a hierarchical visit of the nodes in the TinyXML-2 DOM. Every node in the\nXML tree will be conditionally visited and the host will be called back\nvia the XMLVisitor interface.\nThis is essentially a SAX interface for TinyXML-2. (Note however it doesn't re-parse\nthe XML for the callbacks, so the performance of TinyXML-2 is unchanged by using this\ninterface versus any other.)\nThe interface has been based on ideas from:\n- http://www.saxproject.org\n- http://c2.com/cgi/wiki?HierarchicalVisitorPattern\nWhich are both good references for \"visiting\".\nAn example of using Accept():\n@verbatim\nXMLPrinter printer;\ntinyxmlDoc.Accept( &printer );\nconst char* xmlcstr = printer.CStr();\n@endverbatim"
+  },
+  {
+    "function_name": "XMLNode::Value",
+    "class_name": "XMLNode",
+    "method_name": "Value",
+    "raw_method_signature": "+Value()",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Value` della classe `XMLNode`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_Value",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_Value",
+      "tinyxml-2_tinyxml2_h_XMLNode_Value"
+    ],
+    "db_function_name": "XMLNode::Value",
+    "signature": "const char * XMLNode::Value(void)",
+    "return_type": "const char *",
+    "parameters": [],
+    "source_code": "const char* XMLNode::Value() const\n{\n    // Edge case: XMLDocuments don't have a Value. Return null.\n    if ( this->ToDocument() )\n        return 0;\n    return _value.GetStr();\n}",
+    "cleaned_doc": "The meaning of 'value' changes for the specific type.\n@verbatim\nDocument:\tempty (NULL is returned, not an empty string)\nElement:\tname of the element\nComment:\tthe comment text\nUnknown:\tthe tag contents\nText:\t\tthe text string\n@endverbatim"
+  },
+  {
+    "function_name": "XMLNode::FirstChild",
+    "class_name": "XMLNode",
+    "method_name": "FirstChild",
+    "raw_method_signature": "+FirstChild()",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `FirstChild` della classe `XMLNode`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_FirstChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_FirstChild"
+    ],
+    "db_function_name": "XMLNode::FirstChild",
+    "signature": "XMLNode * XMLNode::FirstChild(void)",
+    "return_type": "XMLNode *",
+    "parameters": [],
+    "source_code": "XMLNode*\t\tFirstChild()\t\t\t{\n        return _firstChild;\n    }",
+    "cleaned_doc": "Get the first child node, or null if none exists."
+  },
+  {
+    "function_name": "XMLNode::NextSibling",
+    "class_name": "XMLNode",
+    "method_name": "NextSibling",
+    "raw_method_signature": "+NextSibling()",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `NextSibling` della classe `XMLNode`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_NextSibling",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_NextSibling"
+    ],
+    "db_function_name": "XMLNode::NextSibling",
+    "signature": "XMLNode * XMLNode::NextSibling(void)",
+    "return_type": "XMLNode *",
+    "parameters": [],
+    "source_code": "XMLNode*\tNextSibling()\t\t\t\t\t\t\t\t{\n        return _next;\n    }",
+    "cleaned_doc": "Get the next (right) sibling node of this node."
+  },
+  {
+    "function_name": "XMLDocument::Print",
+    "class_name": "XMLDocument",
+    "method_name": "Print",
+    "raw_method_signature": "+Print(streamer: XMLPrinter*)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Print` della classe `XMLDocument`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLDocument_Print",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLDocument_Print",
+      "tinyxml-2_tinyxml2_h_XMLDocument_Print"
+    ],
+    "db_function_name": "XMLDocument::Print",
+    "signature": "void XMLDocument::Print(XMLPrinter * streamer)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "streamer",
+        "type": "XMLPrinter *"
+      }
+    ],
+    "source_code": "void XMLDocument::Print( XMLPrinter* streamer ) const\n{\n    if ( streamer ) {\n        Accept( streamer );\n    }\n    else {\n        XMLPrinter stdoutStreamer( stdout );\n        Accept( &stdoutStreamer );\n    }\n}",
+    "cleaned_doc": "Print the Document. If the Printer is not provided, it will\nprint to stdout. If you provide Printer, this can print to a file:\n@verbatim\nXMLPrinter printer( fp );\ndoc.Print( &printer );\n@endverbatim\nOr you can use a printer to print to memory:\n@verbatim\nXMLPrinter printer;\ndoc.Print( &printer );\n// printer.CStr() has a const char* to the XML\n@endverbatim"
+  },
+  {
+    "function_name": "XMLDocument::Accept",
+    "class_name": "XMLDocument",
+    "method_name": "Accept",
+    "raw_method_signature": "+Accept(visitor: XMLVisitor*)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Accept` della classe `XMLDocument`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 0.95,
+    "match_strategy": "inherited",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLNode_Accept",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_Accept"
+    ],
+    "db_function_name": "XMLNode::Accept",
+    "signature": "bool XMLNode::Accept(XMLVisitor * visitor)",
+    "return_type": "bool",
+    "parameters": [
+      {
+        "name": "visitor",
+        "type": "XMLVisitor *"
+      }
+    ],
+    "source_code": "virtual bool Accept( XMLVisitor* visitor ) const = 0;",
+    "cleaned_doc": "Accept a hierarchical visit of the nodes in the TinyXML-2 DOM. Every node in the\nXML tree will be conditionally visited and the host will be called back\nvia the XMLVisitor interface.\nThis is essentially a SAX interface for TinyXML-2. (Note however it doesn't re-parse\nthe XML for the callbacks, so the performance of TinyXML-2 is unchanged by using this\ninterface versus any other.)\nThe interface has been based on ideas from:\n- http://www.saxproject.org\n- http://c2.com/cgi/wiki?HierarchicalVisitorPattern\nWhich are both good references for \"visiting\".\nAn example of using Accept():\n@verbatim\nXMLPrinter printer;\ntinyxmlDoc.Accept( &printer );\nconst char* xmlcstr = printer.CStr();\n@endverbatim"
+  },
+  {
+    "function_name": "XMLDocument::PushDepth",
+    "class_name": "XMLDocument",
+    "method_name": "PushDepth",
+    "raw_method_signature": "-PushDepth()",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `PushDepth` della classe `XMLDocument`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": false,
+    "match_score": 0.8,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLDocument::Parse",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLDocument::PopDepth",
+    "class_name": "XMLDocument",
+    "method_name": "PopDepth",
+    "raw_method_signature": "-PopDepth()",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `PopDepth` della classe `XMLDocument`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": false,
+    "match_score": 0.7692,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLDocument::Parse",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLVisitor::VisitEnter",
+    "class_name": "XMLVisitor",
+    "method_name": "VisitEnter",
+    "raw_method_signature": "+VisitEnter(doc: XMLDocument)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `VisitEnter` della classe `XMLVisitor`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": false,
+    "match_score": 0.8718,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLVisitor::Visit",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLVisitor::VisitExit",
+    "class_name": "XMLVisitor",
+    "method_name": "VisitExit",
+    "raw_method_signature": "+VisitExit(doc: XMLDocument)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `VisitExit` della classe `XMLVisitor`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": false,
+    "match_score": 0.8947,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLVisitor::Visit",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLVisitor::Visit",
+    "class_name": "XMLVisitor",
+    "method_name": "Visit",
+    "raw_method_signature": "+Visit(text: XMLText)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Visit` della classe `XMLVisitor`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLVisitor_Visit",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLVisitor_Visit"
+    ],
+    "db_function_name": "XMLVisitor::Visit",
+    "signature": "bool XMLVisitor::Visit(const XMLUnknown &)",
+    "return_type": "bool",
+    "parameters": [
+      {
+        "name": "",
+        "type": "const XMLUnknown &"
+      }
+    ],
+    "source_code": "virtual bool Visit( const XMLUnknown& /*unknown*/ )\t\t\t\t{\n        return true;\n    }",
+    "cleaned_doc": "Visit an unknown node."
+  },
+  {
+    "function_name": "XMLPrinter::XMLPrinter",
+    "class_name": "XMLPrinter",
+    "method_name": "XMLPrinter",
+    "raw_method_signature": "+XMLPrinter(file: FILE*, compact: bool, depth: int)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `XMLPrinter` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLPrinter_XMLPrinter",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_XMLPrinter",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_XMLPrinter"
+    ],
+    "db_function_name": "XMLPrinter::XMLPrinter",
+    "signature": "XMLPrinter::XMLPrinter(const XMLPrinter &)",
+    "return_type": "",
+    "parameters": [
+      {
+        "name": "",
+        "type": "const XMLPrinter &"
+      }
+    ],
+    "source_code": "XMLPrinter::XMLPrinter( FILE* file, bool compact, int depth, EscapeAposCharsInAttributes aposInAttributes ) :\n    _elementJustOpened( false ),\n    _stack(),\n    _firstElement( true ),\n    _fp( file ),\n    _depth( depth ),\n    _textDepth( -1 ),\n    _processEntities( true ),\n    _compactMode( compact ),\n    _buffer()\n{\n    for( int i=0; i<ENTITY_RANGE; ++i ) {\n        _entityFlag[i] = false;\n        _restrictedEntityFlag[i] = false;\n    }\n    for( int i=0; i<NUM_ENTITIES; ++i ) {\n        const char entityValue = entities[i].value;\n        if ((aposInAttributes == ESCAPE_APOS_CHARS_IN_ATTRIBUTES) || (entityValue != SINGLE_QUOTE)) {\n            const unsigned char flagIndex = static_cast<unsigned char>(entityValue);\n            TIXMLASSERT( flagIndex < ENTITY_RANGE );\n            _entityFlag[flagIndex] = true;\n        }\n    }\n    _restrictedEntityFlag[static_cast<unsigned char>('&')] = true;\n    _restrictedEntityFlag[static_cast<unsigned char>('<')] = true;\n    _restrictedEntityFlag[static_cast<unsigned char>('>')] = true;\t// not required, but consistency is nice\n    _buffer.Push( 0 );\n}",
+    "cleaned_doc": "Construct the printer. If the FILE* is specified,\nthis will print to the FILE. Else it will print\nto memory, and the result is available in CStr().\nIf 'compact' is set to true, then output is created\nwith only required whitespace and newlines."
+  },
+  {
+    "function_name": "XMLPrinter::OpenElement",
+    "class_name": "XMLPrinter",
+    "method_name": "OpenElement",
+    "raw_method_signature": "+OpenElement(name: char*, compactMode: bool)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `OpenElement` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLPrinter_OpenElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_OpenElement",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_OpenElement"
+    ],
+    "db_function_name": "XMLPrinter::OpenElement",
+    "signature": "void XMLPrinter::OpenElement(const char * name, bool compactMode)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      },
+      {
+        "name": "compactMode",
+        "type": "bool"
+      }
+    ],
+    "source_code": "void XMLPrinter::OpenElement( const char* name, bool compactMode )\n{\n    PrepareForNewNode( compactMode );\n    _stack.Push( name );\n\n    Write ( \"<\" );\n    Write ( name );\n\n    _elementJustOpened = true;\n    ++_depth;\n}",
+    "cleaned_doc": "If streaming, start writing an element.\nThe element must be closed with CloseElement()"
+  },
+  {
+    "function_name": "XMLPrinter::PushAttribute",
+    "class_name": "XMLPrinter",
+    "method_name": "PushAttribute",
+    "raw_method_signature": "+PushAttribute(name: char*, value: char*)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `PushAttribute` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLPrinter_PushAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_PushAttribute",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_PushAttribute"
+    ],
+    "db_function_name": "XMLPrinter::PushAttribute",
+    "signature": "void XMLPrinter::PushAttribute(const char * name, double value)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "const char *"
+      },
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "void XMLPrinter::PushAttribute( const char* name, double v )\n{\n    char buf[BUF_SIZE];\n    XMLUtil::ToStr( v, buf, BUF_SIZE );\n    PushAttribute( name, buf );\n}",
+    "cleaned_doc": "If streaming, add an attribute to an open element."
+  },
+  {
+    "function_name": "XMLPrinter::PushText",
+    "class_name": "XMLPrinter",
+    "method_name": "PushText",
+    "raw_method_signature": "+PushText(text: char*, cdata: bool)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `PushText` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLPrinter_PushText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_PushText",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_PushText"
+    ],
+    "db_function_name": "XMLPrinter::PushText",
+    "signature": "void XMLPrinter::PushText(double value)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "void XMLPrinter::PushText( double value )\n{\n    char buf[BUF_SIZE];\n    XMLUtil::ToStr( value, buf, BUF_SIZE );\n    PushText( buf, false );\n}",
+    "cleaned_doc": "Add a text node from a double."
+  },
+  {
+    "function_name": "XMLPrinter::CloseElement",
+    "class_name": "XMLPrinter",
+    "method_name": "CloseElement",
+    "raw_method_signature": "+CloseElement(compactMode: bool)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `CloseElement` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLPrinter_CloseElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_CloseElement",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_CloseElement"
+    ],
+    "db_function_name": "XMLPrinter::CloseElement",
+    "signature": "void XMLPrinter::CloseElement(bool compactMode)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "compactMode",
+        "type": "bool"
+      }
+    ],
+    "source_code": "void XMLPrinter::CloseElement( bool compactMode )\n{\n    --_depth;\n    const char* name = _stack.Pop();\n\n    if ( _elementJustOpened ) {\n        Write( \"/>\" );\n    }\n    else {\n        if ( _textDepth < 0 && !compactMode) {\n            Putc( '\\n' );\n            PrintSpace( _depth );\n        }\n        Write ( \"</\" );\n        Write ( name );\n        Write ( \">\" );\n    }\n\n    if ( _textDepth == _depth ) {\n        _textDepth = -1;\n    }\n    if ( _depth == 0 && !compactMode) {\n        Putc( '\\n' );\n    }\n    _elementJustOpened = false;\n}",
+    "cleaned_doc": "If streaming, close the Element."
+  },
+  {
+    "function_name": "XMLPrinter::CStr",
+    "class_name": "XMLPrinter",
+    "method_name": "CStr",
+    "raw_method_signature": "+CStr(): const char*",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `CStr` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLPrinter_CStr",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLPrinter_CStr"
+    ],
+    "db_function_name": "XMLPrinter::CStr",
+    "signature": "const char * XMLPrinter::CStr(void)",
+    "return_type": "const char *",
+    "parameters": [],
+    "source_code": "const char* CStr() const {\n        return _buffer.Mem();\n    }",
+    "cleaned_doc": "If in print to memory mode, return a pointer to\nthe XML file in memory."
+  },
+  {
+    "function_name": "XMLPrinter::VisitEnter",
+    "class_name": "XMLPrinter",
+    "method_name": "VisitEnter",
+    "raw_method_signature": "+VisitEnter(element: XMLElement, attribute: XMLAttribute*)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `VisitEnter` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": false,
+    "match_score": 0.7895,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLPrinter::CStr",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLPrinter::VisitExit",
+    "class_name": "XMLPrinter",
+    "method_name": "VisitExit",
+    "raw_method_signature": "+VisitExit(element: XMLElement)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `VisitExit` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": false,
+    "match_score": 0.8293,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLPrinter::PushText",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLPrinter::Visit",
+    "class_name": "XMLPrinter",
+    "method_name": "Visit",
+    "raw_method_signature": "+Visit(text: XMLText)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Visit` della classe `XMLPrinter`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 0.95,
+    "match_strategy": "inherited",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLVisitor_Visit",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLVisitor_Visit"
+    ],
+    "db_function_name": "XMLVisitor::Visit",
+    "signature": "bool XMLVisitor::Visit(const XMLUnknown &)",
+    "return_type": "bool",
+    "parameters": [
+      {
+        "name": "",
+        "type": "const XMLUnknown &"
+      }
+    ],
+    "source_code": "virtual bool Visit( const XMLUnknown& /*unknown*/ )\t\t\t\t{\n        return true;\n    }",
+    "cleaned_doc": "Visit an unknown node."
+  },
+  {
+    "function_name": "DepthTracker::DepthTracker",
+    "class_name": "DepthTracker",
+    "method_name": "DepthTracker",
+    "raw_method_signature": "+DepthTracker(document: XMLDocument*)",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `DepthTracker` della classe `DepthTracker`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": false,
+    "match_score": 0.4583,
+    "match_strategy": "none",
+    "closest_db_candidate": "XMLPrinter::PrintSpace",
+    "db_id": null,
+    "db_ids": [],
+    "db_function_name": null,
+    "signature": null,
+    "return_type": null,
+    "parameters": [],
+    "source_code": "",
+    "cleaned_doc": ""
+  },
+  {
+    "function_name": "XMLAttribute::Name",
+    "class_name": "XMLAttribute",
+    "method_name": "Name",
+    "raw_method_signature": "+Name()",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Name` della classe `XMLAttribute`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_Name",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_Name",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_Name"
+    ],
+    "db_function_name": "XMLAttribute::Name",
+    "signature": "const char * XMLAttribute::Name(void)",
+    "return_type": "const char *",
+    "parameters": [],
+    "source_code": "const char* XMLAttribute::Name() const\n{\n    return _name.GetStr();\n}",
+    "cleaned_doc": "The name of the attribute."
+  },
+  {
+    "function_name": "XMLAttribute::Value",
+    "class_name": "XMLAttribute",
+    "method_name": "Value",
+    "raw_method_signature": "+Value()",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Value` della classe `XMLAttribute`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_Value",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_Value",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_Value"
+    ],
+    "db_function_name": "XMLAttribute::Value",
+    "signature": "const char * XMLAttribute::Value(void)",
+    "return_type": "const char *",
+    "parameters": [],
+    "source_code": "const char* XMLAttribute::Value() const\n{\n    return _value.GetStr();\n}",
+    "cleaned_doc": "The value of the attribute."
+  },
+  {
+    "function_name": "XMLAttribute::Next",
+    "class_name": "XMLAttribute",
+    "method_name": "Next",
+    "raw_method_signature": "+Next()",
+    "codewiki_doc": "[da diagramma Mermaid] Metodo `Next` della classe `XMLAttribute`.",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "TinyXML-2_Serialization_and_Printing.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "closest_db_candidate": null,
+    "db_id": "tinyxml-2_tinyxml2_h_XMLAttribute_Next",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_Next"
+    ],
+    "db_function_name": "XMLAttribute::Next",
+    "signature": "const XMLAttribute * XMLAttribute::Next(void)",
+    "return_type": "const XMLAttribute *",
+    "parameters": [],
+    "source_code": "const XMLAttribute* Next() const {\n        return _next;\n    }",
+    "cleaned_doc": "The next attribute in the list."
+  }
+]
