@@ -2,10 +2,10 @@
 evaluate_codewiki_advanced.py
 -----------------------------
 Metriche "avanzate" della pipeline della tesi applicate alla documentazione
-CodeWiki di TinyXML-2, con la stessa configurazione usata da utils/benchmark_eval.py:
+CodeWiki di una libreria, con la stessa configurazione usata da utils/benchmark_eval.py:
 
   - Code Retrieval (MRR, Hit@1/3/5)  stesso corpus della pipeline (function_name+signature
-                                      distinti di TinyXML-2), nessuna chiamata LLM
+                                      distinti della libreria), nessuna chiamata LLM
   - CodeBERTScore F1                  microsoft/codebert-base, nessuna chiamata LLM
   - LLM-as-a-Judge                    GeminiJudgeEvaluator, gemini-3.5-flash-lite, T=0.4,
                                       5 round x prospettive A (Faithfulness) e B (Alignment)
@@ -15,8 +15,8 @@ Non applicabili a CodeWiki (riportate come N/A nel confronto):
   - Param F1 / Return match: richiedono tag @param/@return, assenti nella prosa CodeWiki
   - Hallucination rate: deriva dagli errori del Verifier Doxygen della pipeline
 
-Input : compare_CodeWiki/codewiki_mapped_functions.json + codewiki_metrics_results.json
-Output: compare_CodeWiki/codewiki_advanced_results.json  (cache incrementale per funzione)
+Input : compare_CodeWiki/<Libreria>/codewiki_mapped_functions.json + codewiki_metrics_results.json
+Output: compare_CodeWiki/<Libreria>/codewiki_advanced_results.json  (cache incrementale per funzione)
 
 Ogni step completato viene salvato subito: rilanciando lo script si riprende da dove
 si era interrotto, senza ripagare le chiamate gia' fatte. Se il testo CodeWiki di una
@@ -26,7 +26,7 @@ Le righe del DB (firma, codice, GT) sono selezionate con la stessa funzione usat
 benchmark_eval.py --functions, quindi coincidono con quelle valutate dalla pipeline.
 
 Utilizzo:
-  .venv/Scripts/python utils/evaluate_codewiki_advanced.py [--steps retrieval,codebert,judge,roundtrip]
+  .venv/Scripts/python utils/evaluate_codewiki_advanced.py [-l LIBRERIA] [--steps retrieval,codebert,judge,roundtrip]
                                                            [--rounds 5] [--limit N] [--mock]
 """
 
@@ -42,10 +42,8 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-from utils.evaluate_codewiki_metrics import group_by_db_function, MAPPED_JSON, OUT_RESULTS, DB_PATH, TARGET_LIBRARY
-
-ADV_RESULTS      = os.path.join(ROOT_DIR, "compare_CodeWiki", "codewiki_advanced_results.json")
-ADV_RESULTS_MOCK = os.path.join(ROOT_DIR, "compare_CodeWiki", "codewiki_advanced_results_mock.json")
+from utils.codewiki_config import DB_PATH, LibraryPaths, lib_paths, resolve_library
+from utils.evaluate_codewiki_metrics import group_by_db_function
 
 # Stessa configurazione di utils/benchmark_eval.py
 LLM_MODEL         = "gemini-3.5-flash-lite"
@@ -66,29 +64,29 @@ def _save(cache: Dict, path: str):
     os.replace(tmp, path)
 
 
-def load_codewiki_docs() -> Dict[str, str]:
+def load_codewiki_docs(paths: LibraryPaths) -> Dict[str, str]:
     """{function_name: testo CodeWiki aggregato} per le funzioni valutate nelle metriche NLP."""
-    with open(MAPPED_JSON, encoding="utf-8") as f:
+    with open(paths.mapped_json, encoding="utf-8") as f:
         mapped = json.load(f)
-    with open(OUT_RESULTS, encoding="utf-8") as f:
+    with open(paths.results_json, encoding="utf-8") as f:
         evaluated = {r["function_name"] for r in json.load(f) if r["evaluated"]}
     groups = group_by_db_function([r for r in mapped if r.get("matched")])
     return {g["db_function_name"]: g["codewiki_doc"] for g in groups if g["db_function_name"] in evaluated}
 
 
-def load_pipeline_rows(names: List[str]) -> Dict[str, Dict]:
-    """Stesse righe DB che benchmark_eval.py usa con --functions (variante .cpp preferita)."""
+def load_pipeline_rows(library: str, names: List[str]) -> Dict[str, Dict]:
+    """Stesse righe DB che benchmark_eval.py usa con --functions (variante di implementazione preferita)."""
     from utils.benchmark_eval import get_benchmark_candidates
-    rows = get_benchmark_candidates(TARGET_LIBRARY, len(names), function_names=names)
+    rows = get_benchmark_candidates(library, len(names), function_names=names)
     return {r["function_name"]: r for r in rows}
 
 
-def load_retrieval_corpus() -> List[Dict[str, str]]:
+def load_retrieval_corpus(library: str) -> List[Dict[str, str]]:
     """Stesso corpus di retrieval costruito da benchmark_eval.py per una singola libreria."""
     conn = sqlite3.connect(DB_PATH)
     rows = conn.execute(
         "SELECT DISTINCT function_name, signature FROM benchmark_functions WHERE LOWER(library) = LOWER(?)",
-        (TARGET_LIBRARY,),
+        (library,),
     ).fetchall()
     conn.close()
     return [{"name": r[0], "signature": r[1] or ""} for r in rows]
@@ -96,9 +94,9 @@ def load_retrieval_corpus() -> List[Dict[str, str]]:
 
 # ── Step ──────────────────────────────────────────────────────────────────────
 
-def step_retrieval(cache: Dict, docs: Dict[str, str], path: str):
+def step_retrieval(cache: Dict, docs: Dict[str, str], path: str, library: str):
     from utils.benchmark_metrics import calculate_code_retrieval_mrr
-    corpus = load_retrieval_corpus()
+    corpus = load_retrieval_corpus(library)
     todo = [n for n in docs if "retrieval" not in cache[n]]
     print(f"[retrieval] {len(todo)} funzioni (corpus: {len(corpus)} voci)")
     for name in todo:
@@ -145,7 +143,7 @@ def step_judge(cache: Dict, docs: Dict[str, str], rows: Dict[str, Dict], path: s
         _save(cache, path)
 
 
-def step_roundtrip(cache: Dict, docs: Dict[str, str], rows: Dict[str, Dict], path: str, mock: bool):
+def step_roundtrip(cache: Dict, docs: Dict[str, str], rows: Dict[str, Dict], path: str, mock: bool, library: str):
     from src.llm_provider import GeminiLLMProvider, MockLLMProvider
     from utils.roundtrip_eval import RoundTripEvaluator
     if mock:
@@ -163,7 +161,7 @@ def step_roundtrip(cache: Dict, docs: Dict[str, str], rows: Dict[str, Dict], pat
         print(f"  [{i}/{len(todo)}] {name}", end="", flush=True)
         res = evaluator.evaluate_function_roundtrip(
             name, row["signature"], docs[name],
-            source_code=row["source_code"], library=TARGET_LIBRARY,
+            source_code=row["source_code"], library=library,
         )
         ex = res["execution"]
         diff = ex.get("differential", {}).get("differential_agreement_rate", "N/A")
@@ -174,8 +172,17 @@ def step_roundtrip(cache: Dict, docs: Dict[str, str], rows: Dict[str, Dict], pat
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def run(steps: List[str], rounds: int = 5, limit: int = None, mock: bool = False) -> str:
-    path = ADV_RESULTS_MOCK if mock else ADV_RESULTS
+def run(library: str, steps: List[str], rounds: int = 5, limit: int = None, mock: bool = False) -> str:
+    canonical = resolve_library(library)
+    if canonical is None:
+        raise SystemExit(f"[ERRORE] '{library}' non e' presente in {DB_PATH}")
+    library = canonical
+    paths = lib_paths(library)
+    path = paths.adv_results_mock if mock else paths.adv_results
+    for needed in (paths.mapped_json, paths.results_json):
+        if not os.path.exists(needed):
+            raise SystemExit(f"[ERRORE] File non trovato: {needed}\n"
+                             f"  Esegui prima parse_codewiki_to_benchmark.py e evaluate_codewiki_metrics.py -l {library}")
     if not mock and any(s in steps for s in ("judge", "roundtrip")):
         from dotenv import load_dotenv  # carica .env come la pipeline
         load_dotenv()
@@ -183,10 +190,10 @@ def run(steps: List[str], rounds: int = 5, limit: int = None, mock: bool = False
         if not key or key == "YOUR_GEMINI_API_KEY_HERE":
             raise SystemExit("[ERRORE] GEMINI_API_KEY non configurata: judge/roundtrip richiedono l'API (o usa --mock).")
 
-    docs = load_codewiki_docs()
+    docs = load_codewiki_docs(paths)
     names = sorted(docs)[:limit] if limit else sorted(docs)
     docs = {n: docs[n] for n in names}
-    rows = load_pipeline_rows(names)
+    rows = load_pipeline_rows(library, names)
     missing = [n for n in names if n not in rows]
     if missing:
         print(f"[WARN] Funzioni senza riga nel DB, escluse: {missing}")
@@ -202,15 +209,15 @@ def run(steps: List[str], rounds: int = 5, limit: int = None, mock: bool = False
             # Nuova funzione o testo CodeWiki cambiato: si ricalcola tutto
             cache[name] = {"doc_hash": h, "db_id": rows[name]["id"], "codewiki_doc": doc}
 
-    print(f"Funzioni CodeWiki: {len(docs)}  |  step: {', '.join(steps)}  |  output: {os.path.relpath(path, ROOT_DIR)}")
+    print(f"Libreria: {library}  |  Funzioni CodeWiki: {len(docs)}  |  step: {', '.join(steps)}  |  output: {os.path.relpath(path, ROOT_DIR)}")
     if "retrieval" in steps:
-        step_retrieval(cache, docs, path)
+        step_retrieval(cache, docs, path, library)
     if "codebert" in steps:
         step_codebert(cache, docs, rows, path)
     if "judge" in steps:
         step_judge(cache, docs, rows, path, rounds, mock)
     if "roundtrip" in steps:
-        step_roundtrip(cache, docs, rows, path, mock)
+        step_roundtrip(cache, docs, rows, path, mock, library)
     _save(cache, path)
     return path
 
@@ -219,6 +226,7 @@ def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description="Judge, round-trip, retrieval e CodeBERTScore sulla documentazione CodeWiki")
+    parser.add_argument("-l", "--library", default="TinyXML-2", help="Libreria da valutare (default: TinyXML-2)")
     parser.add_argument("--steps", default=",".join(ALL_STEPS),
                         help=f"Step da eseguire, separati da virgola (default: {','.join(ALL_STEPS)})")
     parser.add_argument("--rounds", type=int, default=5, help="Round per prospettiva del judge (default: 5, come la pipeline)")
@@ -230,7 +238,7 @@ def main():
     unknown = set(steps) - set(ALL_STEPS)
     if unknown:
         parser.error(f"step sconosciuti: {sorted(unknown)}")
-    path = run(steps, args.rounds, args.limit, args.mock)
+    path = run(args.library, steps, args.rounds, args.limit, args.mock)
     print(f"\nRisultati salvati in: {path}")
 
 

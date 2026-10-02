@@ -1,0 +1,350 @@
+[
+  {
+    "library": "OpenCV",
+    "function_name": "fastMalloc",
+    "class_name": null,
+    "method_name": "fastMalloc",
+    "raw_method_signature": "fastMalloc",
+    "codewiki_doc": "Low-level functions that allocate and deallocate aligned memory buffers (aligned to 16 bytes when the buffer size is 16 bytes or more).",
+    "doc_source": "bullet",
+    "codewiki_context": "1. Memory Management & `Allocator`",
+    "source_file": "OpenCV_cvstd.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "opencv_cvstd_hpp_fastMalloc",
+    "db_ids": [
+      "opencv_cvstd_hpp_fastMalloc"
+    ],
+    "db_function_name": "fastMalloc",
+    "signature": "void * fastMalloc(size_t bufSize)",
+    "return_type": "void *",
+    "parameters": [
+      {
+        "name": "bufSize",
+        "type": "size_t"
+      }
+    ],
+    "source_code": "CV_EXPORTS void* fastMalloc(size_t bufSize);",
+    "cleaned_doc": "@brief Allocates an aligned memory buffer.\nThe function allocates the buffer of the specified size and returns it. When the buffer size is 16\nbytes or more, the returned buffer is aligned to 16 bytes.\n@param bufSize Allocated buffer size."
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "fastFree",
+    "class_name": null,
+    "method_name": "fastFree",
+    "raw_method_signature": "fastFree",
+    "codewiki_doc": "Low-level functions that allocate and deallocate aligned memory buffers (aligned to 16 bytes when the buffer size is 16 bytes or more).",
+    "doc_source": "bullet",
+    "codewiki_context": "1. Memory Management & `Allocator`",
+    "source_file": "OpenCV_cvstd.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "opencv_cvstd_hpp_fastFree",
+    "db_ids": [
+      "opencv_cvstd_hpp_fastFree"
+    ],
+    "db_function_name": "fastFree",
+    "signature": "void fastFree(void * ptr)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "ptr",
+        "type": "void *"
+      }
+    ],
+    "source_code": "CV_EXPORTS void fastFree(void* ptr);",
+    "cleaned_doc": "@brief Deallocates a memory buffer.\nThe function deallocates the buffer allocated with fastMalloc . If NULL pointer is passed, the\nfunction does nothing. C version of the function clears the pointer *pptr* to avoid problems with\ndouble memory deallocation.\n@param ptr Pointer to the allocated buffer."
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "cvRound",
+    "class_name": null,
+    "method_name": "cvRound",
+    "raw_method_signature": "cvRound",
+    "codewiki_doc": "- **Purpose**: Rounds a floating-point number (`float` or `double`) to the nearest integer. - **Behavior**: Utilizes hardware instructions (e.g., SSE2 `_mm_cvtsd_si32`, ARM Neon `vcvtn`, x87 `fistp`) or compiler builtins (`__builtin_lrint`) when available, falling back to standard `lrint` implementation. Overloaded for `int` to return the value directly.",
+    "doc_source": "bullet",
+    "codewiki_context": "1. `cvRound`",
+    "source_file": "OpenCV_fast_math.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "opencv_fast_math_hpp_cvRound",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvRound"
+    ],
+    "db_function_name": "cvRound",
+    "signature": "int cvRound(double value)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "CV_INLINE int\ncvRound( double value )\n{\n#if defined CV_INLINE_ROUND_DBL\n    CV_INLINE_ROUND_DBL(value);\n#elif defined(_MSC_VER) && (defined(_M_ARM64) || defined(_M_ARM64EC))\n    float64x1_t v = vdup_n_f64(value);\n    int64x1_t r = vcvtn_s64_f64(v);\n    return static_cast<int>(vget_lane_s64(r, 0));\n#elif ((defined _MSC_VER && defined _M_X64) || (defined __GNUC__ && defined __SSE2__)) && !defined(__CUDACC__)\n    __m128d t = _mm_set_sd( value );\n    return _mm_cvtsd_si32(t);\n#elif defined _MSC_VER && defined _M_IX86\n    int t;\n    __asm\n    {\n        fld value;\n        fistp t;\n    }\n    return t;\n#elif defined CV__FASTMATH_ENABLE_GCC_MATH_BUILTINS || \\\n      defined CV__FASTMATH_ENABLE_CLANG_MATH_BUILTINS\n    return (int)__builtin_lrint(value);\n#else\n    return (int)lrint(value);\n#endif\n}",
+    "cleaned_doc": "@brief Rounds floating-point number to the nearest integer\n@param value floating-point number. If the value is outside of INT_MIN ... INT_MAX range, the\nresult is not defined."
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "cvFloor",
+    "class_name": null,
+    "method_name": "cvFloor",
+    "raw_method_signature": "cvFloor",
+    "codewiki_doc": "- **Purpose**: Rounds a floating-point number to the nearest integer not larger than the original ($\\lfloor \\text{value} \\rfloor$). - **Behavior**: Leverages compiler builtins (`__builtin_floor`), ARM64/LoongArch specific instructions, or inline fallback arithmetic. Overloaded for `int`.",
+    "doc_source": "bullet",
+    "codewiki_context": "2. `cvFloor`",
+    "source_file": "OpenCV_fast_math.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "opencv_fast_math_hpp_cvFloor",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvFloor"
+    ],
+    "db_function_name": "cvFloor",
+    "signature": "int cvFloor(double value)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "CV_INLINE int cvFloor( double value )\n{\n#if defined CV__FASTMATH_ENABLE_GCC_MATH_BUILTINS || \\\n    defined CV__FASTMATH_ENABLE_CLANG_MATH_BUILTINS\n    return (int)__builtin_floor(value);\n#elif defined(_MSC_VER) && (defined(_M_ARM64) || defined(_M_ARM64EC))\n    return (int)vcvtmd_s64_f64(value);\n#elif defined __loongarch64\n    int i;\n    double tmp;\n    __asm__ (\"ftintrm.l.d     %[tmp],    %[in]       \\n\\t\"\n             \"movfr2gr.d      %[i],      %[tmp]      \\n\\t\"\n             : [i] \"=r\" (i), [tmp] \"=f\" (tmp)\n             : [in] \"f\" (value)\n             :);\n    return i;\n#else\n    int i = (int)value;\n    return i - (i > value);\n#endif\n}",
+    "cleaned_doc": "@brief Rounds floating-point number to the nearest integer not larger than the original.\nThe function computes an integer i such that:\n\\f[i \\le \\texttt{value} < i+1\\f]\n@param value floating-point number. If the value is outside of INT_MIN ... INT_MAX range, the\nresult is not defined."
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "cvCeil",
+    "class_name": null,
+    "method_name": "cvCeil",
+    "raw_method_signature": "cvCeil",
+    "codewiki_doc": "- **Purpose**: Rounds a floating-point number to the nearest integer not smaller than the original ($\\lceil \\text{value} \\rceil$). - **Behavior**: Uses compiler builtins (`__builtin_ceil`), ARM64/LoongArch instructions, or fallback arithmetic. Overloaded for `int`.",
+    "doc_source": "bullet",
+    "codewiki_context": "3. `cvCeil`",
+    "source_file": "OpenCV_fast_math.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "opencv_fast_math_hpp_cvCeil",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvCeil"
+    ],
+    "db_function_name": "cvCeil",
+    "signature": "int cvCeil(double value)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "CV_INLINE int cvCeil( double value )\n{\n#if defined CV__FASTMATH_ENABLE_GCC_MATH_BUILTINS || \\\n    defined CV__FASTMATH_ENABLE_CLANG_MATH_BUILTINS\n    return (int)__builtin_ceil(value);\n#elif defined(_MSC_VER) && (defined(_M_ARM64) || defined(_M_ARM64EC))\n    return (int)vcvtpd_s64_f64(value);\n#elif defined __loongarch64\n    int i;\n    double tmp;\n    __asm__ (\"ftintrp.l.d     %[tmp],    %[in]       \\n\\t\"\n             \"movfr2gr.d      %[i],      %[tmp]      \\n\\t\"\n             : [i] \"=r\" (i), [tmp] \"=f\" (tmp)\n             : [in] \"f\" (value)\n             :);\n    return i;\n#else\n    int i = (int)value;\n    return i + (i < value);\n#endif\n}",
+    "cleaned_doc": "@brief Rounds floating-point number to the nearest integer not smaller than the original.\nThe function computes an integer i such that:\n\\f[i \\le \\texttt{value} < i+1\\f]\n@param value floating-point number. If the value is outside of INT_MIN ... INT_MAX range, the\nresult is not defined."
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "cvIsNaN",
+    "class_name": null,
+    "method_name": "cvIsNaN",
+    "raw_method_signature": "cvIsNaN",
+    "codewiki_doc": "- **Purpose**: Determines if a floating-point number is \"Not a Number\" (IEEE 754 standard). - **Behavior**: Checks bit representation via `Cv32suf` / `Cv64suf` unions or optimized compiler builtins (`__builtin_isnan`).",
+    "doc_source": "bullet",
+    "codewiki_context": "4. `cvIsNaN`",
+    "source_file": "OpenCV_fast_math.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "opencv_fast_math_hpp_cvIsNaN",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvIsNaN"
+    ],
+    "db_function_name": "cvIsNaN",
+    "signature": "int cvIsNaN(double value)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "CV_INLINE int cvIsNaN( double value )\n{\n#if defined CV_INLINE_ISNAN_DBL\n    CV_INLINE_ISNAN_DBL(value);\n#else\n    Cv64suf ieee754;\n    ieee754.f = value;\n    return ((unsigned)(ieee754.u >> 32) & 0x7fffffff) +\n           ((unsigned)ieee754.u != 0) > 0x7ff00000;\n#endif\n}",
+    "cleaned_doc": "@brief Determines if the argument is Not A Number.\n@param value The input floating-point value\nThe function returns 1 if the argument is Not A Number (as defined by IEEE754 standard), 0\notherwise."
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "cvIsInf",
+    "class_name": null,
+    "method_name": "cvIsInf",
+    "raw_method_signature": "cvIsInf",
+    "codewiki_doc": "- **Purpose**: Determines if a floating-point number represents positive or negative infinity (IEEE 754 standard). - **Behavior**: Evaluates IEEE 754 bit patterns or uses compiler builtins (`__builtin_isinf`). ---",
+    "doc_source": "bullet",
+    "codewiki_context": "5. `cvIsInf`",
+    "source_file": "OpenCV_fast_math.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "opencv_fast_math_hpp_cvIsInf",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvIsInf"
+    ],
+    "db_function_name": "cvIsInf",
+    "signature": "int cvIsInf(double value)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "CV_INLINE int cvIsInf( double value )\n{\n#if defined CV_INLINE_ISINF_DBL\n    CV_INLINE_ISINF_DBL(value);\n#elif defined(__x86_64__) || defined(_M_X64) || defined(__aarch64__) || defined(_M_ARM64) || defined(_M_ARM64EC) || defined(__PPC64__) || defined(__loongarch64)\n    Cv64suf ieee754;\n    ieee754.f = value;\n    return (ieee754.u & 0x7fffffffffffffff) ==\n                        0x7ff0000000000000;\n#else\n    Cv64suf ieee754;\n    ieee754.f = value;\n    return ((unsigned)(ieee754.u >> 32) & 0x7fffffff) == 0x7ff00000 &&\n            (unsigned)ieee754.u == 0;\n#endif\n}",
+    "cleaned_doc": "@brief Determines if the argument is Infinity.\n@param value The input floating-point value\nThe function returns 1 if the argument is a plus or minus infinity (as defined by IEEE754 standard)\nand 0 otherwise."
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "saturate_cast",
+    "class_name": null,
+    "method_name": "saturate_cast",
+    "raw_method_signature": "saturate_cast",
+    "codewiki_doc": "- **Purpose**: Converts a value from one primitive type to another while clipping out-of-range values instead of wrapping around. - **Floating-point Handling**: When converting from floating-point types (`float`, `double`) to integer types, values are first rounded to the nearest integer using [OpenCV_fast_math](OpenCV_fast_math.md) utilities (`cvRound`), then clipped if necessary. ---",
+    "doc_source": "bullet",
+    "codewiki_context": "Core Component: `saturate_cast`",
+    "source_file": "OpenCV_saturate.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "opencv_saturate_hpp_saturate_cast",
+    "db_ids": [
+      "opencv_saturate_hpp_saturate_cast"
+    ],
+    "db_function_name": "saturate_cast",
+    "signature": "_Tp saturate_cast(int v)",
+    "return_type": "_Tp",
+    "parameters": [
+      {
+        "name": "v",
+        "type": "int"
+      }
+    ],
+    "source_code": "template<typename _Tp> static inline _Tp saturate_cast(uchar v)    { return _Tp(v); }",
+    "cleaned_doc": "@brief Template function for accurate conversion from one primitive type to another.\nThe function saturate_cast resembles the standard C++ cast operations, such as static_cast\\<T\\>()\nand others. It perform an efficient and accurate conversion from one primitive type to another\n(see the introduction chapter). saturate in the name means that when the input value v is out of the\nrange of the target type, the result is not formed just by taking low bits of the input, but instead\nthe value is clipped. For example:\n@code\nuchar a = saturate_cast<uchar>(-100); // a = 0 (UCHAR_MIN)\nshort b = saturate_cast<short>(33333.33333); // b = 32767 (SHRT_MAX)\n@endcode\nSuch clipping is done when the target type is unsigned char , signed char , unsigned short or\nsigned short . For 32-bit integers, no clipping is done.\nWhen the parameter is a floating-point value and the target type is an integer (8-, 16- or 32-bit),\nthe floating-point value is first rounded to the nearest integer and then clipped if needed (when\nthe target type is 8- or 16-bit).\n@param v Function parameter.\n@sa add, subtract, multiply, divide, Mat::convertTo"
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "saturate_cast::saturate_cast",
+    "class_name": null,
+    "method_name": "saturate_cast",
+    "raw_method_signature": "saturate_cast::saturate_cast",
+    "codewiki_doc": "[da diagramma Mermaid] Funzione `saturate_cast` (saturate_cast).",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "OpenCV_saturate.md",
+    "matched": true,
+    "match_score": 0.98,
+    "match_strategy": "namespace_stripped",
+    "db_id": "opencv_saturate_hpp_saturate_cast",
+    "db_ids": [
+      "opencv_saturate_hpp_saturate_cast"
+    ],
+    "db_function_name": "saturate_cast",
+    "signature": "_Tp saturate_cast(int v)",
+    "return_type": "_Tp",
+    "parameters": [
+      {
+        "name": "v",
+        "type": "int"
+      }
+    ],
+    "source_code": "template<typename _Tp> static inline _Tp saturate_cast(uchar v)    { return _Tp(v); }",
+    "cleaned_doc": "@brief Template function for accurate conversion from one primitive type to another.\nThe function saturate_cast resembles the standard C++ cast operations, such as static_cast\\<T\\>()\nand others. It perform an efficient and accurate conversion from one primitive type to another\n(see the introduction chapter). saturate in the name means that when the input value v is out of the\nrange of the target type, the result is not formed just by taking low bits of the input, but instead\nthe value is clipped. For example:\n@code\nuchar a = saturate_cast<uchar>(-100); // a = 0 (UCHAR_MIN)\nshort b = saturate_cast<short>(33333.33333); // b = 32767 (SHRT_MAX)\n@endcode\nSuch clipping is done when the target type is unsigned char , signed char , unsigned short or\nsigned short . For 32-bit integers, no clipping is done.\nWhen the parameter is a floating-point value and the target type is an integer (8-, 16- or 32-bit),\nthe floating-point value is first rounded to the nearest integer and then clipped if needed (when\nthe target type is 8- or 16-bit).\n@param v Function parameter.\n@sa add, subtract, multiply, divide, Mat::convertTo"
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "fast_math::cvRound",
+    "class_name": null,
+    "method_name": "cvRound",
+    "raw_method_signature": "fast_math::cvRound",
+    "codewiki_doc": "[da diagramma Mermaid] Funzione `cvRound` (fast_math).",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "OpenCV_saturate.md",
+    "matched": true,
+    "match_score": 0.98,
+    "match_strategy": "namespace_stripped",
+    "db_id": "opencv_fast_math_hpp_cvRound",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvRound"
+    ],
+    "db_function_name": "cvRound",
+    "signature": "int cvRound(double value)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "CV_INLINE int\ncvRound( double value )\n{\n#if defined CV_INLINE_ROUND_DBL\n    CV_INLINE_ROUND_DBL(value);\n#elif defined(_MSC_VER) && (defined(_M_ARM64) || defined(_M_ARM64EC))\n    float64x1_t v = vdup_n_f64(value);\n    int64x1_t r = vcvtn_s64_f64(v);\n    return static_cast<int>(vget_lane_s64(r, 0));\n#elif ((defined _MSC_VER && defined _M_X64) || (defined __GNUC__ && defined __SSE2__)) && !defined(__CUDACC__)\n    __m128d t = _mm_set_sd( value );\n    return _mm_cvtsd_si32(t);\n#elif defined _MSC_VER && defined _M_IX86\n    int t;\n    __asm\n    {\n        fld value;\n        fistp t;\n    }\n    return t;\n#elif defined CV__FASTMATH_ENABLE_GCC_MATH_BUILTINS || \\\n      defined CV__FASTMATH_ENABLE_CLANG_MATH_BUILTINS\n    return (int)__builtin_lrint(value);\n#else\n    return (int)lrint(value);\n#endif\n}",
+    "cleaned_doc": "@brief Rounds floating-point number to the nearest integer\n@param value floating-point number. If the value is outside of INT_MIN ... INT_MAX range, the\nresult is not defined."
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "fast_math::cvFloor",
+    "class_name": null,
+    "method_name": "cvFloor",
+    "raw_method_signature": "fast_math::cvFloor",
+    "codewiki_doc": "[da diagramma Mermaid] Funzione `cvFloor` (fast_math).",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "OpenCV_saturate.md",
+    "matched": true,
+    "match_score": 0.98,
+    "match_strategy": "namespace_stripped",
+    "db_id": "opencv_fast_math_hpp_cvFloor",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvFloor"
+    ],
+    "db_function_name": "cvFloor",
+    "signature": "int cvFloor(double value)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "CV_INLINE int cvFloor( double value )\n{\n#if defined CV__FASTMATH_ENABLE_GCC_MATH_BUILTINS || \\\n    defined CV__FASTMATH_ENABLE_CLANG_MATH_BUILTINS\n    return (int)__builtin_floor(value);\n#elif defined(_MSC_VER) && (defined(_M_ARM64) || defined(_M_ARM64EC))\n    return (int)vcvtmd_s64_f64(value);\n#elif defined __loongarch64\n    int i;\n    double tmp;\n    __asm__ (\"ftintrm.l.d     %[tmp],    %[in]       \\n\\t\"\n             \"movfr2gr.d      %[i],      %[tmp]      \\n\\t\"\n             : [i] \"=r\" (i), [tmp] \"=f\" (tmp)\n             : [in] \"f\" (value)\n             :);\n    return i;\n#else\n    int i = (int)value;\n    return i - (i > value);\n#endif\n}",
+    "cleaned_doc": "@brief Rounds floating-point number to the nearest integer not larger than the original.\nThe function computes an integer i such that:\n\\f[i \\le \\texttt{value} < i+1\\f]\n@param value floating-point number. If the value is outside of INT_MIN ... INT_MAX range, the\nresult is not defined."
+  },
+  {
+    "library": "OpenCV",
+    "function_name": "fast_math::cvCeil",
+    "class_name": null,
+    "method_name": "cvCeil",
+    "raw_method_signature": "fast_math::cvCeil",
+    "codewiki_doc": "[da diagramma Mermaid] Funzione `cvCeil` (fast_math).",
+    "doc_source": "mermaid",
+    "codewiki_context": "Mermaid Class Diagram",
+    "source_file": "OpenCV_saturate.md",
+    "matched": true,
+    "match_score": 0.98,
+    "match_strategy": "namespace_stripped",
+    "db_id": "opencv_fast_math_hpp_cvCeil",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvCeil"
+    ],
+    "db_function_name": "cvCeil",
+    "signature": "int cvCeil(double value)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "double"
+      }
+    ],
+    "source_code": "CV_INLINE int cvCeil( double value )\n{\n#if defined CV__FASTMATH_ENABLE_GCC_MATH_BUILTINS || \\\n    defined CV__FASTMATH_ENABLE_CLANG_MATH_BUILTINS\n    return (int)__builtin_ceil(value);\n#elif defined(_MSC_VER) && (defined(_M_ARM64) || defined(_M_ARM64EC))\n    return (int)vcvtpd_s64_f64(value);\n#elif defined __loongarch64\n    int i;\n    double tmp;\n    __asm__ (\"ftintrp.l.d     %[tmp],    %[in]       \\n\\t\"\n             \"movfr2gr.d      %[i],      %[tmp]      \\n\\t\"\n             : [i] \"=r\" (i), [tmp] \"=f\" (tmp)\n             : [in] \"f\" (value)\n             :);\n    return i;\n#else\n    int i = (int)value;\n    return i + (i < value);\n#endif\n}",
+    "cleaned_doc": "@brief Rounds floating-point number to the nearest integer not smaller than the original.\nThe function computes an integer i such that:\n\\f[i \\le \\texttt{value} < i+1\\f]\n@param value floating-point number. If the value is outside of INT_MIN ... INT_MAX range, the\nresult is not defined."
+  }
+]

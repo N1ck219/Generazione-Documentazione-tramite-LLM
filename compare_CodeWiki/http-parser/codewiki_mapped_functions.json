@@ -1,0 +1,271 @@
+[
+  {
+    "library": "http-parser",
+    "function_name": "http_parser_version",
+    "class_name": null,
+    "method_name": "http_parser_version",
+    "raw_method_signature": "http_parser_version",
+    "codewiki_doc": "Returns the library's version number.",
+    "doc_source": "bullet",
+    "codewiki_context": "4. Utility Functions",
+    "source_file": "overview.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "http-parser_http_parser_h_http_parser_version",
+    "db_ids": [
+      "http-parser_http_parser_c_http_parser_version",
+      "http-parser_http_parser_h_http_parser_version"
+    ],
+    "db_function_name": "http_parser_version",
+    "signature": "unsigned long http_parser_version(void)",
+    "return_type": "unsigned long",
+    "parameters": [],
+    "source_code": "unsigned long\nhttp_parser_version(void) {\n  return HTTP_PARSER_VERSION_MAJOR * 0x10000 |\n         HTTP_PARSER_VERSION_MINOR * 0x00100 |\n         HTTP_PARSER_VERSION_PATCH * 0x00001;\n}",
+    "cleaned_doc": "Returns the library version. Bits 16-23 contain the major version number,\nbits 8-15 the minor version number and bits 0-7 the patch level.\nUsage example:\n  unsigned long version = http_parser_version();\n  unsigned major = (version >> 16) & 255;\n  unsigned minor = (version >> 8) & 255;\n  unsigned patch = version & 255;\n  printf(\"http_parser v%u.%u.%u\\n\", major, minor, patch);"
+  },
+  {
+    "library": "http-parser",
+    "function_name": "http_should_keep_alive",
+    "class_name": null,
+    "method_name": "http_should_keep_alive",
+    "raw_method_signature": "http_should_keep_alive",
+    "codewiki_doc": "Determines if the connection should be kept alive after the current message.",
+    "doc_source": "bullet",
+    "codewiki_context": "4. Utility Functions",
+    "source_file": "overview.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "http-parser_http_parser_h_http_should_keep_alive",
+    "db_ids": [
+      "http-parser_http_parser_c_http_should_keep_alive",
+      "http-parser_http_parser_h_http_should_keep_alive"
+    ],
+    "db_function_name": "http_should_keep_alive",
+    "signature": "int http_should_keep_alive(const http_parser * parser)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "parser",
+        "type": "const http_parser *"
+      }
+    ],
+    "source_code": "int\nhttp_should_keep_alive (const http_parser *parser)\n{\n  if (parser->http_major > 0 && parser->http_minor > 0) {\n    /* HTTP/1.1 */\n    if (parser->flags & F_CONNECTION_CLOSE) {\n      return 0;\n    }\n  } else {\n    /* HTTP/1.0 or earlier */\n    if (!(parser->flags & F_CONNECTION_KEEP_ALIVE)) {\n      return 0;\n    }\n  }\n\n  return !http_message_needs_eof(parser);\n}",
+    "cleaned_doc": "If http_should_keep_alive() in the on_headers_complete or\non_message_complete callback returns 0, then this should be\nthe last message on the connection.\nIf you are the server, respond with the \"Connection: close\" header.\nIf you are the client, close the connection."
+  },
+  {
+    "library": "http-parser",
+    "function_name": "http_method_str",
+    "class_name": null,
+    "method_name": "http_method_str",
+    "raw_method_signature": "http_method_str",
+    "codewiki_doc": "Returns the string representation of an HTTP method enum.",
+    "doc_source": "bullet",
+    "codewiki_context": "4. Utility Functions",
+    "source_file": "overview.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "http-parser_http_parser_h_http_method_str",
+    "db_ids": [
+      "http-parser_http_parser_c_http_method_str",
+      "http-parser_http_parser_h_http_method_str"
+    ],
+    "db_function_name": "http_method_str",
+    "signature": "const char * http_method_str(enum http_method m)",
+    "return_type": "const char *",
+    "parameters": [
+      {
+        "name": "m",
+        "type": "enum http_method"
+      }
+    ],
+    "source_code": "const char *\nhttp_method_str (enum http_method m)\n{\n  return ELEM_AT(method_strings, m, \"<unknown>\");\n}",
+    "cleaned_doc": "Returns a string version of the HTTP method."
+  },
+  {
+    "library": "http-parser",
+    "function_name": "http_status_str",
+    "class_name": null,
+    "method_name": "http_status_str",
+    "raw_method_signature": "http_status_str",
+    "codewiki_doc": "Returns the string representation of an HTTP status code enum.",
+    "doc_source": "bullet",
+    "codewiki_context": "4. Utility Functions",
+    "source_file": "overview.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "http-parser_http_parser_h_http_status_str",
+    "db_ids": [
+      "http-parser_http_parser_c_http_status_str",
+      "http-parser_http_parser_h_http_status_str"
+    ],
+    "db_function_name": "http_status_str",
+    "signature": "const char * http_status_str(enum http_status s)",
+    "return_type": "const char *",
+    "parameters": [
+      {
+        "name": "s",
+        "type": "enum http_status"
+      }
+    ],
+    "source_code": "const char *\nhttp_status_str (enum http_status s)\n{\n  switch (s) {\n#define XX(num, name, string) case HTTP_STATUS_##name: return #string;\n    HTTP_STATUS_MAP(XX)\n#undef XX\n    default: return \"<unknown>\";\n  }\n}",
+    "cleaned_doc": "Returns a string version of the HTTP status code."
+  },
+  {
+    "library": "http-parser",
+    "function_name": "http_errno_name",
+    "class_name": null,
+    "method_name": "http_errno_name",
+    "raw_method_signature": "http_errno_name",
+    "codewiki_doc": "Returns the name of an HTTP parser error.",
+    "doc_source": "bullet",
+    "codewiki_context": "4. Utility Functions",
+    "source_file": "overview.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "http-parser_http_parser_h_http_errno_name",
+    "db_ids": [
+      "http-parser_http_parser_c_http_errno_name",
+      "http-parser_http_parser_h_http_errno_name"
+    ],
+    "db_function_name": "http_errno_name",
+    "signature": "const char * http_errno_name(enum http_errno err)",
+    "return_type": "const char *",
+    "parameters": [
+      {
+        "name": "err",
+        "type": "enum http_errno"
+      }
+    ],
+    "source_code": "const char *\nhttp_errno_name(enum http_errno err) {\n  assert(((size_t) err) < ARRAY_SIZE(http_strerror_tab));\n  return http_strerror_tab[err].name;\n}",
+    "cleaned_doc": "Return a string name of the given error"
+  },
+  {
+    "library": "http-parser",
+    "function_name": "http_errno_description",
+    "class_name": null,
+    "method_name": "http_errno_description",
+    "raw_method_signature": "http_errno_description",
+    "codewiki_doc": "Returns a human-readable description of an HTTP parser error.",
+    "doc_source": "bullet",
+    "codewiki_context": "4. Utility Functions",
+    "source_file": "overview.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "http-parser_http_parser_h_http_errno_description",
+    "db_ids": [
+      "http-parser_http_parser_c_http_errno_description",
+      "http-parser_http_parser_h_http_errno_description"
+    ],
+    "db_function_name": "http_errno_description",
+    "signature": "const char * http_errno_description(enum http_errno err)",
+    "return_type": "const char *",
+    "parameters": [
+      {
+        "name": "err",
+        "type": "enum http_errno"
+      }
+    ],
+    "source_code": "const char *\nhttp_errno_description(enum http_errno err) {\n  assert(((size_t) err) < ARRAY_SIZE(http_strerror_tab));\n  return http_strerror_tab[err].description;\n}",
+    "cleaned_doc": "Return a string description of the given error"
+  },
+  {
+    "library": "http-parser",
+    "function_name": "http_parser_pause",
+    "class_name": null,
+    "method_name": "http_parser_pause",
+    "raw_method_signature": "http_parser_pause",
+    "codewiki_doc": "Pauses or unpauses the parser.",
+    "doc_source": "bullet",
+    "codewiki_context": "4. Utility Functions",
+    "source_file": "overview.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "http-parser_http_parser_h_http_parser_pause",
+    "db_ids": [
+      "http-parser_http_parser_c_http_parser_pause",
+      "http-parser_http_parser_h_http_parser_pause"
+    ],
+    "db_function_name": "http_parser_pause",
+    "signature": "void http_parser_pause(http_parser * parser, int paused)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "parser",
+        "type": "http_parser *"
+      },
+      {
+        "name": "paused",
+        "type": "int"
+      }
+    ],
+    "source_code": "void\nhttp_parser_pause(http_parser *parser, int paused) {\n  /* Users should only be pausing/unpausing a parser that is not in an error\n   * state. In non-debug builds, there's not much that we can do about this\n   * other than ignore it.\n   */\n  if (HTTP_PARSER_ERRNO(parser) == HPE_OK ||\n      HTTP_PARSER_ERRNO(parser) == HPE_PAUSED) {\n    uint32_t nread = parser->nread; /* used by the SET_ERRNO macro */\n    SET_ERRNO((paused) ? HPE_PAUSED : HPE_OK);\n  } else {\n    assert(0 && \"Attempting to pause parser in error state\");\n  }\n}",
+    "cleaned_doc": "Pause or un-pause the parser; a nonzero value pauses"
+  },
+  {
+    "library": "http-parser",
+    "function_name": "http_body_is_final",
+    "class_name": null,
+    "method_name": "http_body_is_final",
+    "raw_method_signature": "http_body_is_final",
+    "codewiki_doc": "Checks if the body parsing is complete.",
+    "doc_source": "bullet",
+    "codewiki_context": "4. Utility Functions",
+    "source_file": "overview.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "http-parser_http_parser_h_http_body_is_final",
+    "db_ids": [
+      "http-parser_http_parser_c_http_body_is_final",
+      "http-parser_http_parser_h_http_body_is_final"
+    ],
+    "db_function_name": "http_body_is_final",
+    "signature": "int http_body_is_final(const http_parser * parser)",
+    "return_type": "int",
+    "parameters": [
+      {
+        "name": "parser",
+        "type": "const http_parser *"
+      }
+    ],
+    "source_code": "int\nhttp_body_is_final(const struct http_parser *parser) {\n    return parser->state == s_message_done;\n}",
+    "cleaned_doc": "Checks if this is the final chunk of the body."
+  },
+  {
+    "library": "http-parser",
+    "function_name": "http_parser_set_max_header_size",
+    "class_name": null,
+    "method_name": "http_parser_set_max_header_size",
+    "raw_method_signature": "http_parser_set_max_header_size",
+    "codewiki_doc": "Allows changing the maximum allowed header size at runtime.",
+    "doc_source": "bullet",
+    "codewiki_context": "4. Utility Functions",
+    "source_file": "overview.md",
+    "matched": true,
+    "match_score": 1.0,
+    "match_strategy": "exact",
+    "db_id": "http-parser_http_parser_h_http_parser_set_max_header_size",
+    "db_ids": [
+      "http-parser_http_parser_c_http_parser_set_max_header_size",
+      "http-parser_http_parser_h_http_parser_set_max_header_size"
+    ],
+    "db_function_name": "http_parser_set_max_header_size",
+    "signature": "void http_parser_set_max_header_size(uint32_t size)",
+    "return_type": "void",
+    "parameters": [
+      {
+        "name": "size",
+        "type": "uint32_t"
+      }
+    ],
+    "source_code": "void\nhttp_parser_set_max_header_size(uint32_t size) {\n  max_header_size = size;\n}",
+    "cleaned_doc": "Change the maximum header size provided at compile time."
+  }
+]

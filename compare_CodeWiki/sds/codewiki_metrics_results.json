@@ -1,0 +1,1402 @@
+[
+  {
+    "function_name": "sdsMakeRoomFor",
+    "db_ids": [
+      "sds_sds_c_sdsMakeRoomFor",
+      "sds_sds_h_sdsMakeRoomFor"
+    ],
+    "codewiki_mentions": [
+      "sdsMakeRoomFor",
+      "sdsMakeRoomFor"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_allocation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 71,
+    "gt_doc_length": 64,
+    "rouge_l": 0.2424,
+    "tfidf_cosine": 0.3793,
+    "length_ratio": 1.109,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.6808,
+    "meteor_score": 0.4616,
+    "bleurt_estimate": 0.6031,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "ownership_memory",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "ownership_memory",
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.6025,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 1.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.5
+  },
+  {
+    "function_name": "sdsRemoveFreeSpace",
+    "db_ids": [
+      "sds_sds_c_sdsRemoveFreeSpace",
+      "sds_sds_h_sdsRemoveFreeSpace"
+    ],
+    "codewiki_mentions": [
+      "sdsRemoveFreeSpace"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_allocation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 20,
+    "gt_doc_length": 54,
+    "rouge_l": 0.1509,
+    "tfidf_cosine": 0.2857,
+    "length_ratio": 0.37,
+    "brevity_penalty": 0.1827,
+    "sbert_similarity": 0.6976,
+    "meteor_score": 0.4243,
+    "bleurt_estimate": 0.5094,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "ownership_memory"
+    ],
+    "concept_matched": [
+      "ownership_memory"
+    ],
+    "bertscore_f1": 0.6255,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdsgrowzero",
+    "db_ids": [
+      "sds_sds_c_sdsgrowzero",
+      "sds_sds_h_sdsgrowzero"
+    ],
+    "codewiki_mentions": [
+      "sdsgrowzero"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_allocation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 13,
+    "gt_doc_length": 39,
+    "rouge_l": 0.2222,
+    "tfidf_cosine": 0.4709,
+    "length_ratio": 0.333,
+    "brevity_penalty": 0.1353,
+    "sbert_similarity": 0.7709,
+    "meteor_score": 0.4966,
+    "bleurt_estimate": 0.5702,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.6206,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdsIncrLen",
+    "db_ids": [
+      "sds_sds_c_sdsIncrLen",
+      "sds_sds_h_sdsIncrLen"
+    ],
+    "codewiki_mentions": [
+      "sdsIncrLen",
+      "sdsIncrLen"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_allocation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 71,
+    "gt_doc_length": 137,
+    "rouge_l": 0.1304,
+    "tfidf_cosine": 0.3303,
+    "length_ratio": 0.518,
+    "brevity_penalty": 0.3947,
+    "sbert_similarity": 0.7326,
+    "meteor_score": 0.4315,
+    "bleurt_estimate": 0.5483,
+    "concept_checklist_score": 0.6667,
+    "concept_ref_active": [
+      "ownership_memory",
+      "null_safety",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "null_safety",
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.6009,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.5
+  },
+  {
+    "function_name": "sdsAllocSize",
+    "db_ids": [
+      "sds_sds_c_sdsAllocSize",
+      "sds_sds_h_sdsAllocSize"
+    ],
+    "codewiki_mentions": [
+      "sdsAllocSize"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_allocation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 20,
+    "gt_doc_length": 37,
+    "rouge_l": 0.5,
+    "tfidf_cosine": 0.6306,
+    "length_ratio": 0.541,
+    "brevity_penalty": 0.4274,
+    "sbert_similarity": 0.8649,
+    "meteor_score": 0.6825,
+    "bleurt_estimate": 0.7299,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "ownership_memory",
+      "null_safety",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "ownership_memory",
+      "null_safety",
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.6564,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdsclear",
+    "db_ids": [
+      "sds_sds_c_sdsclear",
+      "sds_sds_h_sdsclear"
+    ],
+    "codewiki_mentions": [
+      "sdsclear"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_allocation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 18,
+    "gt_doc_length": 41,
+    "rouge_l": 0.0952,
+    "tfidf_cosine": 0.1575,
+    "length_ratio": 0.439,
+    "brevity_penalty": 0.2787,
+    "sbert_similarity": 0.6417,
+    "meteor_score": 0.3685,
+    "bleurt_estimate": 0.4688,
+    "concept_checklist_score": 0.6667,
+    "concept_ref_active": [
+      "ownership_memory",
+      "mutation_const",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "ownership_memory",
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.6076,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdsupdatelen",
+    "db_ids": [
+      "sds_sds_c_sdsupdatelen",
+      "sds_sds_h_sdsupdatelen"
+    ],
+    "codewiki_mentions": [
+      "sdsupdatelen"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_allocation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 20,
+    "gt_doc_length": 83,
+    "rouge_l": 0.1791,
+    "tfidf_cosine": 0.4229,
+    "length_ratio": 0.241,
+    "brevity_penalty": 0.0429,
+    "sbert_similarity": 0.5793,
+    "meteor_score": 0.3792,
+    "bleurt_estimate": 0.4256,
+    "concept_checklist_score": 0.6667,
+    "concept_ref_active": [
+      "null_safety",
+      "mutation_const",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "mutation_const",
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.5923,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdsalloc",
+    "db_ids": [
+      "sds_sds_h_sdsalloc"
+    ],
+    "codewiki_mentions": [
+      "sdsalloc"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_core.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 10,
+    "gt_doc_length": 5,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 2.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.1984,
+    "meteor_score": 0.0992,
+    "bleurt_estimate": 0.229,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4116,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 1.0,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdsnewlen",
+    "db_ids": [
+      "sds_sds_c_sdsnewlen",
+      "sds_sds_h_sdsnewlen"
+    ],
+    "codewiki_mentions": [
+      "sdsnewlen"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_core.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 16,
+    "gt_doc_length": 102,
+    "rouge_l": 0.137,
+    "tfidf_cosine": 0.3878,
+    "length_ratio": 0.157,
+    "brevity_penalty": 0.0046,
+    "sbert_similarity": 0.7538,
+    "meteor_score": 0.4454,
+    "bleurt_estimate": 0.5247,
+    "concept_checklist_score": 0.5,
+    "concept_ref_active": [
+      "null_safety",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.618,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 3,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdsnew",
+    "db_ids": [
+      "sds_sds_c_sdsnew",
+      "sds_sds_h_sdsnew"
+    ],
+    "codewiki_mentions": [
+      "sdsnew"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_core.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 12,
+    "rouge_l": 0.7143,
+    "tfidf_cosine": 0.7826,
+    "length_ratio": 0.75,
+    "brevity_penalty": 0.7165,
+    "sbert_similarity": 0.9329,
+    "meteor_score": 0.8236,
+    "bleurt_estimate": 0.8566,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "null_safety"
+    ],
+    "concept_matched": [
+      "null_safety"
+    ],
+    "bertscore_f1": 0.8891,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 1.0
+  },
+  {
+    "function_name": "sdsempty",
+    "db_ids": [
+      "sds_sds_c_sdsempty",
+      "sds_sds_h_sdsempty"
+    ],
+    "codewiki_mentions": [
+      "sdsempty"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_core.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 19,
+    "rouge_l": 0.3333,
+    "tfidf_cosine": 0.3953,
+    "length_ratio": 0.632,
+    "brevity_penalty": 0.558,
+    "sbert_similarity": 0.6791,
+    "meteor_score": 0.5062,
+    "bleurt_estimate": 0.5805,
+    "concept_checklist_score": 0.5,
+    "concept_ref_active": [
+      "null_safety",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.6502,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdsdup",
+    "db_ids": [
+      "sds_sds_c_sdsdup",
+      "sds_sds_h_sdsdup"
+    ],
+    "codewiki_mentions": [
+      "sdsdup"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_core.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 5,
+    "gt_doc_length": 4,
+    "rouge_l": 0.5714,
+    "tfidf_cosine": 0.5774,
+    "length_ratio": 1.25,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.9165,
+    "meteor_score": 0.744,
+    "bleurt_estimate": 0.8386,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.8825,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdsfree",
+    "db_ids": [
+      "sds_sds_c_sdsfree",
+      "sds_sds_h_sdsfree"
+    ],
+    "codewiki_mentions": [
+      "sdsfree"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_core.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 15,
+    "gt_doc_length": 12,
+    "rouge_l": 0.2105,
+    "tfidf_cosine": 0.3198,
+    "length_ratio": 1.25,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.7131,
+    "meteor_score": 0.4618,
+    "bleurt_estimate": 0.6161,
+    "concept_checklist_score": 0.5,
+    "concept_ref_active": [
+      "ownership_memory",
+      "null_safety"
+    ],
+    "concept_matched": [
+      "null_safety"
+    ],
+    "bertscore_f1": 0.585,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 1.0
+  },
+  {
+    "function_name": "sdscatlen",
+    "db_ids": [
+      "sds_sds_c_sdscatlen",
+      "sds_sds_h_sdscatlen"
+    ],
+    "codewiki_mentions": [
+      "sdscatlen"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 11,
+    "gt_doc_length": 46,
+    "rouge_l": 0.2778,
+    "tfidf_cosine": 0.5031,
+    "length_ratio": 0.239,
+    "brevity_penalty": 0.0415,
+    "sbert_similarity": 0.7762,
+    "meteor_score": 0.527,
+    "bleurt_estimate": 0.5781,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "mutation_const"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.6406,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdscat",
+    "db_ids": [
+      "sds_sds_c_sdscat",
+      "sds_sds_h_sdscat"
+    ],
+    "codewiki_mentions": [
+      "sdscat",
+      "sdscat"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 10,
+    "gt_doc_length": 38,
+    "rouge_l": 0.2759,
+    "tfidf_cosine": 0.5539,
+    "length_ratio": 0.263,
+    "brevity_penalty": 0.0608,
+    "sbert_similarity": 0.8124,
+    "meteor_score": 0.5442,
+    "bleurt_estimate": 0.6031,
+    "concept_checklist_score": 0.5,
+    "concept_ref_active": [
+      "null_safety",
+      "mutation_const"
+    ],
+    "concept_matched": [
+      "null_safety"
+    ],
+    "bertscore_f1": 0.6369,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdscatsds",
+    "db_ids": [
+      "sds_sds_c_sdscatsds",
+      "sds_sds_h_sdscatsds"
+    ],
+    "codewiki_mentions": [
+      "sdscatsds"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 36,
+    "rouge_l": 0.1538,
+    "tfidf_cosine": 0.3322,
+    "length_ratio": 0.167,
+    "brevity_penalty": 0.0067,
+    "sbert_similarity": 0.7012,
+    "meteor_score": 0.4275,
+    "bleurt_estimate": 0.4949,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "mutation_const"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.6099,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdscpylen",
+    "db_ids": [
+      "sds_sds_c_sdscpylen",
+      "sds_sds_h_sdscpylen"
+    ],
+    "codewiki_mentions": [
+      "sdscpylen"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 11,
+    "gt_doc_length": 20,
+    "rouge_l": 0.4762,
+    "tfidf_cosine": 0.639,
+    "length_ratio": 0.55,
+    "brevity_penalty": 0.4412,
+    "sbert_similarity": 0.8477,
+    "meteor_score": 0.662,
+    "bleurt_estimate": 0.7142,
+    "concept_checklist_score": 0.5,
+    "concept_ref_active": [
+      "mutation_const",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.6763,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdscpy",
+    "db_ids": [
+      "sds_sds_c_sdscpy",
+      "sds_sds_h_sdscpy"
+    ],
+    "codewiki_mentions": [
+      "sdscpy"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 20,
+    "rouge_l": 0.3333,
+    "tfidf_cosine": 0.5669,
+    "length_ratio": 0.45,
+    "brevity_penalty": 0.2946,
+    "sbert_similarity": 0.6612,
+    "meteor_score": 0.4972,
+    "bleurt_estimate": 0.5426,
+    "concept_checklist_score": 0.5,
+    "concept_ref_active": [
+      "null_safety",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "null_safety"
+    ],
+    "bertscore_f1": 0.6129,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdsull2str",
+    "db_ids": [
+      "sds_sds_c_sdsull2str"
+    ],
+    "codewiki_mentions": [
+      "sdsull2str"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 8,
+    "rouge_l": 0.1111,
+    "tfidf_cosine": 0.1005,
+    "length_ratio": 1.125,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.4929,
+    "meteor_score": 0.302,
+    "bleurt_estimate": 0.4482,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.453,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdsfromlonglong",
+    "db_ids": [
+      "sds_sds_c_sdsfromlonglong",
+      "sds_sds_h_sdsfromlonglong"
+    ],
+    "codewiki_mentions": [
+      "sdsfromlonglong"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 10,
+    "gt_doc_length": 16,
+    "rouge_l": 0.5,
+    "tfidf_cosine": 0.6468,
+    "length_ratio": 0.625,
+    "brevity_penalty": 0.5488,
+    "sbert_similarity": 0.7385,
+    "meteor_score": 0.6193,
+    "bleurt_estimate": 0.6599,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.6502,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdscatvprintf",
+    "db_ids": [
+      "sds_sds_c_sdscatvprintf",
+      "sds_sds_h_sdscatvprintf"
+    ],
+    "codewiki_mentions": [
+      "sdscatvprintf"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 9,
+    "rouge_l": 0.1538,
+    "tfidf_cosine": 0.1581,
+    "length_ratio": 0.667,
+    "brevity_penalty": 0.6065,
+    "sbert_similarity": 0.3796,
+    "meteor_score": 0.2667,
+    "bleurt_estimate": 0.3458,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5909,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 3,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdscatprintf",
+    "db_ids": [
+      "sds_sds_c_sdscatprintf",
+      "sds_sds_h_sdscatprintf"
+    ],
+    "codewiki_mentions": [
+      "sdscatprintf"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 5,
+    "gt_doc_length": 83,
+    "rouge_l": 0.0351,
+    "tfidf_cosine": 0.0856,
+    "length_ratio": 0.06,
+    "brevity_penalty": 0.0,
+    "sbert_similarity": 0.3912,
+    "meteor_score": 0.2132,
+    "bleurt_estimate": 0.2631,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "mutation_const"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.4602,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdscatfmt",
+    "db_ids": [
+      "sds_sds_c_sdscatfmt",
+      "sds_sds_h_sdscatfmt"
+    ],
+    "codewiki_mentions": [
+      "sdscatfmt"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 22,
+    "gt_doc_length": 94,
+    "rouge_l": 0.1053,
+    "tfidf_cosine": 0.1336,
+    "length_ratio": 0.234,
+    "brevity_penalty": 0.0379,
+    "sbert_similarity": 0.4808,
+    "meteor_score": 0.2931,
+    "bleurt_estimate": 0.3426,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5246,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdstrim",
+    "db_ids": [
+      "sds_sds_c_sdstrim",
+      "sds_sds_h_sdstrim"
+    ],
+    "codewiki_mentions": [
+      "sdstrim"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 68,
+    "rouge_l": 0.0385,
+    "tfidf_cosine": 0.0413,
+    "length_ratio": 0.176,
+    "brevity_penalty": 0.0094,
+    "sbert_similarity": 0.306,
+    "meteor_score": 0.1722,
+    "bleurt_estimate": 0.2095,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "null_safety",
+      "mutation_const"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.4416,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdsrange",
+    "db_ids": [
+      "sds_sds_c_sdsrange",
+      "sds_sds_h_sdsrange"
+    ],
+    "codewiki_mentions": [
+      "sdsrange"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 10,
+    "gt_doc_length": 73,
+    "rouge_l": 0.1429,
+    "tfidf_cosine": 0.345,
+    "length_ratio": 0.137,
+    "brevity_penalty": 0.0018,
+    "sbert_similarity": 0.5849,
+    "meteor_score": 0.3639,
+    "bleurt_estimate": 0.4161,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "mutation_const"
+    ],
+    "concept_matched": [
+      "mutation_const"
+    ],
+    "bertscore_f1": 0.4947,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.5
+  },
+  {
+    "function_name": "sdstolower",
+    "db_ids": [
+      "sds_sds_c_sdstolower",
+      "sds_sds_h_sdstolower"
+    ],
+    "codewiki_mentions": [
+      "sdstolower"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 5,
+    "gt_doc_length": 10,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.5,
+    "brevity_penalty": 0.3679,
+    "sbert_similarity": 0.3289,
+    "meteor_score": 0.1645,
+    "bleurt_estimate": 0.2506,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4705,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdstoupper",
+    "db_ids": [
+      "sds_sds_c_sdstoupper",
+      "sds_sds_h_sdstoupper"
+    ],
+    "codewiki_mentions": [
+      "sdstoupper"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 5,
+    "gt_doc_length": 10,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.5,
+    "brevity_penalty": 0.3679,
+    "sbert_similarity": 0.308,
+    "meteor_score": 0.154,
+    "bleurt_estimate": 0.237,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4708,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdsmapchars",
+    "db_ids": [
+      "sds_sds_c_sdsmapchars",
+      "sds_sds_h_sdsmapchars"
+    ],
+    "codewiki_mentions": [
+      "sdsmapchars"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 10,
+    "gt_doc_length": 63,
+    "rouge_l": 0.1333,
+    "tfidf_cosine": 0.3145,
+    "length_ratio": 0.159,
+    "brevity_penalty": 0.005,
+    "sbert_similarity": 0.7129,
+    "meteor_score": 0.4231,
+    "bleurt_estimate": 0.4972,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "mutation_const"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5392,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdscmp",
+    "db_ids": [
+      "sds_sds_c_sdscmp",
+      "sds_sds_h_sdscmp"
+    ],
+    "codewiki_mentions": [
+      "sdscmp"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 60,
+    "rouge_l": 0.12,
+    "tfidf_cosine": 0.2917,
+    "length_ratio": 0.1,
+    "brevity_penalty": 0.0001,
+    "sbert_similarity": 0.7498,
+    "meteor_score": 0.4349,
+    "bleurt_estimate": 0.5174,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.528,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdscatrepr",
+    "db_ids": [
+      "sds_sds_c_sdscatrepr",
+      "sds_sds_h_sdscatrepr"
+    ],
+    "codewiki_mentions": [
+      "sdscatrepr"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 7,
+    "gt_doc_length": 54,
+    "rouge_l": 0.2381,
+    "tfidf_cosine": 0.2757,
+    "length_ratio": 0.13,
+    "brevity_penalty": 0.0012,
+    "sbert_similarity": 0.5111,
+    "meteor_score": 0.3746,
+    "bleurt_estimate": 0.3919,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "mutation_const"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5604,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "sdssplitlen",
+    "db_ids": [
+      "sds_sds_c_sdssplitlen",
+      "sds_sds_h_sdssplitlen"
+    ],
+    "codewiki_mentions": [
+      "sdssplitlen"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 13,
+    "gt_doc_length": 82,
+    "rouge_l": 0.1176,
+    "tfidf_cosine": 0.335,
+    "length_ratio": 0.159,
+    "brevity_penalty": 0.005,
+    "sbert_similarity": 0.7484,
+    "meteor_score": 0.433,
+    "bleurt_estimate": 0.5164,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "null_safety",
+      "bounds_range"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5846,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdsfreesplitres",
+    "db_ids": [
+      "sds_sds_c_sdsfreesplitres",
+      "sds_sds_h_sdsfreesplitres"
+    ],
+    "codewiki_mentions": [
+      "sdsfreesplitres"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 4,
+    "gt_doc_length": 13,
+    "rouge_l": 0.1538,
+    "tfidf_cosine": 0.1667,
+    "length_ratio": 0.308,
+    "brevity_penalty": 0.1054,
+    "sbert_similarity": 0.1007,
+    "meteor_score": 0.1273,
+    "bleurt_estimate": 0.1144,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "ownership_memory",
+      "null_safety"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5342,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdssplitargs",
+    "db_ids": [
+      "sds_sds_c_sdssplitargs",
+      "sds_sds_h_sdssplitargs"
+    ],
+    "codewiki_mentions": [
+      "sdssplitargs"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 109,
+    "rouge_l": 0.1163,
+    "tfidf_cosine": 0.2623,
+    "length_ratio": 0.11,
+    "brevity_penalty": 0.0003,
+    "sbert_similarity": 0.6194,
+    "meteor_score": 0.3678,
+    "bleurt_estimate": 0.4317,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "ownership_memory",
+      "null_safety",
+      "error_contract"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5197,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdsjoin",
+    "db_ids": [
+      "sds_sds_c_sdsjoin",
+      "sds_sds_h_sdsjoin"
+    ],
+    "codewiki_mentions": [
+      "sdsjoin"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 10,
+    "gt_doc_length": 21,
+    "rouge_l": 0.2222,
+    "tfidf_cosine": 0.3273,
+    "length_ratio": 0.476,
+    "brevity_penalty": 0.3329,
+    "sbert_similarity": 0.8511,
+    "meteor_score": 0.5366,
+    "bleurt_estimate": 0.6421,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.7064,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "sdsjoinsds",
+    "db_ids": [
+      "sds_sds_c_sdsjoinsds",
+      "sds_sds_h_sdsjoinsds"
+    ],
+    "codewiki_mentions": [
+      "sdsjoinsds"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "sds_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 10,
+    "gt_doc_length": 9,
+    "rouge_l": 0.4615,
+    "tfidf_cosine": 0.4629,
+    "length_ratio": 1.111,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.7127,
+    "meteor_score": 0.5871,
+    "bleurt_estimate": 0.6786,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.651,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  }
+]

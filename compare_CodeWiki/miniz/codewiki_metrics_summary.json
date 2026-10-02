@@ -1,0 +1,114 @@
+{
+  "total_db_rows": 36,
+  "total_db_functions": 21,
+  "total_codewiki_mentions": 25,
+  "total_codewiki_unmatched": 3,
+  "unmatched_mentions": [
+    "miniz_def_alloc_func",
+    "miniz_def_free_func",
+    "miniz_def_realloc_func"
+  ],
+  "match_strategy_counts": {
+    "exact": 22,
+    "none": 3
+  },
+  "total_db_mentioned": 17,
+  "total_db_documented": 14,
+  "total_db_mentioned_only": 3,
+  "documented_coverage_rate": 0.6667,
+  "mention_coverage_rate": 0.8095,
+  "uncovered_db_functions": [
+    "deflateInit",
+    "inflateInit",
+    "mz_error",
+    "mz_version"
+  ],
+  "sbert_similarity": {
+    "label": "SBERT Cosine Similarity",
+    "n": 14,
+    "mean": 0.3961,
+    "std": 0.1789,
+    "min": 0.0895,
+    "max": 0.6974
+  },
+  "bertscore_f1": {
+    "label": "BERTScore F1",
+    "n": 14,
+    "mean": 0.4825,
+    "std": 0.0617,
+    "min": 0.387,
+    "max": 0.5962
+  },
+  "rouge_l": {
+    "label": "ROUGE-L",
+    "n": 14,
+    "mean": 0.0867,
+    "std": 0.0745,
+    "min": 0.0,
+    "max": 0.2308
+  },
+  "tfidf_cosine": {
+    "label": "TF-IDF Cosine",
+    "n": 14,
+    "mean": 0.1208,
+    "std": 0.083,
+    "min": 0.0,
+    "max": 0.2425
+  },
+  "meteor_score": {
+    "label": "METEOR",
+    "n": 14,
+    "mean": 0.2414,
+    "std": 0.0959,
+    "min": 0.0447,
+    "max": 0.3858
+  },
+  "bleurt_estimate": {
+    "label": "BLEURT Estimate",
+    "n": 14,
+    "mean": 0.3535,
+    "std": 0.1195,
+    "min": 0.1582,
+    "max": 0.5718
+  },
+  "concept_checklist_score": {
+    "label": "Semantic Concept Checklist",
+    "n": 14,
+    "mean": 0.7143,
+    "std": 0.4518,
+    "min": 0.0,
+    "max": 1.0
+  },
+  "actionability_score": {
+    "label": "Actionability Score",
+    "n": 14,
+    "mean": 0.25,
+    "std": 0.0,
+    "min": 0.25,
+    "max": 0.25
+  },
+  "error_doc_rate": {
+    "label": "Error Documentation Rate",
+    "n": 8,
+    "mean": 0.125,
+    "std": 0.3307,
+    "min": 0.0,
+    "max": 1.0
+  },
+  "edge_case_coverage": {
+    "label": "Edge Case Coverage",
+    "n": 9,
+    "mean": 0.0,
+    "std": 0.0,
+    "min": 0.0,
+    "max": 0.0
+  },
+  "length_ratio": {
+    "label": "Length Ratio (CodeWiki/GT)",
+    "n": 14,
+    "mean": 4.6758,
+    "std": 7.2202,
+    "min": 0.316,
+    "max": 22.667
+  }
+}

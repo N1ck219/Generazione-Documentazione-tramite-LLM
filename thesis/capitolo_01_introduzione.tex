@@ -1,0 +1,264 @@
+\chapter{Introduzione}
+\label{chap:introduzione}
+
+\section{Il Paradigma dei Large Language Model nell'Ingegneria del Software}
+\label{sec:intro_paradigma_llm}
+
+Negli ultimi anni, la disciplina dell'ingegneria del software (Software Engineering, SE) ha assistito a una profonda transizione di paradigma, trainata dall'avvento e dalla rapida maturazione dei modelli linguistici a grande scala (Large Language Model, LLM) fondazionali. Inizialmente concepiti e ottimizzati nell'alveo dell'Elaborazione del Linguaggio Naturale (Natural Language Processing, NLP) per compiti generici di modellazione sequenziale non supervisionata, tali architetture neurali --- prevalentemente basate sul modello \emph{Transformer} con meccanismo di auto-attenzione stocastica (\emph{self-attention}) e decodifica causale autoregressiva --- hanno progressivamente trasceso il dominio del testo naturale.
+
+La convergenza tra l'enorme disponibilità di dati archiviati nelle piattaforme di social coding e lo scaling computazionale ha favorito la nascita di modelli esplicitamente addestrati o rifiniti su vasti corpora di codice sorgente bilingue (codice e annotazioni correlate). Sistemi pionieristici quali CodeX \cite{khan_automatic_2023,ahmed_few-shot_2022}, StarCoder \cite{xu_prompt_2024,cordeiro_empirical_2024}, CodeGen \cite{nijkamp_codegen_2023} e PolyCoder \cite{xu_systematic_2022} hanno dimostrato che il codice sorgente, pur possedendo proprietà sintattico-formali e vincoli deterministici di compilazione assenti nel linguaggio naturale umano, manifesta una forte ``ipotesi di naturalezza'' (\emph{naturalness hypothesis}): i programmi scritti da esseri umani esibiscono una ridondanza statistica, una regolarità lessicale e pattern idiomatici che possono essere efficacemente appresi da reti neurali generative profonde \cite{feng_codebert_2020,guo_graphcodebert_2021}.
+
+L'interazione con questi modelli ha portato all'emergere di capacità cognitive e algoritmiche sofisticate, note come \emph{capacità emergenti}. A differenza dei parser tradizionali, un LLM è in grado di:
+\begin{enumerate}
+    \item \textbf{Catturare la grammatica e la struttura gerarchica}: comprendere la conformità sintattica e le dipendenze innestate dell'albero sintattico astratto (Abstract Syntax Tree, AST) pur elaborando il codice come una sequenza monodimensionale linearizzata di token discreti \cite{zhang_survey_2022};
+    \item \textbf{Inferire l'intento algoritmico sottostante}: ricostruire lo scopo logico di procedure complesse mediante l'astrazione dal dettaglio implementativo, colmando il divario semantico (\emph{semantic gap}) tra il formalismo computazionale di macchina e la modellazione concettuale dell'utente \cite{geng_large_2023,rai_review_2022};
+    \item \textbf{Eseguire compiti cross-modali e cross-linguaggio}: generare compiti di sintesi automatica di programmi a partire da specifiche in linguaggio naturale, implementare traduzioni funzionali tra linguaggi computazionali eterogenei e sintetizzare spiegazioni analitiche sul comportamento operativo del software \cite{zhang_deep_2024,bairi_codeplan_2023}.
+\end{enumerate}
+
+Ciononostante, il fondamento matematico-probabilistico di tali architetture cela limiti intrinseci e vulnerabilità strutturali che ne ostacolano l'adozione acritica in contesti industriali mission-critical:
+\begin{itemize}[leftmargin=*, label=\textbullet]
+    \item \textbf{Allucinazioni e fragilità su vincoli e precondizioni}: Trattandosi di stimatori statistici di densità di probabilità congiunta del tipo:
+    \begin{equation}
+        P(X) = \prod_{t=1}^{T} P(x_t \mid x_1, \dots, x_{t-1}; \Theta)
+        \label{eq:autoregressive_llm}
+    \end{equation}
+    (dove $x_t$ è il token generato al passo $t$ e $\Theta$ è l'insieme dei pesi della rete), i modelli generano output conformi ai pattern di massima verosimiglianza superficiale ma privi di verifica logica o contrattuale. Questo fenomeno induce frequenti \emph{allucinazioni tecniche}, quali l'invenzione di costrutti inesistenti, la presupposizione errata di precondizioni, o la fabbricazione di parametri non presenti nella dichiarazione della funzione \cite{yang_docagent_2025,pomian_together_2024}.
+    \item \textbf{Instabilità stocastica e sensibilità al prompting}: La natura probabilistica della decodifica (influenzata da parametri quali temperatura $\tau$, top-$p$ e strategie di campionamento) rende le risposte non perfettamente riproducibili, inducendo variazioni significative a fronte di modifiche minimali o non semantiche nel prompt di ingresso.
+    \item \textbf{Cecità alle relazioni logico-relazionali fini}: Senza strumenti di analisi statica o verificatori formali esterni integrati, gli LLM faticano a tracciare vincoli di flusso dati, cammini d'esecuzione e relazioni di aliasing che richiederebbero ragionamenti formali e deduttivi \cite{lomshakov_proconsul_2024}.
+    \item \textbf{Finestra di contesto finita e fenomeno ``Lost in the Middle''}: Nonostante l'espansione nominale delle finestre di contesto delle recenti architetture Transformer, l'attenzione stocastica degrada sistematicamente in precisione nel recupero di informazioni posizionate nella porzione centrale della finestra di prompt (\emph{Lost in the Middle}). Tale limitazione compromette la capacità di sintetizzare contesti architetturali complessi che si estendono su centinaia di file sorgente interconnessi.
+\end{itemize}
+
+\section{Il Ruolo Critico della Documentazione del Software: Dalla Manutenzione al ``Continuous Drift''}
+\label{sec:intro_ruolo_documentazione}
+
+La documentazione del software non rappresenta un elemento meramente accessorio o decorativo del ciclo di vita dello sviluppo; essa è un pilastro portante dell'ingegneria del software su cui poggiano la manutenibilità, l'onboarding di nuovi ingegneri, la comprensione di sistemi legacy e l'affidabilità sistemica nel lungo periodo \cite{sridhara_towards_2010,rai_review_2022}. In letteratura è ampiamente consolidato che gli ingegneri del software impiegano fino al 70\% del proprio tempo in attività di comprensione del programma (\emph{program comprehension}) piuttosto che nella scrittura attiva di nuove linee di codice \cite{fowkes_autofolding_2017,zhang_survey_2022}. In questo scenario, una documentazione accurata e concisa agisce da interfaccia di astrazione ad alto livello, consentendo di comprendere i contratti operativi di una procedura senza doverne dissezionare le implementazioni interne.
+
+Tuttavia, la prassi industriale è afflitta da una costante e problematica discrepanza tra il codice e le sue descrizioni: il \emph{debito tecnico documentale}. La redazione manuale della documentazione tecnica costituisce un'attività complessa, tediosa e dispendiosa in termini temporali. Con il susseguirsi delle iterazioni di sviluppo, dei commit e dei refactoring architetturali, i team di ingegneria tendono fisiologicamente ad aggiornare le istruzioni eseguibili tralasciando l'adeguamento dei commenti associati. Questo fenomeno genera il cosiddetto \textbf{Documentation Drift}:
+\begin{equation}
+    \Delta_{\mathrm{drift}}(t) = \|\mathcal{S}_{\mathrm{code}}(t) - \mathcal{S}_{\mathrm{doc}}(t)\|_{\mathcal{H}}
+    \label{eq:documentation_drift}
+\end{equation}
+dove $\mathcal{S}_{\mathrm{code}}(t)$ e $\mathcal{S}_{\mathrm{doc}}(t)$ rappresentano rispettivamente la semantica effettiva implementata nel codice e quella asserita nei blocchi documentali al tempo $t$, proiettate su uno spazio di astrazione contrattuale $\mathcal{H}$. All'aumentare di $\Delta_{\mathrm{drift}}$, la documentazione non solo perde la propria utilità descrittiva, ma si trasforma in un elemento attivo di disinformazione tecnica, inducendo i consumatori delle API ad assumere comportamenti errati che sfociano in bug silenti e regressioni disastrose \cite{luo_repoagent_2024,yang_docagent_2025}.
+
+Questa criticità assume connotati particolarmente allarmanti nel contesto dei linguaggi di programmazione di livello di sistema, quali C e C++. A differenza di linguaggi a memoria gestita (come Java, C\# o Python), C e C++ operano a stretto contatto con l'hardware e scaricano sul programmatore la gestione del ciclo di vita delle risorse:
+\begin{itemize}[leftmargin=*, label=\textbullet]
+    \item \textbf{Gestione manuale della memoria e proprietà (Ownership)}: Il modello C/C++ non include un Garbage Collector deterministico a runtime. Il contratto di una funzione deve specificare chiaramente l'ownership dei puntatori passati e restituiti: se la funzione assume la proprietà di un buffer allocato, se alloca memoria dinamica mediante primitive (\texttt{malloc}, \texttt{calloc}, operatore \texttt{new}) che deve essere rilasciata dal chiamante (\texttt{free}, \texttt{delete}), o se trattiene puntatori pendenti \cite{lomshakov_proconsul_2024}.
+    \item \textbf{Puntatori raw e vincoli di aliasing}: L'uso pervasivo di puntatori grezzi (\emph{raw pointers}) e l'assenza di controlli sui limiti degli array (\emph{bounds checking}) impongono che la documentazione formalizzi rigorosamente le precondizioni d'ingresso (es. garanzia di puntatore non nullo, dimensione minima del buffer puntato, assenza di sovrapposizioni tra aree di memoria in conformità alla clausola \texttt{restrict}).
+    \item \textbf{Trattamento degli errori ed effetti collaterali non tracciati dai tipi}: In assenza di un sistema uniforme di gestione delle eccezioni tipizzate (o in codice conforme a standard dove le eccezioni sono disabilitate per vincoli hard real-time), la segnalazione di anomalie è affidata a codici di errore interi restituiti, a variabili globali di stato (es. \texttt{errno}) o a parametri formali passati per riferimento come canali di uscita (\emph{out parameters}). Se la documentazione omette il valore numerico o semantico del codice di errore restituito, il chiamante non è in grado di gestire in sicurezza i rami di fallimento.
+\end{itemize}
+In tali ambienti operativi critici, la documentazione non è una semplice narrazione parafrasata, bensì un vero e proprio \textbf{contratto formale d'interfaccia}. Automatizzarne la sintesi e la verifica in modo scientificamente rigoroso costituisce dunque un'esigenza ingegneristica non rinviabile.
+
+\section{Evoluzione Storica del Code Summarization: Le Quattro Epoche}
+\label{sec:intro_quattro_epoche}
+
+Il problema della generazione automatica di riassunti e spiegazioni di codice sorgente (\emph{Code Summarization}) vanta una storia pluridecennale nell'ingegneria del software. Come sintetizzato nella letteratura di riferimento \cite{zhang_survey_2022,rai_review_2022,zhu_deep_2024}, tale evoluzione può essere formalmente articolata in quattro epoche distinte, ciascuna caratterizzata da specifici assunti teorici, metodologie e vincoli di scalabilità.
+
+\subsection{L'Era delle Euristiche e dei Template (pre-2010)}
+\label{subsec:era_euristiche}
+Agli albori della disciplina, l'approccio predominante era strettamente deterministico, simbolico e guidato da regole sintattiche rigide. I sistemi di questa prima generazione si basavano sull'estrazione puramente strutturale di entità dal codice e sull'interpolazione di tali elementi all'interno di modelli testuali predeterminati (\emph{templates}) \cite{sridhara_towards_2010}.
+
+Tra i contributi seminali di quest'epoca si annoverano:
+\begin{itemize}[leftmargin=*, label=\textbullet]
+    \item \textbf{SCHEMACODE di Robillard (1986)}: L'impiego di pseudocodice schematico per rappresentare i costrutti di controllo del flusso dei programmi, associando commenti operativi derivati dall'applicazione di una grammatica formale rigida \cite{robillard_schematic_1986}.
+    \item \textbf{Slicing di programma e approcci basati su TASSAL}: Le tecniche di \emph{program slicing} fondate sul lavoro pionieristico di Mark Weiser (1984) \cite{weiser_program_1984}, in cui la scomposizione automatica del codice in base a flussi di controllo e dati permetteva di isolare porzioni minime di programma responsabili di un determinato comportamento, agevolando l'estrazione di metriche di astrazione per la generazione di commenti.
+    \item \textbf{Sistemi a template rule-based (Sridhara et al., 2010)}: L'applicazione di tecniche di analisi dei blocchi di controllo per estrarre la firma del metodo, le assegnazioni principali e le istruzioni condizionali dominanti, mappandole su schemi prefissati del tipo: \texttt{"This method executes <action> on <target> and returns <value>"} \cite{sridhara_towards_2010}.
+\end{itemize}
+\textbf{Limite intrinseco}: Questi sistemi soffrivano di un'estrema rigidità formale. Il testo prodotto risultava un mero \emph{boilerplate} tautologico che ripeteva pedissequamente i nomi delle variabili e delle chiamate di funzione, privo di qualsiasi reale comprensione semantica o inferenza sull'intento operativo reale dell'autore.
+
+\subsection{L'Era dell'Information Retrieval (primi anni 2010)}
+\label{subsec:era_ir}
+Con l'avvento dei grandi repository open-source (la rivoluzione del ``Big Code''), la comunità scientifica comprese che i programmatori tendono a risolvere problemi analoghi adottando soluzioni strutturalmente e lessicalmente similari. Nacque così il paradigma del Code Summarization guidato dal Recupero di Informazione (\emph{Information Retrieval}, IR).
+
+Il principio di base consiste nell'assumere una funzione di similarità lessicale o vettoriale tra snippet di codice:
+\begin{equation}
+    c^* = \arg\max_{c \in \mathcal{C}_{\mathrm{corpus}}} \mathrm{Sim}(c_{\mathrm{query}}, c)
+    \label{eq:ir_similarity}
+\end{equation}
+dove $c_{\mathrm{query}}$ è il codice non documentato, $\mathcal{C}_{\mathrm{corpus}}$ è una base di conoscenza di frammenti di codice dotati di commento umano, e il commento associato a $c^*$ viene estratto e riadattato.
+
+Sistemi quali BM25, Rencos e l'architettura a due stadi \emph{EditSum} di Li et al. (2021) \cite{li_editsum_2021} rappresentano l'apice di questo filone: EditSum recupera un sommario prototipale dal corpus mediante somiglianza e successivamente applica una modifica controllata (\emph{retrieve-and-edit}) per specializzare i token specifici del nuovo frammento.
+
+Tuttavia, lo studio empirico estensivo pubblicato da Zhu et al. (TOSEM 2024) \cite{zhu_deep_2024} ha tracciato il confine computazionale invalicabile di questa classe di modelli:
+\begin{itemize}[leftmargin=*, label=\textbullet]
+    \item Gli approcci IR dimostrano prestazioni eccellenti e talvolta superiori ai modelli neurali solo in presenza di un'elevata sovrapposizione lessicale e strutturale tra la query e il database ($\text{Lexical Overlap} > 60\%$).
+    \item A fronte di algoritmi inediti, logiche di dominio personalizzate o strutture sintattiche atipiche, il modello di IR fallisce sistematicamente, recuperando sommari completamente fuorvianti e semanticamente scorrelati.
+\end{itemize}
+
+\subsection{L'Era del Deep Learning Iniziale (metà anni 2010)}
+\label{subsec:era_deep_learning}
+Verso la metà degli anni 2010, il successo della traduzione automatica neurale (Neural Machine Translation, NMT) nel processamento del linguaggio naturale ispirò una ridefinizione formale del compito: la generazione di documentazione fu inquadrata come una traduzione da un linguaggio formale sorgente a un linguaggio naturale di destinazione.
+
+Questo periodo ha visto l'introduzione di architetture neurali encoder-decoder sequenziali e grafiche:
+\begin{enumerate}
+    \item \textbf{CODE-NN di Iyer et al. (2016)} \cite{iyer_summarizing_2016}: Il primo modello basato su reti ricorrenti (RNN) con meccanismo di attenzione (attention-based sequence-to-sequence) per generare sommari sintetici da sequenze di codice sorgente atomiche.
+    \item \textbf{DeepCom di Hu et al. (2018)}: L'incorporazione della struttura sintattica mediante l'attraversamento linearizzato dell'albero AST (\emph{Structure-Based Traversal}, SBT), trasformando l'albero sintattico in una sequenza preservante la gerarchia da processare tramite LSTM \cite{zhang_survey_2022}.
+    \item \textbf{code2seq di Alon et al. (2019)} \cite{alon_code2seq_2019}: Superamento della linearizzazione sequenziale mediante la scomposizione del codice in un insieme di cammini composizionali su AST. La rete codifica i cammini tra nodi foglia tramite LSTM bidirezionali e impiega un meccanismo di attenzione per selezionare dinamicamente i percorsi più informativi durante la decodifica.
+    \item \textbf{Transformer e Modelli Pre-addestrati}: L'avvento di modelli quali Transformer dedicati al codice \cite{ahmad_transformer-based_2020}, CodeBERT \cite{feng_codebert_2020} e GraphCodeBERT \cite{guo_graphcodebert_2021}, che introducono compiti di mascheramento bilingue e integrano flussi di dati (\emph{data flow}) per catturare le relazioni di assegnazione tra variabili.
+\end{enumerate}
+
+\subsection{Il ``Soffitto Tecnologico'' Pre-LLM (The Deep Learning Ceiling)}
+\label{subsec:soffitto_tecnologico}
+Nonostante gli indiscutibili progressi rispetto alle euristiche simboliche, l'era del Deep Learning classico si è scontrata con un insormontabile ``soffitto tecnologico'', originato da tre colli di bottiglia architetturali:
+\begin{enumerate}
+    \item \textbf{Vincoli di Contesto (Context Constraints)}: Le architetture RNN, LSTM e le prime implementazioni Transformer soffrivano di una marcata incapacità di gestire dipendenze temporali lunghe. Con l'aumentare della lunghezza del file sorgente, il gradiente dell'attenzione subiva un rapido decadimento matematico, limitando l'analisi a finestre di poche centinaia di token.
+    \item \textbf{Il Problema dei Token Rari e OOV (The Rare Token Problem)}: I linguaggi di programmazione presentano una cardinalità lessicale potenzialmente infinita dovuta a identificatori composti definiti dagli sviluppatori, macro di registro, convenzioni snake\_case e camelCase. I modelli con vocabolario fisso ($|V| \le 30.000-50.000$) collassavano frequentemente su token sconosciuti (\texttt{<UNK>}), allucinando identificatori cruciali per comprendere il dominio applicativo.
+    \item \textbf{Visione Miope e Atomica (Myopic Scope)}: Il vincolo più penalizzante era l'isolamento metodologico. La quasi totalità della letteratura considerava esclusivamente il livello del singolo metodo atomico (\emph{method-level summarization}) \cite{rai_review_2022}. In un progetto C/C++ reale, il corpo di una funzione è incomprensibile se disgiunto dalle definizioni di tipo (typedef, struct, enum) collocate nei file header di inclusione (\texttt{.h}), dalla gerarchia di ereditarietà o dalle funzioni chiamate all'interno del modulo \cite{bansal_project-level_2021,lomshakov_proconsul_2024}. Questa miopia ha impedito per anni l'impiego reale di tali modelli in codebase industriali complesse.
+\end{enumerate}
+
+\section{Dall'Analisi Atomica alla Scala Repository: Micro-Scale vs Macro-Scale}
+\label{sec:intro_micro_macro}
+
+La comprensione ingegneristica del software richiede una netta differenziazione tra due regimi dimensionali complementari: il regime a scala microscopica (\emph{Micro-Scale}), incentrato sull'accuratezza della singola unità procedurale, e il regime a scala macroscopica (\emph{Macro-Scale}), orientato alla preservazione delle interconnessioni architetturali globali.
+
+\subsection{Micro-Scale: Dalla Funzione alla Documentazione di Dettaglio}
+\label{subsec:micro_scale}
+A livello microscopico, l'obiettivo è la generazione della documentazione di interfaccia per una singola unità computazionale isolata. L'evoluzione dei modelli di frontiera offre oggi tre metodologie primarie di adattamento:
+\begin{enumerate}
+    \item \textbf{Instruction Prompting (Zero/Few-Shot)}: Consiste nell'alimentare un LLM pre-addestrato (quali StarCoder \cite{xu_prompt_2024}, DeepSeek-Coder, Claude, GPT-4) mediante istruzioni in linguaggio naturale corredate o meno da esempi dimostrativi nel contesto (\emph{In-Context Learning}) \cite{geng_large_2023}. Sebbene non richieda costi computazionali di addestramento e risulti di immediata applicabilità, è altamente suscettibile a instabilità di formato e non garantisce la conformità sintattica ai vincoli formali del compilatore.
+    \item \textbf{Task-Oriented Full Fine-Tuning}: Comporta l'aggiornamento globale di tutti i parametri $\Theta$ del modello su un dataset supervisionato di coppie $\langle\text{codice}, \text{documentazione}\rangle$. Pur massimizzando la convergenza statistica sullo stile del corpus di addestramento, questa metodologia comporta costi computazionali insostenibili per modelli di grande taglia e incorre nel grave rischio del \emph{catastrophic forgetting}, degradando la capacità di ragionamento logico generale del modello pre-addestrato.
+    \item \textbf{Continuous Prompting e Parameter-Efficient Fine-Tuning (PEFT)}: Per conciliare efficienza e specializzazione, approcci all'avanguardia hanno proposto la parametrizzazione di vettori continui di prompt. Un esempio emblematico è rappresentato dal framework \textbf{PromptCS} proposto da Xu et al. (2024) \cite{xu_prompt_2024}. In PromptCS, i parametri del modello LLM di base rimangono completamente congelati (\emph{frozen}); un agente neurale dedicato (denominato \emph{Prompt Agent}, strutturato su reti BiLSTM) riceve il codice sorgente e sintetizza dinamicamente un vettore continuo di embedding:
+    \begin{equation}
+        \mathbf{P}_{\mathrm{soft}} = \mathrm{BiLSTM}(X_{\mathrm{code}}; \Phi)
+        \label{eq:promptcs_soft}
+    \end{equation}
+    che viene prefissato alla rappresentazione del codice, guidando lo spazio di generazione del modello verso descrizioni informative senza alterarne i pesi originali.
+\end{enumerate}
+
+Nonostante l'eleganza teorica del continuous prompting, esso presenta vincoli operativi severi: è strettamente vincolato all'accesso diretto ai vettori di embedding del modello, risultando quindi inapplicabile alle potenti API dei modelli commerciali closed-source. Inoltre, la capacità espressiva complessiva resta limitata dalla conoscenza statica memorizzata dal modello congelato.
+
+\subsection{Macro-Scale: Dalla Codebase alla Mappatura Architetturale}
+\label{subsec:macro_scale}
+Quando la complessità del sistema software scala all'intero repository, il paradigma del \emph{single-pass prompting} (inviare l'intero codice in un'unica invocazione) collassa a causa dell'esaurimento della finestra di contesto, del rumore informativo e del costo esponenziale dell'auto-attenzione. Per generare una documentazione di livello aziendale è indispensabile un'architettura macroscopica basata su tre prerequisiti strutturali:
+\begin{enumerate}
+    \item \textbf{Analisi Statica e AST Parsing Deterministico}: L'adozione di un motore di compilazione reale (quale \texttt{Clang/LLVM}) per dissezionare deterministicamente le unità di traduzione C/C++, estraendo la totalità dei simboli, le firme formali, le visibilità e i mapping di inclusione (\texttt{\#include}) privi di allucinazioni \cite{lomshakov_proconsul_2024}.
+    \item \textbf{Dependency \& Call Graphs Inter-Procedurali}: La costruzione esplicita di grafi di chiamata globali $G = (V, E)$, in cui ogni vertice rappresenta una funzione o entità architetturale e ogni arco orientato modella una relazione di invocazione o consumo di tipo. Sistemi pionieristici come \emph{PROCONSUL} (Lomshakov et al., EMNLP 2024) \cite{lomshakov_proconsul_2024} hanno certificato che arricchire il prompt dell'LLM con il contesto semantico estratto dai callee e dai caller (informazioni su tipi composti, contratti di ritorno e macro) riduce le allucinazioni tecniche di oltre il 40\% rispetto ai prompt atomici decontestualizzati.
+    \item \textbf{Orchestrazione Agentica Modulare}: La scomposizione del processo documentale in una sequenza coordinata di agenti specializzati, in cui ruoli differenziati gestiscono l'estrazione, la sintesi, la verifica e l'ordinamento topologico di dipendenza per garantire la propagazione coerente delle informazioni dal basso verso l'alto \cite{yang_docagent_2025,hoang_codewiki_2026}.
+\end{enumerate}
+
+\section{Stato dell'Arte dei Framework di Repository: CodeWiki, RepoAgent e DocAgent}
+\label{sec:intro_sota_frameworks}
+
+La ricerca contemporanea più avanzata nell'intersezione tra ingegneria del software e sistemi multi-agente basati su LLM ha prodotto paradigmi innovativi orientati alla documentazione olistica di interi repository. Di seguito si esaminano i quattro modelli di riferimento dello stato dell'arte che ispirano e contestualizzano l'approccio proposto nella presente tesi.
+
+\subsection{CodeWiki (Hoang et al., 2026)}
+\label{subsec:codewiki}
+\textbf{CodeWiki} \cite{hoang_codewiki_2026} affronta la sfida di generare una documentazione tecnica olistica e consapevole dell'architettura per codebase su larga scala distribuite su molteplici linguaggi. Il contributo cardine di CodeWiki risiede nell'introduzione di una \emph{scomposizione gerarchica ricorsiva con delega dinamica dei task}:
+\begin{itemize}[leftmargin=*, label=\textbullet]
+    \item Un agente di vertice (\emph{Repository Manager}) pianifica e suddivide l'albero del progetto in moduli logici;
+    \item Una rete di agenti intermedi (\emph{Module Agents}) coordina l'analisi dei sottosistemi;
+    \item Gli agenti esecutori terminali (\emph{Leaf Agents}) estraggono e documentano le singole unità implementative.
+\end{itemize}
+La sintesi opera con una logica bottom-up: i sommari sintetizzati dai Leaf Agents vengono ricorsivamente aggregati per distillare la panoramica concettuale del modulo e del repository. Inoltre, CodeWiki innova integrando una componente di \emph{sintesi multimodale}, producendo parallelamente alla prosa testuale diagrammi visuali in notazione Mermaid e grafi del flusso dati architetturali. Per validare il sistema, gli autori hanno introdotto il benchmark \emph{CodeWikiBench}, fondato su metriche multidimensionali valutate tramite modelli LLM proprietari.
+
+\subsection{RepoAgent (Luo et al., 2024)}
+\label{subsec:repoagent}
+\textbf{RepoAgent} \cite{luo_repoagent_2024} affronta il problema cronico del deterioramento documentale introducendo il paradigma della \emph{Continuous Documentation} integrata nei cicli di Continuous Integration e Continuous Deployment (CI/CD) e nel version control Git.
+
+A differenza degli approcci statici offline, RepoAgent include un modulo euristico e algoritmico denominato \emph{ChangeDetector}:
+\begin{equation}
+    \Delta_{\mathrm{commit}} \longrightarrow \mathcal{T}_{\mathrm{impact}} = \mathrm{TraverseCallGraph}(\Delta_{\mathrm{AST}})
+    \label{eq:repoagent_impact}
+\end{equation}
+Quando uno sviluppatore effettua un commit, RepoAgent calcola il diff sintattico sull'AST, identifica le funzioni direttamente alterate e calcola la chiusura transitiva dei loro dipendenti nel grafo di chiamata inter-procedurale. In questo modo, l'orchestrazione multi-agente non rigenera l'intera documentazione del progetto, bensì attiva una propagazione differenziale minima e reattiva, garantendo l'allineamento perenne tra codice e specifiche senza incorrere in costi computazionali proibitivi.
+
+\subsection{DocAgent (Yang et al., 2025)}
+\label{subsec:docagent}
+Presentato alla conferenza ACL 2025, \textbf{DocAgent} \cite{yang_docagent_2025} struttura l'elaborazione del software secondo un'architettura multi-agente collaborativa basata sull'\emph{ordinamento topologico di dipendenza} del codice sorgente. Il grafo delle chiamate viene linearizzato in modo che nessuna funzione venga documentata prima che i suoi callee non siano stati precedentemente analizzati e documentati, consentendo la costruzione incrementale e contestualizzata del prompt.
+
+DocAgent formalizza inoltre una specifica triade qualitativa di requisiti per la validazione della documentazione, strutturata su tre assi ortogonali:
+\begin{enumerate}
+    \item \textbf{Completeness (Completezza)}: Il grado di copertura di tutti i componenti essenziali della funzione (argomenti, tipi, valori di ritorno, eccezioni/errori e logica essenziale);
+    \item \textbf{Helpfulness (Utilità operativa)}: La chiarezza delle indicazioni fornite, l'assenza di ridondanza boilerplate e l'effettiva capacità di guidare un programmatore terzo nell'integrazione della routine;
+    \item \textbf{Truthfulness (Veridicità e Fedeltà)}: La totale assenza di allucinazioni fattuali, precondizioni inventate o contraddizioni rispetto all'effettivo comportamento deterministico del codice sorgente.
+\end{enumerate}
+La validazione di tale triade è demandata a un agente \emph{Verifier} dedicato che opera secondo il paradigma LLM-as-a-Judge con protocolli di auditing strutturati \cite{wu_can_2024,liu_g-eval_2023,zhu_judgelm_2025}.
+
+\subsection{RepoSummary (Zhu et al., 2025)}
+\label{subsec:reposummary}
+\textbf{RepoSummary} \cite{zhu_reposummary_2025} affronta una delle problematiche più complesse nell'analisi dei sistemi legacy: la discrepanza tra la struttura fisica delle directory su disco e l'architettura logico-funzionale effettiva del sistema. Spesso, nei monoliti software storici, file collocati in sottocartelle distanti collaborano strettamente all'erogazione della medesima funzionalità ad alto livello.
+
+RepoSummary supera l'ordinamento topografico rigido introducendo una tecnica di \emph{clusterizzazione feature-oriented}:
+\begin{equation}
+    \mathbf{A}_{\mathrm{ibrida}} = \alpha \mathbf{A}_{\mathrm{semantica}} + (1 - \alpha) \mathbf{A}_{\mathrm{strutturale}}
+    \label{eq:reposummary_hybrid}
+\end{equation}
+in cui la matrice di adiacenza del grafo di dipendenza strutturale viene fusa con la matrice di similarità semantica degli embedding del codice. Attraverso algoritmi di partizionamento su grafi, il repository viene segmentato in ``Epiche Funzionali'' (Feature Clusters). La documentazione generata mappa esplicitamente le catene di tracciabilità (\emph{traceability links}) che connettono le feature astratte ai metodi atomici distribuiti, fornendo una guida fondamentale sia per la comprensione che per il refactoring guidato del software \cite{cordeiro_empirical_2024,pomian_together_2024}.
+
+\subsection{Quadro Comparativo Sinottico}
+\label{subsec:tabella_comparativa}
+
+Nella Tabella~\ref{tab:confronto_sota} viene proposta una disamina sinottica comparativa tra i principali framework dello stato dell'arte e l'approccio ingegneristico introdotto nella presente tesi.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Quadro comparativo sinottico tra i framework avanzati di repository summarization dello stato dell'arte e la soluzione proposta.}
+\label{tab:confronto_sota}
+\begin{tabularx}{\textwidth}{l p{2.2cm} p{2.2cm} p{2.5cm} X}
+\toprule
+\textbf{Framework} & \textbf{Granularità} & \textbf{Analisi Contesto} & \textbf{Meccanismo Validazione} & \textbf{Peculiarità Distintiva} \\
+\midrule
+\textbf{PromptCS} \newline \cite{xu_prompt_2024} & Micro (Method-level) & Nessuno (Isolamento atomico) & Metriche NLP superficiali (BLEU, ROUGE) & Prompt Agent neurale (BiLSTM) per continuous prompting con LLM frozen. \\
+\addlinespace
+\textbf{RepoAgent} \newline \cite{luo_repoagent_2024} & Macro \newline (File / Repo) & Call Graph statico monodirezionale & Nessuna verifica formale automatica & Paradigma \emph{Continuous Documentation} e rilevamento differenziale dei commit via Git. \\
+\addlinespace
+\textbf{DocAgent} \newline \cite{yang_docagent_2025} & Macro \newline (Modulo / Repo) & Ordinamento topologico chiamate & Agente Verifier via LLM-as-a-Judge & Triade qualitativa (Completeness, Helpfulness, Truthfulness) per repo complessi. \\
+\addlinespace
+\textbf{CodeWiki} \newline \cite{hoang_codewiki_2026} & Macro gerarchico (Sistema intero) & Scomposizione ricorsiva gerarchica & Valutazione LLM (benchmark CodeWikiBench) & Decomposizione modulare bottom-up e sintesi multimodale (testo e diagrammi). \\
+\addlinespace
+\textbf{Approccio} \newline \textbf{Proposto} & Ibrido Integrato (Micro \& Macro) & AST Clang + Call/Type Graphs + Header Expansion & \textbf{Certificazione 4-Layer}: Verifier AST, Verificatore formale Clang e Round-Trip Testing & \textbf{Ciclo chiuso deterministico}: verifica contrattuale estesa su C/C++, mitigazione drift ed esecuzione differenziale. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Come si evince dall'analisi tassonomica, i sistemi correnti si collocano o sul versante micro-analitico privo di contesto sistemico (es. PromptCS), oppure su quello macroscopico che delega la totalità della validazione a valutatori LLM stocastici privi di un ancoraggio deterministico alle proprietà statiche del compilatore (es. DocAgent, CodeWiki). La soluzione qui formalizzata si colloca all'intersezione di tali paradigmi, integrando il rigore deterministico del compilatore C/C++ con l'orchestrazione cognitiva multi-agente.
+
+\section{Obiettivo della Tesi e ``Strategic Blueprint'' Proposto}
+\label{sec:intro_blueprint}
+
+\subsection{Definizione dell'Obiettivo Primario}
+\label{subsec:obiettivo_tesi}
+La presente tesi magistrale si prefigge l'obiettivo di superare lo stato dell'arte attraverso la progettazione, formalizzazione e implementazione empirica di un \textbf{framework olistico end-to-end multi-agente}, specificamente architettato per la generazione automatica, la validazione formale e il mantenimento continuo della documentazione tecnica di codebase complesse scritte in C e C++.
+
+Dato in ingresso un repository software reale $\mathcal{R}_{\mathrm{C/C++}}$ caratterizzato da una complessa topologia di file di intestazione (\texttt{.h}/\texttt{.hpp}), unità di traduzione (\texttt{.c}/\texttt{.cpp}), gerarchie di inclusione e puntatori opachi, il framework produce in uscita un corpus documentale tecnico (conforme allo standard Doxygen ed esteso a sintesi architetturali globali) \emph{certificato}, \emph{gerarchico}, \emph{formalmente verificato} e \emph{consapevole dell'architettura}.
+
+\subsection{L'Architettura Modulare a Quattro Livelli (Strategic Blueprint)}
+\label{subsec:architettura_blueprint}
+Per garantire il rigore scientifico e la separazione dei compiti architetturali, il framework sviluppato è strutturato su quattro livelli cooperativi:
+\begin{enumerate}
+    \item \textbf{Parser \& Static Analysis Layer (Fase Deterministica)}: Questo modulo si interfaccia con il compilatore \texttt{Clang/LibTooling}. Invece di delegare all'LLM l'interpretazione testuale grezza del codice sorgente, il Parser Layer esegue il parsing completo delle unità di traduzione, generando:
+    \begin{itemize}[leftmargin=*, label=\textbullet]
+        \item L'AST formale di ciascuna funzione, con le firme esatte dei tipi, i qualificatori di puntatore (\texttt{const}, \texttt{*}, \texttt{\&}), i contratti di visibilità e i mapping di ritorno;
+        \item Il \emph{Control Flow Graph} (CFG) per intercettare i blocchi di guardia condizionali e le uscite con errori (\texttt{return -1}, codici di stato);
+        \item Il \emph{Call \& Type Graph} globale inter-procedurale per correlare costrutti e tipi composti definiti negli header correlati.
+    \end{itemize}
+    \item \textbf{Micro-Scale Agent Layer (Sintesi Atomica e Focalizzata)}: In questo strato, agenti specializzati ricevono il corpo della singola funzione arricchito dal suo contesto compilativo e strutturale circostante (\emph{Expanded Signature and Callee Context}) \cite{lomshakov_proconsul_2024}. L'agente genera la documentazione tecnica micro-level garantendo che ogni parametro riceva un'esplicitazione della propria direzionalità (\texttt{[in]}, \texttt{[out]}, \texttt{[in,out]}), dell'ownership di memoria e dei requisiti di pre/postcondizione.
+    \item \textbf{Macro-Scale Multi-Agent Orchestration Layer (Sintesi Gerarchica)}: Adottando un'architettura gerarchica bottom-up ispirata ai principi di CodeWiki \cite{hoang_codewiki_2026} e DocAgent \cite{yang_docagent_2025}, una comunità di agenti conversazionali (Repository Manager, Module Synthesizers e Interface Documenters) sintetizza le correlazioni tra i file del sistema. La propagazione delle sintesi ascende dai moduli elementari alle cartelle di sottosistema fino a compilare il sommario globale dell'architettura del software, includendo la generazione automatica di diagrammi di flusso e grafi dei componenti espressi in standard Mermaid.
+    \item \textbf{Evaluation \& Verification Loop (Validazione Multidimensionale)}: A coronamento della pipeline, la documentazione generata non viene considerata accettata fino al superamento di un loop formale e comportamentale:
+    \begin{itemize}[leftmargin=*, label=\textbullet]
+        \item \emph{AST Verifier}: Controllo deterministico di coerenza biiettiva tra parametri AST e clausole Doxygen;
+        \item \emph{Static Contract Guard}: Analisi della copertura della gestione degli errori e dei vincoli di allocazione;
+        \item \emph{LLM-as-a-Judge Protocol}: Audit a rubric chiusa su Completezza, Utilità e Veridicità;
+        \item \emph{Differential Round-Trip Testing}: Esecuzione a scatola nera in cui agenti programmatori autonomi rigenerano implementazioni a partire dalla documentazione prodotta e le sottopongono a suite di test formali (Hypothesis/Pytest) per validarne la consistenza semantica effettiva.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{I Tre Principi Cardine della Tesi}
+\label{subsec:tre_principi}
+L'intera dissertazione e lo sviluppo tecnologico associato si sviluppano su tre postulati scientifici fondamentali:
+\begin{enumerate}
+    \item \textbf{Principio I: Il Contesto Determina la Qualità (Context-Driven Quality)}: La documentazione generata da un modello autoregressivo per una funzione C/C++ non può eccellere se limitata all'elaborazione del solo snippet locale. La fornitura sistematica del contesto strutturale (tipi negli header, firme dei callee, vincoli dell'AST) costituisce la precondizione fisica indispensabile per abbattere le allucinazioni e produrre specifiche affidabili.
+    \item \textbf{Principio II: L'Orchestrazione Gerarchica Supera la Finestra di Contesto (Hierarchical Decomposition)}: La scalabilità a codebase di centinaia di migliaia di linee di codice non si persegue incrementando all'infinito la finestra di token dell'LLM (operazione vulnerabile a fenomeni di distrazione e decadimento attentivo), bensì ingegnerizzando architetture agentiche modulari e ricorsive che scompongono il problema secondo le gerarchie naturali del software (Funzione $\to$ File $\to$ Modulo $\to$ Sottosistema $\to$ Repository).
+    \item \textbf{Principio III: La Documentazione è un'Entità Viva e Verificabile (Living \& Executable Specification)}: La documentazione tecnica non deve costituire un artefatto statico, redatto una volta e abbandonato all'invecchiamento. Essa deve vivere all'interno del flusso continuo del repository (Continuous Documentation), integrarsi con il compilatore statico ed essere sottoposta a continua validazione empirica, trasformandosi in una specifica azionabile e testabile a livello computazionale.
+\end{enumerate}
+
+\subsection{Struttura e Organizzazione della Tesi}
+\label{subsec:struttura_tesi}
+La presente tesi è strutturata nei seguenti capitoli tematici:
+\begin{itemize}[leftmargin=*, label=\textbullet]
+    \item \textbf{Capitolo 2 -- Fondamenti Teorici e Stato dell'Arte}: Analizza approfonditamente l'evoluzione delle architetture neurali generative, i modelli Transformer per il codice sorgente (CodeBERT, GraphCodeBERT, StarCoder, DeepSeek), i principi dell'analisi statica dei programmi (AST, CFG, DFG) basata sul framework Clang/LLVM e le basi concettuali delle architetture ad agenti autonomi collaborativi (AutoGen, SWE-agent).
+    \item \textbf{Capitolo 3 -- Architettura del Framework Multi-Agente}: Illustra dettagliatamente la progettazione ingegneristica e l'implementazione del sistema proposto. Vengono descritti l'interfacciamento deterministico con l'AST parser, la gestione del grafo di chiamata inter-procedurale, i prompt template specializzati e i meccanismi di coordinamento asincrono tra gli agenti (Reader, Architect, Synthesizer, Verifier).
+    \item \textbf{Capitolo 4 -- Tassonomia e Formulazione Analitica delle Metriche di Valutazione}: Presenta una formalizzazione analitica e matematica rigorosa delle metriche di valutazione articolate su quattro livelli: metriche formali contrattuali AST, metriche software di actionability, metriche semantiche dense (Sentence-BERT, BERTScore, CodeBERTScore, BLEURT, LLM-as-a-Judge) e metriche empiriche comportamentali di Round-Trip Testing ed esecuzione differenziale.
+    \item \textbf{Capitolo 5 -- Validazione Sperimentale, Analisi Comparativa e Risultati}: Riporta i risultati quantitativi e qualitativi di una vasta campagna di sperimentazione condotta su codebase reali C/C++. Vengono valutate comparativamente le prestazioni del framework rispetto ai modelli baseline e ai framework dello stato dell'arte (PromptCS, RepoAgent, DocAgent, CodeWiki), supportate da studi di ablazione, analisi statistica di correlazione con il giudizio umano e visualizzazione grafica dei trade-off prestazionali.
+    \item \textbf{Capitolo 6 -- Conclusioni e Sviluppi Futuri}: Riassume i contributi scientifici della tesi, discute le implicazioni industriali del framework proposto ed evidenzia le prospettive future di ricerca, tra cui l'integrazione di verificatori formali a livello di modello (Model Checking) e la sintesi completamente autonoma di specifiche di sicurezza formale (\emph{Formal Proofs}).
+\end{itemize}

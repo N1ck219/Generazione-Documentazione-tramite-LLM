@@ -1,0 +1,632 @@
+[
+  {
+    "function_name": "mz_deflateInit",
+    "db_ids": [
+      "miniz_miniz_c_mz_deflateInit",
+      "miniz_miniz_h_mz_deflateInit"
+    ],
+    "codewiki_mentions": [
+      "mz_deflateInit"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_compression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 7,
+    "gt_doc_length": 5,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 1.4,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.1209,
+    "meteor_score": 0.0604,
+    "bleurt_estimate": 0.1786,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4448,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "mz_deflateInit2",
+    "db_ids": [
+      "miniz_miniz_c_mz_deflateInit2",
+      "miniz_miniz_h_mz_deflateInit2"
+    ],
+    "codewiki_mentions": [
+      "mz_deflateInit2"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_compression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 14,
+    "gt_doc_length": 12,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 1.167,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.0895,
+    "meteor_score": 0.0447,
+    "bleurt_estimate": 0.1582,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4349,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "mz_deflate",
+    "db_ids": [
+      "miniz_miniz_c_mz_deflate",
+      "miniz_miniz_h_mz_deflate"
+    ],
+    "codewiki_mentions": [
+      "mz_deflate"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_compression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 29,
+    "rouge_l": 0.1333,
+    "tfidf_cosine": 0.2004,
+    "length_ratio": 0.414,
+    "brevity_penalty": 0.2425,
+    "sbert_similarity": 0.2744,
+    "meteor_score": 0.2038,
+    "bleurt_estimate": 0.2359,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "ownership_memory"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.4938,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "mz_deflateReset",
+    "db_ids": [
+      "miniz_miniz_c_mz_deflateReset",
+      "miniz_miniz_h_mz_deflateReset"
+    ],
+    "codewiki_mentions": [
+      "mz_deflateReset"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_compression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 16,
+    "rouge_l": 0.1905,
+    "tfidf_cosine": 0.1961,
+    "length_ratio": 0.562,
+    "brevity_penalty": 0.4594,
+    "sbert_similarity": 0.3767,
+    "meteor_score": 0.2836,
+    "bleurt_estimate": 0.3384,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5093,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "mz_deflateEnd",
+    "db_ids": [
+      "miniz_miniz_c_mz_deflateEnd",
+      "miniz_miniz_h_mz_deflateEnd"
+    ],
+    "codewiki_mentions": [
+      "mz_deflateEnd"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_compression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 8,
+    "gt_doc_length": 6,
+    "rouge_l": 0.1818,
+    "tfidf_cosine": 0.189,
+    "length_ratio": 1.333,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.3729,
+    "meteor_score": 0.2773,
+    "bleurt_estimate": 0.3878,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4853,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "mz_deflateBound",
+    "db_ids": [
+      "miniz_miniz_c_mz_deflateBound"
+    ],
+    "codewiki_mentions": [
+      "mz_deflateBound"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_compression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 13,
+    "gt_doc_length": 27,
+    "rouge_l": 0.2308,
+    "tfidf_cosine": 0.2425,
+    "length_ratio": 0.481,
+    "brevity_penalty": 0.3406,
+    "sbert_similarity": 0.4634,
+    "meteor_score": 0.3471,
+    "bleurt_estimate": 0.393,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.4954,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "mz_compress",
+    "db_ids": [
+      "miniz_miniz_c_mz_compress",
+      "miniz_miniz_h_mz_compress"
+    ],
+    "codewiki_mentions": [
+      "mz_compress"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_compression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 14,
+    "rouge_l": 0.1429,
+    "tfidf_cosine": 0.1443,
+    "length_ratio": 0.429,
+    "brevity_penalty": 0.2636,
+    "sbert_similarity": 0.167,
+    "meteor_score": 0.155,
+    "bleurt_estimate": 0.1706,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.4267,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "mz_compressBound",
+    "db_ids": [
+      "miniz_miniz_c_mz_compressBound"
+    ],
+    "codewiki_mentions": [
+      "mz_compressBound"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_compression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 19,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.316,
+    "brevity_penalty": 0.1146,
+    "sbert_similarity": 0.6693,
+    "meteor_score": 0.3347,
+    "bleurt_estimate": 0.4465,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "bounds_range"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5493,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "mz_inflateInit",
+    "db_ids": [
+      "miniz_miniz_c_mz_inflateInit",
+      "miniz_miniz_h_mz_inflateInit"
+    ],
+    "codewiki_mentions": [
+      "mz_inflateInit",
+      "mz_inflateInit"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_decompression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 63,
+    "gt_doc_length": 3,
+    "rouge_l": 0.0656,
+    "tfidf_cosine": 0.2032,
+    "length_ratio": 21.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.463,
+    "meteor_score": 0.2643,
+    "bleurt_estimate": 0.4174,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.3987,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "mz_inflateInit2",
+    "db_ids": [
+      "miniz_miniz_c_mz_inflateInit2",
+      "miniz_miniz_h_mz_inflateInit2"
+    ],
+    "codewiki_mentions": [
+      "mz_inflateInit2",
+      "mz_inflateInit2"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_decompression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 79,
+    "gt_doc_length": 12,
+    "rouge_l": 0.0233,
+    "tfidf_cosine": 0.0645,
+    "length_ratio": 6.583,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.5474,
+    "meteor_score": 0.2853,
+    "bleurt_estimate": 0.4616,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5505,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "mz_inflateReset",
+    "db_ids": [
+      "miniz_miniz_c_mz_inflateReset",
+      "miniz_miniz_h_mz_inflateReset"
+    ],
+    "codewiki_mentions": [
+      "mz_inflateReset",
+      "mz_inflateReset"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_decompression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 71,
+    "gt_doc_length": 16,
+    "rouge_l": 0.0741,
+    "tfidf_cosine": 0.1862,
+    "length_ratio": 4.438,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.6974,
+    "meteor_score": 0.3858,
+    "bleurt_estimate": 0.5718,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5962,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "mz_inflateEnd",
+    "db_ids": [
+      "miniz_miniz_c_mz_inflateEnd",
+      "miniz_miniz_h_mz_inflateEnd"
+    ],
+    "codewiki_mentions": [
+      "mz_inflateEnd",
+      "mz_inflateEnd"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_decompression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 68,
+    "gt_doc_length": 3,
+    "rouge_l": 0.0308,
+    "tfidf_cosine": 0.1265,
+    "length_ratio": 22.667,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.394,
+    "meteor_score": 0.2124,
+    "bleurt_estimate": 0.3638,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.387,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "mz_inflate",
+    "db_ids": [
+      "miniz_miniz_c_mz_inflate",
+      "miniz_miniz_h_mz_inflate"
+    ],
+    "codewiki_mentions": [
+      "mz_inflate"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_decompression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 32,
+    "gt_doc_length": 20,
+    "rouge_l": 0.093,
+    "tfidf_cosine": 0.0917,
+    "length_ratio": 1.6,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.3994,
+    "meteor_score": 0.2462,
+    "bleurt_estimate": 0.3829,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4316,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 1.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "mz_uncompress",
+    "db_ids": [
+      "miniz_miniz_c_mz_uncompress",
+      "miniz_miniz_h_mz_uncompress"
+    ],
+    "codewiki_mentions": [
+      "mz_uncompress",
+      "mz_uncompress"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_decompression.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 43,
+    "gt_doc_length": 14,
+    "rouge_l": 0.0476,
+    "tfidf_cosine": 0.0472,
+    "length_ratio": 3.071,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.5096,
+    "meteor_score": 0.2786,
+    "bleurt_estimate": 0.4431,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5517,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "mz_adler32",
+    "db_ids": [
+      "miniz_miniz_c_mz_adler32"
+    ],
+    "codewiki_mentions": [
+      "mz_adler32"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_utilities.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 3,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "mz_crc32",
+    "db_ids": [
+      "miniz_miniz_c_mz_crc32"
+    ],
+    "codewiki_mentions": [
+      "mz_crc32"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_utilities.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 6,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "mz_free",
+    "db_ids": [
+      "miniz_miniz_c_mz_free",
+      "miniz_miniz_h_mz_free"
+    ],
+    "codewiki_mentions": [
+      "mz_free"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "miniz_utilities.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 25,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  }
+]

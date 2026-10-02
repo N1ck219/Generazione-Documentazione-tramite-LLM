@@ -1,0 +1,323 @@
+[
+  {
+    "function_name": "fastMalloc",
+    "db_ids": [
+      "opencv_cvstd_hpp_fastMalloc"
+    ],
+    "codewiki_mentions": [
+      "fastMalloc"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "OpenCV_cvstd.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 22,
+    "gt_doc_length": 40,
+    "rouge_l": 0.3636,
+    "tfidf_cosine": 0.614,
+    "length_ratio": 0.55,
+    "brevity_penalty": 0.4412,
+    "sbert_similarity": 0.6228,
+    "meteor_score": 0.4932,
+    "bleurt_estimate": 0.5398,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "ownership_memory",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "ownership_memory",
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.7034,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "fastFree",
+    "db_ids": [
+      "opencv_cvstd_hpp_fastFree"
+    ],
+    "codewiki_mentions": [
+      "fastFree"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "OpenCV_cvstd.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 22,
+    "gt_doc_length": 46,
+    "rouge_l": 0.0833,
+    "tfidf_cosine": 0.1406,
+    "length_ratio": 0.478,
+    "brevity_penalty": 0.3359,
+    "sbert_similarity": 0.4683,
+    "meteor_score": 0.2758,
+    "bleurt_estimate": 0.3588,
+    "concept_checklist_score": 0.5,
+    "concept_ref_active": [
+      "ownership_memory",
+      "null_safety"
+    ],
+    "concept_matched": [
+      "ownership_memory"
+    ],
+    "bertscore_f1": 0.5473,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cvRound",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvRound"
+    ],
+    "codewiki_mentions": [
+      "cvRound",
+      "fast_math::cvRound"
+    ],
+    "match_strategies": [
+      "exact",
+      "namespace_stripped"
+    ],
+    "source_files": [
+      "OpenCV_fast_math.md",
+      "OpenCV_saturate.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 46,
+    "gt_doc_length": 27,
+    "rouge_l": 0.25,
+    "tfidf_cosine": 0.3453,
+    "length_ratio": 1.704,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.5624,
+    "meteor_score": 0.4062,
+    "bleurt_estimate": 0.5281,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "bounds_range"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5575,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "cvFloor",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvFloor"
+    ],
+    "codewiki_mentions": [
+      "cvFloor",
+      "fast_math::cvFloor"
+    ],
+    "match_strategies": [
+      "exact",
+      "namespace_stripped"
+    ],
+    "source_files": [
+      "OpenCV_fast_math.md",
+      "OpenCV_saturate.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 34,
+    "gt_doc_length": 45,
+    "rouge_l": 0.3667,
+    "tfidf_cosine": 0.4876,
+    "length_ratio": 0.756,
+    "brevity_penalty": 0.7236,
+    "sbert_similarity": 0.6349,
+    "meteor_score": 0.5008,
+    "bleurt_estimate": 0.5767,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "bounds_range"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.6195,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cvCeil",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvCeil"
+    ],
+    "codewiki_mentions": [
+      "cvCeil",
+      "fast_math::cvCeil"
+    ],
+    "match_strategies": [
+      "exact",
+      "namespace_stripped"
+    ],
+    "source_files": [
+      "OpenCV_fast_math.md",
+      "OpenCV_saturate.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 32,
+    "gt_doc_length": 45,
+    "rouge_l": 0.3793,
+    "tfidf_cosine": 0.5053,
+    "length_ratio": 0.711,
+    "brevity_penalty": 0.6661,
+    "sbert_similarity": 0.6619,
+    "meteor_score": 0.5206,
+    "bleurt_estimate": 0.5917,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "bounds_range"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.619,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cvIsNaN",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvIsNaN"
+    ],
+    "codewiki_mentions": [
+      "cvIsNaN"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "OpenCV_fast_math.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 29,
+    "gt_doc_length": 33,
+    "rouge_l": 0.3111,
+    "tfidf_cosine": 0.4243,
+    "length_ratio": 0.879,
+    "brevity_penalty": 0.8712,
+    "sbert_similarity": 0.3814,
+    "meteor_score": 0.3463,
+    "bleurt_estimate": 0.4128,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5922,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cvIsInf",
+    "db_ids": [
+      "opencv_fast_math_hpp_cvIsInf"
+    ],
+    "codewiki_mentions": [
+      "cvIsInf"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "OpenCV_fast_math.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 28,
+    "gt_doc_length": 34,
+    "rouge_l": 0.2667,
+    "tfidf_cosine": 0.2811,
+    "length_ratio": 0.824,
+    "brevity_penalty": 0.8071,
+    "sbert_similarity": 0.5238,
+    "meteor_score": 0.3952,
+    "bleurt_estimate": 0.4879,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5956,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 1.0
+  },
+  {
+    "function_name": "saturate_cast",
+    "db_ids": [
+      "opencv_saturate_hpp_saturate_cast"
+    ],
+    "codewiki_mentions": [
+      "saturate_cast",
+      "saturate_cast::saturate_cast"
+    ],
+    "match_strategies": [
+      "exact",
+      "namespace_stripped"
+    ],
+    "source_files": [
+      "OpenCV_saturate.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 49,
+    "gt_doc_length": 183,
+    "rouge_l": 0.2182,
+    "tfidf_cosine": 0.3706,
+    "length_ratio": 0.268,
+    "brevity_penalty": 0.0649,
+    "sbert_similarity": 0.5011,
+    "meteor_score": 0.3597,
+    "bleurt_estimate": 0.3868,
+    "concept_checklist_score": 0.5,
+    "concept_ref_active": [
+      "error_contract",
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.5719,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  }
+]

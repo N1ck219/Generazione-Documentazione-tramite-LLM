@@ -1,0 +1,29 @@
+{
+    "OpenCV_fast_math": {
+        "components": [
+            "fast_math.hpp::cvFloor",
+            "fast_math.hpp::cvIsInf",
+            "fast_math.hpp::cvCeil",
+            "fast_math.hpp::cvRound",
+            "fast_math.hpp::cvIsNaN"
+        ],
+        "children": {}
+    },
+    "OpenCV_cvstd": {
+        "components": [
+            "cvstd.hpp::FileNode",
+            "cvstd.hpp::char_toupper",
+            "cvstd.hpp::Allocator",
+            "cvstd.hpp::rebind",
+            "cvstd.hpp::char_tolower",
+            "cvstd.hpp::abs"
+        ],
+        "children": {}
+    },
+    "OpenCV_saturate": {
+        "components": [
+            "saturate.hpp::saturate_cast"
+        ],
+        "children": {}
+    }
+}

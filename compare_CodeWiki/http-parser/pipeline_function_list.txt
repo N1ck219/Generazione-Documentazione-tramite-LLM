@@ -1,0 +1,11 @@
+# Funzioni http-parser da documentare con la pipeline (batch 1/1, generato da compare_codewiki.py)
+http_body_is_final
+http_errno_description
+http_message_needs_eof
+http_parser_pause
+http_parser_set_max_header_size
+http_parser_settings_init
+http_parser_url_init
+http_parser_version
+http_should_keep_alive
+http_status_str

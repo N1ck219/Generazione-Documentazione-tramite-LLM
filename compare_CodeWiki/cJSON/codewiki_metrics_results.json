@@ -1,0 +1,1482 @@
+[
+  {
+    "function_name": "cJSON_Delete",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_Delete",
+      "cjson_cJSON_h_cJSON_Delete"
+    ],
+    "codewiki_mentions": [
+      "cJSON_Delete"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_core_types.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 28,
+    "gt_doc_length": 4,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 7.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.6754,
+    "meteor_score": 0.3377,
+    "bleurt_estimate": 0.539,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "ownership_memory"
+    ],
+    "concept_matched": [
+      "ownership_memory"
+    ],
+    "bertscore_f1": 0.5534,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "cJSON_CreateNull",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateNull",
+      "cjson_cJSON_h_cJSON_CreateNull"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateNull"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 10,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateTrue",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateTrue",
+      "cjson_cJSON_h_cJSON_CreateTrue"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateTrue"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 12,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateFalse",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateFalse",
+      "cjson_cJSON_h_cJSON_CreateFalse"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateFalse"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 12,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateBool",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateBool",
+      "cjson_cJSON_h_cJSON_CreateBool"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateBool"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 12,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateNumber",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateNumber",
+      "cjson_cJSON_h_cJSON_CreateNumber"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateNumber"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 12,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateString",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateString",
+      "cjson_cJSON_h_cJSON_CreateString"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateString"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 12,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateRaw",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateRaw",
+      "cjson_cJSON_h_cJSON_CreateRaw"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateRaw"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 12,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateArray",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateArray",
+      "cjson_cJSON_h_cJSON_CreateArray"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateArray"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 12,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateObject",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateObject",
+      "cjson_cJSON_h_cJSON_CreateObject"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateObject"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 12,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateIntArray",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateIntArray",
+      "cjson_cJSON_h_cJSON_CreateIntArray"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateIntArray"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 31,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateFloatArray",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateFloatArray",
+      "cjson_cJSON_h_cJSON_CreateFloatArray"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateFloatArray"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 33,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateDoubleArray",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateDoubleArray",
+      "cjson_cJSON_h_cJSON_CreateDoubleArray"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateDoubleArray"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 33,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_CreateStringArray",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_CreateStringArray",
+      "cjson_cJSON_h_cJSON_CreateStringArray"
+    ],
+    "codewiki_mentions": [
+      "cJSON_CreateStringArray"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 33,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_GetArraySize",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_GetArraySize",
+      "cjson_cJSON_h_cJSON_GetArraySize"
+    ],
+    "codewiki_mentions": [
+      "cJSON_GetArraySize"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 6,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_GetArrayItem",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_GetArrayItem",
+      "cjson_cJSON_h_cJSON_GetArrayItem"
+    ],
+    "codewiki_mentions": [
+      "cJSON_GetArrayItem"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 11,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_GetObjectItem",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_GetObjectItem",
+      "cjson_cJSON_h_cJSON_GetObjectItem"
+    ],
+    "codewiki_mentions": [
+      "cJSON_GetObjectItem"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 7,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_AddItemToArray",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_AddItemToArray",
+      "cjson_cJSON_h_cJSON_AddItemToArray"
+    ],
+    "codewiki_mentions": [
+      "cJSON_AddItemToArray"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 4,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_AddItemToObject",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_AddItemToObject",
+      "cjson_cJSON_h_cJSON_AddItemToObject"
+    ],
+    "codewiki_mentions": [
+      "cJSON_AddItemToObject"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 8,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_AddItemReferenceToArray",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_AddItemReferenceToArray",
+      "cjson_cJSON_h_cJSON_AddItemReferenceToArray"
+    ],
+    "codewiki_mentions": [
+      "cJSON_AddItemReferenceToArray"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 30,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_AddItemReferenceToObject",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_AddItemReferenceToObject",
+      "cjson_cJSON_h_cJSON_AddItemReferenceToObject"
+    ],
+    "codewiki_mentions": [
+      "cJSON_AddItemReferenceToObject"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 32,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_InsertItemInArray",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_InsertItemInArray",
+      "cjson_cJSON_h_cJSON_InsertItemInArray"
+    ],
+    "codewiki_mentions": [
+      "cJSON_InsertItemInArray"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 6,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_DetachItemViaPointer",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_DetachItemViaPointer",
+      "cjson_cJSON_h_cJSON_DetachItemViaPointer"
+    ],
+    "codewiki_mentions": [
+      "cJSON_DetachItemViaPointer"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 4,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_Duplicate",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_Duplicate",
+      "cjson_cJSON_h_cJSON_Duplicate"
+    ],
+    "codewiki_mentions": [
+      "cJSON_Duplicate"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 20,
+    "gt_doc_length": 4,
+    "rouge_l": 0.0952,
+    "tfidf_cosine": 0.1291,
+    "length_ratio": 5.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.569,
+    "meteor_score": 0.3321,
+    "bleurt_estimate": 0.4936,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5738,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_Minify",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_Minify",
+      "cjson_cJSON_h_cJSON_Minify"
+    ],
+    "codewiki_mentions": [
+      "cJSON_Minify"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 40,
+    "rouge_l": 0.125,
+    "tfidf_cosine": 0.1361,
+    "length_ratio": 0.225,
+    "brevity_penalty": 0.0319,
+    "sbert_similarity": 0.5688,
+    "meteor_score": 0.3469,
+    "bleurt_estimate": 0.4042,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "mutation_const"
+    ],
+    "concept_matched": [
+      "mutation_const"
+    ],
+    "bertscore_f1": 0.5457,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "cJSON_Compare",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_Compare",
+      "cjson_cJSON_h_cJSON_Compare"
+    ],
+    "codewiki_mentions": [
+      "cJSON_Compare"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_manipulation.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 10,
+    "gt_doc_length": 35,
+    "rouge_l": 0.1875,
+    "tfidf_cosine": 0.2004,
+    "length_ratio": 0.286,
+    "brevity_penalty": 0.0821,
+    "sbert_similarity": 0.6393,
+    "meteor_score": 0.4134,
+    "bleurt_estimate": 0.4706,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "null_safety"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5864,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "cJSON_Parse",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_Parse",
+      "cjson_cJSON_h_cJSON_Parse"
+    ],
+    "codewiki_mentions": [
+      "cJSON_Parse"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_parsing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 19,
+    "gt_doc_length": 4,
+    "rouge_l": 0.2,
+    "tfidf_cosine": 0.2649,
+    "length_ratio": 4.75,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.8466,
+    "meteor_score": 0.5233,
+    "bleurt_estimate": 0.7003,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.6708,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_ParseWithOpts",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_ParseWithOpts",
+      "cjson_cJSON_h_cJSON_ParseWithOpts"
+    ],
+    "codewiki_mentions": [
+      "cJSON_ParseWithOpts"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_parsing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 22,
+    "gt_doc_length": 23,
+    "rouge_l": 0.1622,
+    "tfidf_cosine": 0.2227,
+    "length_ratio": 0.957,
+    "brevity_penalty": 0.9556,
+    "sbert_similarity": 0.3594,
+    "meteor_score": 0.2608,
+    "bleurt_estimate": 0.3697,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [
+      "error_contract"
+    ],
+    "bertscore_f1": 0.5105,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 1.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "parse_value",
+    "db_ids": [
+      "cjson_cJSON_c_parse_value"
+    ],
+    "codewiki_mentions": [
+      "parse_value"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_parsing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 49,
+    "gt_doc_length": 8,
+    "rouge_l": 0.0606,
+    "tfidf_cosine": 0.0557,
+    "length_ratio": 6.125,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.5168,
+    "meteor_score": 0.2887,
+    "bleurt_estimate": 0.4511,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.3607,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 1.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 1.0
+  },
+  {
+    "function_name": "parse_string",
+    "db_ids": [
+      "cjson_cJSON_c_parse_string"
+    ],
+    "codewiki_mentions": [
+      "parse_string",
+      "parse_string"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_parsing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 22,
+    "gt_doc_length": 11,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 2.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.2343,
+    "meteor_score": 0.1172,
+    "bleurt_estimate": 0.2523,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4094,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 3,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "parse_array",
+    "db_ids": [
+      "cjson_cJSON_c_parse_array"
+    ],
+    "codewiki_mentions": [
+      "parse_array",
+      "parse_array"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_parsing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 26,
+    "gt_doc_length": 6,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 4.333,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.199,
+    "meteor_score": 0.0995,
+    "bleurt_estimate": 0.2294,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4509,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "parse_object",
+    "db_ids": [
+      "cjson_cJSON_c_parse_object"
+    ],
+    "codewiki_mentions": [
+      "parse_object",
+      "parse_object"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_parsing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 24,
+    "gt_doc_length": 6,
+    "rouge_l": 0.087,
+    "tfidf_cosine": 0.1179,
+    "length_ratio": 4.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.2875,
+    "meteor_score": 0.1872,
+    "bleurt_estimate": 0.3086,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.462,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "parse_number",
+    "db_ids": [
+      "cjson_cJSON_c_parse_number"
+    ],
+    "codewiki_mentions": [
+      "parse_number",
+      "parse_number"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_parsing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 20,
+    "gt_doc_length": 14,
+    "rouge_l": 0.0769,
+    "tfidf_cosine": 0.0808,
+    "length_ratio": 1.429,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.2072,
+    "meteor_score": 0.1421,
+    "bleurt_estimate": 0.2539,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4798,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "cJSON_Print",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_Print",
+      "cjson_cJSON_h_cJSON_Print"
+    ],
+    "codewiki_mentions": [
+      "cJSON_Print"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 19,
+    "gt_doc_length": 6,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 3.167,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.1983,
+    "meteor_score": 0.0992,
+    "bleurt_estimate": 0.2289,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5205,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_PrintUnformatted",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_PrintUnformatted",
+      "cjson_cJSON_h_cJSON_PrintUnformatted"
+    ],
+    "codewiki_mentions": [
+      "cJSON_PrintUnformatted"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 19,
+    "gt_doc_length": 11,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 1.727,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.2843,
+    "meteor_score": 0.1421,
+    "bleurt_estimate": 0.2848,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5152,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "cJSON_PrintBuffered",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_PrintBuffered",
+      "cjson_cJSON_h_cJSON_PrintBuffered"
+    ],
+    "codewiki_mentions": [
+      "cJSON_PrintBuffered"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 28,
+    "rouge_l": 0.069,
+    "tfidf_cosine": 0.0711,
+    "length_ratio": 0.321,
+    "brevity_penalty": 0.1211,
+    "sbert_similarity": 0.3184,
+    "meteor_score": 0.1937,
+    "bleurt_estimate": 0.2363,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.5247,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "cJSON_PrintPreallocated",
+    "db_ids": [
+      "cjson_cJSON_c_cJSON_PrintPreallocated",
+      "cjson_cJSON_h_cJSON_PrintPreallocated"
+    ],
+    "codewiki_mentions": [
+      "cJSON_PrintPreallocated"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 16,
+    "gt_doc_length": 27,
+    "rouge_l": 0.0556,
+    "tfidf_cosine": 0.1588,
+    "length_ratio": 0.593,
+    "brevity_penalty": 0.5028,
+    "sbert_similarity": 0.3799,
+    "meteor_score": 0.2177,
+    "bleurt_estimate": 0.3111,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "ownership_memory"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.4419,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "print_value",
+    "db_ids": [
+      "cjson_cJSON_c_print_value"
+    ],
+    "codewiki_mentions": [
+      "print_value"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 15,
+    "gt_doc_length": 5,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 3.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.0688,
+    "meteor_score": 0.0344,
+    "bleurt_estimate": 0.1447,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.3663,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 1.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 1.0
+  },
+  {
+    "function_name": "print_string",
+    "db_ids": [
+      "cjson_cJSON_c_print_string"
+    ],
+    "codewiki_mentions": [
+      "print_string"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 11,
+    "gt_doc_length": 8,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 1.375,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.2857,
+    "meteor_score": 0.1429,
+    "bleurt_estimate": 0.2857,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5086,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "print_number",
+    "db_ids": [
+      "cjson_cJSON_c_print_number"
+    ],
+    "codewiki_mentions": [
+      "print_number"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 11,
+    "rouge_l": 0.25,
+    "tfidf_cosine": 0.252,
+    "length_ratio": 0.818,
+    "brevity_penalty": 0.8007,
+    "sbert_similarity": 0.3841,
+    "meteor_score": 0.317,
+    "bleurt_estimate": 0.3922,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5895,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 3,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "print_array",
+    "db_ids": [
+      "cjson_cJSON_c_print_array"
+    ],
+    "codewiki_mentions": [
+      "print_array"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 15,
+    "gt_doc_length": 5,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 3.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.2763,
+    "meteor_score": 0.1381,
+    "bleurt_estimate": 0.2796,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4207,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "print_object",
+    "db_ids": [
+      "cjson_cJSON_c_print_object"
+    ],
+    "codewiki_mentions": [
+      "print_object"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "cJSON_printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 15,
+    "gt_doc_length": 5,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 3.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.1279,
+    "meteor_score": 0.064,
+    "bleurt_estimate": 0.1831,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4168,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 2,
+    "edge_case_coverage": 0.0
+  }
+]

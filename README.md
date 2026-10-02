@@ -399,6 +399,28 @@ Per ogni esecuzione del benchmark, la pipeline genera automaticamente una **suit
 
 ---
 
+## 🆚 Confronto con CodeWiki (`compare_codewiki.py`)
+
+Script unico che confronta la documentazione generata da CodeWiki con quella della pipeline, libreria per libreria
+(cartelle `compare_CodeWiki/<Libreria>/`; una libreria e' confrontabile se esiste anche in `dataset/benchmark.db`).
+Per ogni libreria esegue: `parse` (mapping CodeWiki -> DB) → `metrics` (NLP CodeWiki vs GT) → `pipeline`
+(documentazione + benchmark completi della pipeline, con ripresa dalle funzioni gia' presenti in `results/`) →
+`advanced` (judge, round-trip, retrieval, CodeBERTScore su CodeWiki) → `compare` (grafici e report).
+
+```bash
+python compare_codewiki.py                      # tutte le librerie, tutti gli step
+python compare_codewiki.py -l cJSON sds         # solo alcune librerie
+python compare_codewiki.py --list               # librerie disponibili
+python compare_codewiki.py --dry-run            # piano di esecuzione senza eseguire nulla
+python compare_codewiki.py --steps parse,metrics,compare   # solo la parte offline (niente API)
+python compare_codewiki.py --pipeline-scope codewiki       # pipeline solo sulle funzioni documentate da CodeWiki
+```
+
+Output: `compare_CodeWiki/<Libreria>/` (mapping, metriche, `charts/`, `codewiki_vs_pipeline_report.md`) e
+`compare_CodeWiki/SUMMARY.md` (riepilogo tra librerie). Gli step `pipeline` e `advanced` usano l'API Gemini.
+
+---
+
 ## 📋 Requisiti di Sistema e Installazione
 
 1. **Python 3.10+**

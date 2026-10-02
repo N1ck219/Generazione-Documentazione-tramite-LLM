@@ -1,0 +1,71 @@
+{
+    "sds_core": {
+        "components": [
+            "sds.h::sdshdr5",
+            "sds.h::sdshdr8",
+            "sds.h::sdshdr16",
+            "sds.h::sdshdr32",
+            "sds.h::sdshdr64",
+            "sds.c::sdsnewlen",
+            "sds.c::sdsnew",
+            "sds.c::sdsempty",
+            "sds.c::sdsdup",
+            "sds.c::sdsfree",
+            "sds.h::sdslen",
+            "sds.h::sdsavail",
+            "sds.h::sdsalloc",
+            "sds.h::sdssetlen",
+            "sds.h::sdssetalloc",
+            "sds.h::sdsinclen",
+            "sds.c::sdsHdrSize",
+            "sds.c::sdsReqType",
+            "sds.c::sds_malloc",
+            "sds.c::sds_realloc",
+            "sds.c::sds_free"
+        ],
+        "children": {}
+    },
+    "sds_allocation": {
+        "components": [
+            "sds.c::sdsMakeRoomFor",
+            "sds.c::sdsRemoveFreeSpace",
+            "sds.c::sdsgrowzero",
+            "sds.c::sdsIncrLen",
+            "sds.c::sdsAllocSize",
+            "sds.c::sdsAllocPtr",
+            "sds.c::sdsclear",
+            "sds.c::sdsupdatelen"
+        ],
+        "children": {}
+    },
+    "sds_manipulation": {
+        "components": [
+            "sds.c::sdscatlen",
+            "sds.c::sdscat",
+            "sds.c::sdscatsds",
+            "sds.c::sdscpylen",
+            "sds.c::sdscpy",
+            "sds.c::sdsll2str",
+            "sds.c::sdsull2str",
+            "sds.c::sdsfromlonglong",
+            "sds.c::sdscatvprintf",
+            "sds.c::sdscatprintf",
+            "sds.c::sdscatfmt",
+            "sds.c::sdstrim",
+            "sds.c::sdsrange",
+            "sds.c::sdstolower",
+            "sds.c::sdstoupper",
+            "sds.c::sdscmp",
+            "sds.c::sdssplitlen",
+            "sds.c::sdsfreesplitres",
+            "sds.c::sdscatrepr",
+            "sds.c::sdssplitargs",
+            "sds.c::sdsmapchars",
+            "sds.c::sdsjoin",
+            "sds.c::sdsjoinsds",
+            "sds.c::is_hex_digit",
+            "sds.c::hex_digit_to_int"
+        ],
+        "children": {}
+    }
+}

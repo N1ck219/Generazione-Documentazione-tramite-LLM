@@ -1,0 +1,351 @@
+[
+  {
+    "function_name": "http_parser_version",
+    "db_ids": [
+      "http-parser_http_parser_c_http_parser_version",
+      "http-parser_http_parser_h_http_parser_version"
+    ],
+    "codewiki_mentions": [
+      "http_parser_version"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "overview.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 5,
+    "gt_doc_length": 57,
+    "rouge_l": 0.1739,
+    "tfidf_cosine": 0.4824,
+    "length_ratio": 0.088,
+    "brevity_penalty": 0.0,
+    "sbert_similarity": 0.6772,
+    "meteor_score": 0.4255,
+    "bleurt_estimate": 0.4837,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4519,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "http_should_keep_alive",
+    "db_ids": [
+      "http-parser_http_parser_c_http_should_keep_alive",
+      "http-parser_http_parser_h_http_should_keep_alive"
+    ],
+    "codewiki_mentions": [
+      "http_should_keep_alive"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "overview.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 39,
+    "rouge_l": 0.1875,
+    "tfidf_cosine": 0.427,
+    "length_ratio": 0.308,
+    "brevity_penalty": 0.1054,
+    "sbert_similarity": 0.6867,
+    "meteor_score": 0.4371,
+    "bleurt_estimate": 0.5038,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5241,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "http_method_str",
+    "db_ids": [
+      "http-parser_http_parser_c_http_method_str",
+      "http-parser_http_parser_h_http_method_str"
+    ],
+    "codewiki_mentions": [
+      "http_method_str"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "overview.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 8,
+    "rouge_l": 0.7273,
+    "tfidf_cosine": 0.7303,
+    "length_ratio": 1.125,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.7488,
+    "meteor_score": 0.738,
+    "bleurt_estimate": 0.7685,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.7947,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "http_status_str",
+    "db_ids": [
+      "http-parser_http_parser_c_http_status_str",
+      "http-parser_http_parser_h_http_status_str"
+    ],
+    "codewiki_mentions": [
+      "http_status_str"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "overview.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 10,
+    "gt_doc_length": 9,
+    "rouge_l": 0.7692,
+    "tfidf_cosine": 0.7715,
+    "length_ratio": 1.111,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.8061,
+    "meteor_score": 0.7876,
+    "bleurt_estimate": 0.8163,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [
+      "error_contract"
+    ],
+    "bertscore_f1": 0.8231,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "http_errno_name",
+    "db_ids": [
+      "http-parser_http_parser_c_http_errno_name",
+      "http-parser_http_parser_h_http_errno_name"
+    ],
+    "codewiki_mentions": [
+      "http_errno_name"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "overview.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 8,
+    "gt_doc_length": 8,
+    "rouge_l": 0.4,
+    "tfidf_cosine": 0.4,
+    "length_ratio": 1.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.6365,
+    "meteor_score": 0.5182,
+    "bleurt_estimate": 0.6137,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [
+      "error_contract"
+    ],
+    "bertscore_f1": 0.6538,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "http_errno_description",
+    "db_ids": [
+      "http-parser_http_parser_c_http_errno_description",
+      "http-parser_http_parser_h_http_errno_description"
+    ],
+    "codewiki_mentions": [
+      "http_errno_description"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "overview.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 8,
+    "rouge_l": 0.3333,
+    "tfidf_cosine": 0.3381,
+    "length_ratio": 1.125,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.5785,
+    "meteor_score": 0.4559,
+    "bleurt_estimate": 0.5594,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [
+      "error_contract"
+    ],
+    "bertscore_f1": 0.6586,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "http_parser_pause",
+    "db_ids": [
+      "http-parser_http_parser_c_http_parser_pause",
+      "http-parser_http_parser_h_http_parser_pause"
+    ],
+    "codewiki_mentions": [
+      "http_parser_pause"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "overview.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 5,
+    "gt_doc_length": 9,
+    "rouge_l": 0.2222,
+    "tfidf_cosine": 0.4082,
+    "length_ratio": 0.556,
+    "brevity_penalty": 0.4493,
+    "sbert_similarity": 0.7896,
+    "meteor_score": 0.5059,
+    "bleurt_estimate": 0.6137,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.6651,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "http_body_is_final",
+    "db_ids": [
+      "http-parser_http_parser_c_http_body_is_final",
+      "http-parser_http_parser_h_http_body_is_final"
+    ],
+    "codewiki_mentions": [
+      "http_body_is_final"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "overview.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 7,
+    "gt_doc_length": 10,
+    "rouge_l": 0.6,
+    "tfidf_cosine": 0.6,
+    "length_ratio": 0.7,
+    "brevity_penalty": 0.6514,
+    "sbert_similarity": 0.6343,
+    "meteor_score": 0.6171,
+    "bleurt_estimate": 0.6274,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.7114,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "http_parser_set_max_header_size",
+    "db_ids": [
+      "http-parser_http_parser_c_http_parser_set_max_header_size",
+      "http-parser_http_parser_h_http_parser_set_max_header_size"
+    ],
+    "codewiki_mentions": [
+      "http_parser_set_max_header_size"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "overview.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 9,
+    "rouge_l": 0.4286,
+    "tfidf_cosine": 0.4286,
+    "length_ratio": 1.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.6951,
+    "meteor_score": 0.5618,
+    "bleurt_estimate": 0.659,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [
+      "bounds_range"
+    ],
+    "concept_matched": [
+      "bounds_range"
+    ],
+    "bertscore_f1": 0.8293,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  }
+]

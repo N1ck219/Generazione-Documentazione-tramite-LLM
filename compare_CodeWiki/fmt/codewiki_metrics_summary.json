@@ -1,0 +1,116 @@
+{
+  "total_db_rows": 12,
+  "total_db_functions": 12,
+  "total_codewiki_mentions": 1,
+  "total_codewiki_unmatched": 0,
+  "unmatched_mentions": [],
+  "match_strategy_counts": {
+    "namespace_stripped": 1
+  },
+  "total_db_mentioned": 1,
+  "total_db_documented": 1,
+  "total_db_mentioned_only": 0,
+  "documented_coverage_rate": 0.0833,
+  "mention_coverage_rate": 0.0833,
+  "uncovered_db_functions": [
+    "format_int::c_str",
+    "format_int::data",
+    "format_int::size",
+    "format_int::str",
+    "group_digits",
+    "operator\"\"_a",
+    "ptr",
+    "system_error",
+    "to_string",
+    "underlying",
+    "writer::print"
+  ],
+  "sbert_similarity": {
+    "label": "SBERT Cosine Similarity",
+    "n": 1,
+    "mean": 0.2484,
+    "std": 0.0,
+    "min": 0.2484,
+    "max": 0.2484
+  },
+  "bertscore_f1": {
+    "label": "BERTScore F1",
+    "n": 1,
+    "mean": 0.3361,
+    "std": 0.0,
+    "min": 0.3361,
+    "max": 0.3361
+  },
+  "rouge_l": {
+    "label": "ROUGE-L",
+    "n": 1,
+    "mean": 0.0,
+    "std": 0.0,
+    "min": 0.0,
+    "max": 0.0
+  },
+  "tfidf_cosine": {
+    "label": "TF-IDF Cosine",
+    "n": 1,
+    "mean": 0.0,
+    "std": 0.0,
+    "min": 0.0,
+    "max": 0.0
+  },
+  "meteor_score": {
+    "label": "METEOR",
+    "n": 1,
+    "mean": 0.1242,
+    "std": 0.0,
+    "min": 0.1242,
+    "max": 0.1242
+  },
+  "bleurt_estimate": {
+    "label": "BLEURT Estimate",
+    "n": 1,
+    "mean": 0.1657,
+    "std": 0.0,
+    "min": 0.1657,
+    "max": 0.1657
+  },
+  "concept_checklist_score": {
+    "label": "Semantic Concept Checklist",
+    "n": 1,
+    "mean": 1.0,
+    "std": 0.0,
+    "min": 1.0,
+    "max": 1.0
+  },
+  "actionability_score": {
+    "label": "Actionability Score",
+    "n": 1,
+    "mean": 0.25,
+    "std": 0.0,
+    "min": 0.25,
+    "max": 0.25
+  },
+  "error_doc_rate": {
+    "label": "Error Documentation Rate",
+    "n": 0,
+    "mean": null,
+    "std": null,
+    "min": null,
+    "max": null
+  },
+  "edge_case_coverage": {
+    "label": "Edge Case Coverage",
+    "n": 0,
+    "mean": null,
+    "std": null,
+    "min": null,
+    "max": null
+  },
+  "length_ratio": {
+    "label": "Length Ratio (CodeWiki/GT)",
+    "n": 1,
+    "mean": 0.24,
+    "std": 0.0,
+    "min": 0.24,
+    "max": 0.24
+  }
+}

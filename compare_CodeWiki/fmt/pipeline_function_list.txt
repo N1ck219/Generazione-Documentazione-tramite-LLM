@@ -1,0 +1,12 @@
+# Funzioni fmt da documentare con la pipeline (batch 1/1, generato da compare_codewiki.py)
+format
+format_int::c_str
+format_int::data
+format_int::size
+format_int::str
+group_digits
+operator""_a
+ptr
+to_string
+underlying
+writer::print

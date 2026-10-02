@@ -19,7 +19,7 @@ class DocOrchestrator:
         else:
             api_key = os.getenv("GEMINI_API_KEY")
             if api_key and api_key != "YOUR_GEMINI_API_KEY_HERE":
-                print("[INFO LLM] Configurazione rilevata: Uso del provider Gemini (modello gemini-3.5-flash-lite, 15 RPM)")
+                print("[INFO LLM] Configurazione rilevata: Uso del provider Gemini (modello eval_chart_roundtrip.5-flash-lite, 15 RPM)")
                 self.llm = GeminiLLMProvider(model_name="gemini-3.5-flash-lite", api_key=api_key, rpm_limit=15)
             else:
 

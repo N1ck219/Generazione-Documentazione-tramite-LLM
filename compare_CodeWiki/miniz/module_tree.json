@@ -1,0 +1,39 @@
+{
+    "miniz_compression": {
+        "components": [
+            "miniz.c::mz_deflateInit",
+            "miniz.c::mz_deflateInit2",
+            "miniz.c::mz_deflate",
+            "miniz.c::mz_deflateReset",
+            "miniz.c::mz_deflateEnd",
+            "miniz.c::mz_deflateBound",
+            "miniz.c::mz_compress",
+            "miniz.c::mz_compress2",
+            "miniz.c::mz_compressBound",
+            "miniz.c::mz_internal_state"
+        ],
+        "children": {}
+    },
+    "miniz_decompression": {
+        "components": [
+            "miniz.c::mz_inflateInit",
+            "miniz.c::mz_inflateInit2",
+            "miniz.c::mz_inflate",
+            "miniz.c::mz_inflateReset",
+            "miniz.c::mz_inflateEnd",
+            "miniz.c::mz_uncompress",
+            "miniz.c::mz_uncompress2",
+            "miniz.c::inflate_state"
+        ],
+        "children": {}
+    },
+    "miniz_utilities": {
+        "components": [
+            "miniz.c::mz_adler32",
+            "miniz.c::mz_crc32",
+            "miniz.c::mz_free",
+            "miniz.c::miniz_def_free_func"
+        ],
+        "children": {}
+    }
+}

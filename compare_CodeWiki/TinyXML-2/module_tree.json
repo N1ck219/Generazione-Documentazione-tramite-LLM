@@ -1,0 +1,36 @@
+{
+    "TinyXML-2_dom": {
+        "components": [
+            "tinyxml2.h::XMLDocument",
+            "tinyxml2.h::XMLNode",
+            "tinyxml2.h::XMLElement",
+            "tinyxml2.h::XMLAttribute",
+            "tinyxml2.h::XMLText",
+            "tinyxml2.h::XMLComment",
+            "tinyxml2.h::XMLDeclaration",
+            "tinyxml2.h::XMLUnknown",
+            "tinyxml2.h::XMLHandle",
+            "tinyxml2.h::XMLConstHandle"
+        ],
+        "children": {}
+    },
+    "TinyXML-2_visitor": {
+        "components": [
+            "tinyxml2.h::XMLPrinter",
+            "tinyxml2.h::XMLVisitor"
+        ],
+        "children": {}
+    },
+    "TinyXML-2_memory_utils": {
+        "components": [
+            "tinyxml2.h::MemPool",
+            "tinyxml2.h::MemPoolT",
+            "tinyxml2.h::DynArray",
+            "tinyxml2.h::Block",
+            "tinyxml2.h::StrPair",
+            "tinyxml2.h::XMLUtil",
+            "tinyxml2.cpp::Entity"
+        ],
+        "children": {}
+    }
+}

@@ -1,0 +1,10 @@
+# Funzioni OpenCV documentate da CodeWiki (generato da evaluate_codewiki_metrics.py)
+# Uso: python utils/benchmark_eval.py -l OpenCV -m multiagent --functions <questo file>
+cvCeil
+cvFloor
+cvIsInf
+cvIsNaN
+cvRound
+fastFree
+fastMalloc
+saturate_cast

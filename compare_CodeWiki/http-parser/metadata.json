@@ -1,0 +1,19 @@
+{
+    "generation_info": {
+        "timestamp": "2026-10-02T10:02:59.908805",
+        "main_model": "gemini-2.5-flash",
+        "generator_version": "1.0.1",
+        "repo_path": "D:\\python\\CodeWiki\\src_code\\sources\\http-parser",
+        "commit_id": "4c18face91c6a634a86b3e9aebb1af6c78d66e76"
+    },
+    "statistics": {
+        "total_components": 19,
+        "leaf_nodes": 19,
+        "max_depth": 2
+    },
+    "files_generated": [
+        "overview.md",
+        "module_tree.json",
+        "first_module_tree.json"
+    ]
+}

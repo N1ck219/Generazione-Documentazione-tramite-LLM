@@ -48,3 +48,4 @@ Test_code/**/results/
 Test_code/**/documentation.db
 Test_code/**/LLM_INTERACTIONS_LOG.md
 Test_code/**/extracted_metadata.json
+Paper/

@@ -1,0 +1,6 @@
+# Funzioni OpenCV da documentare con la pipeline (batch 1/1, generato da compare_codewiki.py)
+cvFloor
+cvIsInf
+cvRound
+fastMalloc
+saturate_cast

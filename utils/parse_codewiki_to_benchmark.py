@@ -25,12 +25,11 @@ Ogni record del JSON contiene:
     - doc_source       : "bullet" (testo reale CodeWiki) o "mermaid" (solo menzione
                          nel classDiagram, senza testo descrittivo)
     - matched          : True se trovato nel benchmark.db, False altrimenti
-    - match_score      : 1.0 per exact/exact_ci, 0.95 per inherited; per "none" è
-                         la similarità del candidato DB più vicino (solo diagnostica)
+    - match_score      : 1.0 per exact/exact_ci, 0.98 per namespace_stripped, 0.95 per
+                         inherited, 0.0 per "none"
     - match_strategy   : "exact", "exact_ci", "inherited" (metodo dichiarato in una
                          classe base, es. XMLDocument::Accept -> XMLNode::Accept) o "none"
     - db_ids           : tutti gli id DB della funzione (varianti .h e .cpp)
-    - closest_db_candidate : per i non matchati, la funzione DB più simile (revisione manuale)
 
 Nota: nel DB molte funzioni compaiono due volte (dichiarazione nel .h e
 definizione nel .cpp) con lo stesso Ground Truth. L'unità di confronto è
@@ -50,34 +49,26 @@ import re
 import sys
 import json
 import sqlite3
-from difflib import SequenceMatcher
+import argparse
 from typing import Dict, List, Optional, Tuple
 
-# ── Percorsi ──────────────────────────────────────────────────────────────────
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CODEWIKI_DIR = os.path.join(ROOT_DIR, "compare_CodeWiki")
-DB_PATH = os.path.join(ROOT_DIR, "dataset", "benchmark.db")
-OUTPUT_JSON = os.path.join(CODEWIKI_DIR, "codewiki_mapped_functions.json")
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 
-# Libreria target nel database
-TARGET_LIBRARY = "TinyXML-2"
+from utils.codewiki_config import (
+    DB_PATH,
+    class_bases,
+    is_class_style,
+    is_header_file,
+    is_impl_file,
+    lib_paths,
+    resolve_library,
+)
 
-# Gerarchia di ereditarietà di TinyXML-2 (classe derivata -> classi base).
-# Usata per il matching "inherited": un metodo descritto da CodeWiki su una
-# classe derivata viene associato alla dichiarazione nella classe base.
-CLASS_BASES = {
-    "XMLDocument": ["XMLNode"],
-    "XMLElement": ["XMLNode"],
-    "XMLText": ["XMLNode"],
-    "XMLComment": ["XMLNode"],
-    "XMLDeclaration": ["XMLNode"],
-    "XMLUnknown": ["XMLNode"],
-    "XMLPrinter": ["XMLVisitor"],
-}
-
-# File da ignorare nella directory CodeWiki
-SKIP_FILES = {"overview.md", "module_tree.json", "first_module_tree.json", "metadata.json",
-              "codewiki_metrics_report.md"}
+# File da ignorare nella directory CodeWiki (documentazione di servizio e output del confronto)
+SKIP_FILES = {"overview.md", "module_tree.json", "first_module_tree.json", "metadata.json"}
+SKIP_PREFIXES = ("codewiki_",)
 
 
 # ── Utilities di pulizia testo ─────────────────────────────────────────────────
@@ -87,14 +78,9 @@ def clean_backtick_name(text: str) -> str:
     return re.sub(r"[`()\[\]]", "", text).strip()
 
 
-def similarity(a: str, b: str) -> float:
-    """Calcola la similarità tra due stringhe in [0.0, 1.0]."""
-    return SequenceMatcher(None, a.lower(), b.lower()).ratio()
-
-
 # ── Parser dei file Markdown CodeWiki ─────────────────────────────────────────
 
-def parse_codewiki_markdown(filepath: str) -> List[Dict]:
+def parse_class_style_markdown(filepath: str) -> List[Dict]:
     """
     Effettua il parsing di un singolo file Markdown prodotto da CodeWiki.
 
@@ -236,22 +222,231 @@ def parse_codewiki_markdown(filepath: str) -> List[Dict]:
     return records
 
 
-def extract_all_codewiki_methods(codewiki_dir: str) -> List[Dict]:
-    """Processa tutti i file Markdown nella directory CodeWiki e aggrega i record."""
-    all_records = []
-    md_files = [
-        f for f in os.listdir(codewiki_dir)
-        if f.endswith(".md") and f not in SKIP_FILES
-    ]
+# ── Parser per librerie C / funzioni libere ───────────────────────────────────
+# CodeWiki non usa una struttura fissa per le librerie C: le funzioni compaiono in
+# bullet ("- **`cJSON_Parse(const char *v)`**: ..."), tabelle, titoli di sezione
+# ("### `cJSON_Parse`") e diagrammi Mermaid. Si estraggono gli identificatori che
+# compaiono come SOGGETTO (prima del separatore di un bullet, prima cella di una
+# tabella, titolo di sezione); i nomi citati solo nella descrizione ("wrapper di
+# `cJSON_ParseWithOpts`") non sono soggetti e vengono ignorati.
 
+_IDENT = r"~?[A-Za-z_][A-Za-z0-9_]*"
+_QUALIFIED_RE = re.compile(rf"{_IDENT}(?:::{_IDENT})*")
+_BACKTICK_RE = re.compile(r"`([^`\n]+)`")
+_BULLET_RE = re.compile(r"^(\s*)[*\-+]\s+(.*)$")
+_HEADING_RE = re.compile(r"^#{1,6}\s+(.*)$")
+_TABLE_RE = re.compile(r"^\s*\|(.+)\|\s*$")
+_SEPARATORS = (":", " – ", " — ", " - ", " → ", " -> ", "$\\rightarrow$")
+_SECTION_DESC_MAX_CHARS = 1200
+
+
+def _split_head_description(text: str) -> Tuple[str, str]:
+    """Divide un bullet in (soggetto, descrizione) al primo separatore fuori dai backtick."""
+    spans = [(m.start(), m.end()) for m in _BACKTICK_RE.finditer(text)]
+
+    def inside(pos: int) -> bool:
+        return any(a <= pos < b for a, b in spans)
+
+    best = None
+    for sep in _SEPARATORS:
+        start = 0
+        while True:
+            i = text.find(sep, start)
+            if i == -1:
+                break
+            if not inside(i):
+                if best is None or i < best[0]:
+                    best = (i, sep)
+                break
+            start = i + 1
+    if best is None:
+        return text, ""
+    i, sep = best
+    return text[:i], text[i + len(sep):].strip()
+
+
+def _identifiers_from_token(token: str) -> List[Tuple[str, bool]]:
+    """
+    Da un token tra backtick estrae (nome, ha_sintassi_di_chiamata).
+    `cJSON_Parse(const char *v)` -> [("cJSON_Parse", True)]
+    `const char *cJSON_Version(void)` -> [("cJSON_Version", True)]
+    `fmt::format` -> [("fmt::format", False)]
+    Token con spazi e senza parentesi (tipi, frasi) non sono funzioni.
+    """
+    token = token.strip().strip("*").strip()
+    if "(" in token:
+        pre = token.split("(", 1)[0]
+        if not pre or pre[-1].isspace():
+            return []  # "Floating-Point Value (T)": una frase, non una chiamata
+        found = _QUALIFIED_RE.findall(pre)
+        return [(found[-1], True)] if found else []
+    if _QUALIFIED_RE.fullmatch(token):
+        return [(token, False)]
+    return []
+
+
+def _subjects(head: str) -> List[Tuple[str, bool]]:
+    out: List[Tuple[str, bool]] = []
+    for m in _BACKTICK_RE.finditer(head):
+        out.extend(_identifiers_from_token(m.group(1)))
+    return out
+
+
+def _fence_state(line: str, in_fence: bool) -> Tuple[bool, bool]:
+    """(in_fence_dopo_la_riga, la_riga_e_un_delimitatore)."""
+    if line.strip().startswith("```"):
+        return (not in_fence), True
+    return in_fence, False
+
+
+def _section_text(lines: List[str], start: int) -> str:
+    """Testo (esclusi i blocchi di codice) dalla riga `start` fino al titolo successivo."""
+    body, fence = [], False
+    for line in lines[start:]:
+        if not fence and _HEADING_RE.match(line):
+            break
+        fence, delim = _fence_state(line, fence)
+        if not delim and not fence and line.strip():
+            body.append(line.strip())
+    return " ".join(body)[:_SECTION_DESC_MAX_CHARS].strip()
+
+
+def parse_function_style_markdown(filepath: str) -> List[Dict]:
+    """
+    Estrae le menzioni di funzioni da un file Markdown CodeWiki di una libreria C o con
+    funzioni libere. Ogni record ha: mention (nome come scritto da CodeWiki, eventualmente
+    qualificato), method_name, description, doc_source ("bullet", "mention" se senza testo
+    descrittivo, "mermaid"), call_syntax (il nome compare con parentesi) e context_block.
+    """
+    filename = os.path.basename(filepath)
+    with open(filepath, "r", encoding="utf-8") as f:
+        lines = f.read().splitlines()
+
+    records: List[Dict] = []
+    seen = set()
+
+    def add(mention: str, description: str, doc_source: str, context: str, call_syntax: bool):
+        key = (mention, description)
+        if key in seen:
+            return
+        seen.add(key)
+        records.append({
+            "class_name": None,
+            "method_name": mention.split("::")[-1],
+            "mention": mention,
+            "raw_method_signature": mention,
+            "description": description,
+            "doc_source": doc_source,
+            "context_block": context,
+            "source_file": filename,
+            "call_syntax": call_syntax,
+        })
+
+    section = ""
+    in_fence = False
+    for i, line in enumerate(lines):
+        in_fence, is_delim = _fence_state(line, in_fence)
+        if is_delim or in_fence:
+            continue
+
+        heading = _HEADING_RE.match(line)
+        if heading:
+            section = heading.group(1).strip()
+            subjects = _subjects(section)
+            if subjects:
+                # il testo della sezione descrive i soggetti del titolo
+                text = _section_text(lines, i + 1)
+                for name, call in subjects:
+                    add(name, text, "bullet" if text else "mention", section, call)
+            continue
+
+        bullet = _BULLET_RE.match(line)
+        if bullet:
+            indent, text = len(bullet.group(1)), bullet.group(2).strip()
+            # righe di continuazione: piu' rientrate del bullet e non a loro volta bullet
+            for nxt in lines[i + 1:i + 6]:
+                if (nxt.strip() and not _BULLET_RE.match(nxt) and not _HEADING_RE.match(nxt)
+                        and not nxt.strip().startswith("```")
+                        and len(nxt) - len(nxt.lstrip()) > indent):
+                    text += " " + nxt.strip()
+                else:
+                    break
+            head, desc = _split_head_description(text)
+            only_names = not re.sub(r"[*\s,/;&]|\band\b|\bor\b", "", _BACKTICK_RE.sub("", head))
+            if not _subjects(head) and desc and not re.sub(
+                    r"[*\s,/;&.]|\band\b|\bor\b|\betc\b", "", _BACKTICK_RE.sub("", desc)):
+                # "- **Etichetta**: `f1()`, `f2()`": elenco di nomi sotto un'etichetta, senza descrizioni
+                for name, call in _subjects(desc):
+                    add(name, "", "mention", section, call)
+                continue
+            for name, call in _subjects(head):
+                if desc:
+                    add(name, desc, "bullet", section, call)
+                elif only_names:
+                    # il bullet e' solo un elenco di nomi, senza testo descrittivo
+                    add(name, "", "mention", section, call)
+            continue
+
+        table = _TABLE_RE.match(line)
+        if table:
+            cells = [c.strip() for c in table.group(1).split("|")]
+            if cells and not re.fullmatch(r"[\s:\-]*", cells[0]):
+                desc = " ".join(c for c in cells[1:] if c and not re.fullmatch(r"[\s:\-]*", c))
+                for name, call in _subjects(cells[0]):
+                    add(name, desc, "bullet" if desc else "mention", section, call)
+
+    # Metodi nei diagrammi Mermaid classDiagram: "+nome(params) Tipo" dentro "class X { }"
+    mermaid_class_re = re.compile(r"^\s*class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{")
+    mermaid_method_re = re.compile(r"^\s*[+\-#~]\s*([A-Za-z_][A-Za-z0-9_]*)\s*\(")
+    in_mermaid, cur_class = False, None
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("```mermaid"):
+            in_mermaid, cur_class = True, None
+            continue
+        if stripped == "```" and in_mermaid:
+            in_mermaid, cur_class = False, None
+            continue
+        if not in_mermaid:
+            continue
+        cm = mermaid_class_re.match(line)
+        if cm:
+            cur_class = cm.group(1)
+            continue
+        mm = mermaid_method_re.match(line)
+        if mm and cur_class:
+            add(f"{cur_class}::{mm.group(1)}",
+                f"[da diagramma Mermaid] Funzione `{mm.group(1)}` ({cur_class}).",
+                "mermaid", "Mermaid Class Diagram", False)
+
+    return records
+
+
+def list_codewiki_markdown(codewiki_dir: str) -> List[str]:
+    """
+    File .md con la documentazione CodeWiki. overview.md e' usato solo se la libreria non
+    ha altri file di modulo (es. librerie a modulo singolo come fmt o http-parser).
+    """
+    all_md = [f for f in os.listdir(codewiki_dir) if f.endswith(".md")
+              and not f.startswith(SKIP_PREFIXES)]
+    modules = [f for f in all_md if f not in SKIP_FILES]
+    if modules:
+        return sorted(modules)
+    return ["overview.md"] if "overview.md" in all_md else []
+
+
+def extract_all_codewiki_methods(codewiki_dir: str, library: str) -> List[Dict]:
+    """Processa i file Markdown CodeWiki della libreria e aggrega i record."""
+    all_records: List[Dict] = []
+    md_files = list_codewiki_markdown(codewiki_dir)
     if not md_files:
         print(f"[WARN] Nessun file .md trovato in: {codewiki_dir}")
         return []
 
-    for md_file in sorted(md_files):
-        filepath = os.path.join(codewiki_dir, md_file)
-        records = parse_codewiki_markdown(filepath)
-        print(f"  [{md_file}] -> {len(records)} metodi estratti")
+    parser_fn = parse_class_style_markdown if is_class_style(library) else parse_function_style_markdown
+    for md_file in md_files:
+        records = parser_fn(os.path.join(codewiki_dir, md_file))
+        print(f"  [{md_file}] -> {len(records)} menzioni estratte")
         all_records.extend(records)
 
     return all_records
@@ -265,10 +460,10 @@ def load_benchmark_functions(db_path: str, library: str) -> List[Dict]:
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
         """
-        SELECT id, library, function_name, signature, return_type,
+        SELECT id, library, filename, function_name, signature, return_type,
                parameters, source_code, cleaned_doc, raw_comment
         FROM benchmark_functions
-        WHERE library = ?
+        WHERE LOWER(library) = LOWER(?)
         ORDER BY id
         """,
         (library,),
@@ -285,6 +480,7 @@ def load_benchmark_functions(db_path: str, library: str) -> List[Dict]:
                 params = []
         functions.append({
             "db_id": row["id"],
+            "filename": row["filename"],
             "function_name": row["function_name"],
             "signature": row["signature"],
             "return_type": row["return_type"],
@@ -301,12 +497,12 @@ def load_benchmark_functions(db_path: str, library: str) -> List[Dict]:
 
 def group_db_functions(db_functions: List[Dict]) -> Dict[str, Dict]:
     """
-    Raggruppa le righe DB per nome canonico "ClassName::MethodName".
-    Le varianti .h/.cpp della stessa funzione condividono lo stesso Ground Truth:
-    come rappresentante si usa la variante .h (presente per ogni funzione),
-    conservando l'elenco completo degli id in "db_ids". Il source_code viene
-    invece preso dalla variante .cpp quando esiste, perché il .h contiene spesso
-    solo la dichiarazione e renderebbe EDR/ECC non calcolabili.
+    Raggruppa le righe DB per nome canonico ("ClassName::MethodName" in C++, nome della
+    funzione in C). Le varianti header/implementazione della stessa funzione condividono
+    lo stesso Ground Truth: come rappresentante si usa la variante header (presente per
+    ogni funzione), conservando l'elenco completo degli id in "db_ids". Il source_code
+    viene invece preso dalla variante di implementazione (.cpp/.c) quando esiste, perche'
+    l'header contiene spesso solo la dichiarazione e renderebbe EDR/ECC non calcolabili.
     """
     groups: Dict[str, Dict] = {}
     for fn in db_functions:
@@ -316,11 +512,11 @@ def group_db_functions(db_functions: List[Dict]) -> Dict[str, Dict]:
             continue
         g = groups[name]
         g["db_ids"].append(fn["db_id"])
-        if "_h_" in fn["db_id"] and "_h_" not in g["db_id"]:
-            cpp_source = g["source_code"]
+        if is_header_file(fn.get("filename")) and not is_header_file(g.get("filename")):
+            impl_source = g["source_code"]
             g.update(fn)
-            g["source_code"] = cpp_source
-        elif "_cpp_" in fn["db_id"] and fn["source_code"]:
+            g["source_code"] = impl_source
+        elif is_impl_file(fn.get("filename")) and fn["source_code"]:
             g["source_code"] = fn["source_code"]
     return groups
 
@@ -328,43 +524,53 @@ def group_db_functions(db_functions: List[Dict]) -> Dict[str, Dict]:
 def match_codewiki_to_db(
     codewiki_record: Dict,
     db_groups: Dict[str, Dict],
-) -> Tuple[Optional[Dict], float, str, Optional[str]]:
+    bases: Optional[Dict[str, List[str]]] = None,
+) -> Tuple[Optional[Dict], float, str]:
     """
     Tenta di far corrispondere un record CodeWiki a una funzione nel DB.
 
-    Strategie (in ordine di priorità):
-    1. Exact match su "ClassName::MethodName"
+    Strategie (in ordine di priorita'):
+    1. Exact match sul nome ("ClassName::MethodName" oppure nome della funzione C)
     2. Case-insensitive exact match
-    3. Inherited: stesso metodo dichiarato in una classe base (CLASS_BASES)
+    3. Namespace stripped (solo funzioni libere): "fmt::format" -> "format"
+    4. Inherited (solo classi): stesso metodo dichiarato in una classe base (class_bases)
 
-    Returns: (db_group_or_None, score, strategy_label, closest_candidate)
+    Returns: (db_group_or_None, score, strategy_label)
     """
-    class_name = codewiki_record["class_name"]
-    method_name = codewiki_record["method_name"]
-    canonical = f"{class_name}::{method_name}"
+    bases = bases or {}
+    class_name = codewiki_record.get("class_name")
+    mention = codewiki_record["mention"]
 
     # 1. Exact
-    if canonical in db_groups:
-        return db_groups[canonical], 1.0, "exact", None
+    if mention in db_groups:
+        return db_groups[mention], 1.0, "exact"
 
     # 2. Case-insensitive exact
     lower_index = {name.lower(): g for name, g in db_groups.items()}
-    if canonical.lower() in lower_index:
-        return lower_index[canonical.lower()], 1.0, "exact_ci", None
+    if mention.lower() in lower_index:
+        return lower_index[mention.lower()], 1.0, "exact_ci"
 
-    # 3. Metodo ereditato da una classe base
-    for base in CLASS_BASES.get(class_name, []):
-        base_name = f"{base}::{method_name}"
-        if base_name in db_groups:
-            return db_groups[base_name], 0.95, "inherited", None
+    if class_name is None:
+        # 3. Namespace/qualificatore iniziale rimosso (fmt::format -> format).
+        # Si accorcia solo da sinistra: nessun match per solo nome di metodo di una classe.
+        parts = mention.split("::")
+        for i in range(1, len(parts)):
+            cand = "::".join(parts[i:])
+            if cand in db_groups:
+                return db_groups[cand], 0.98, "namespace_stripped"
+            if cand.lower() in lower_index:
+                return lower_index[cand.lower()], 0.98, "namespace_stripped"
+    else:
+        # 4. Metodo ereditato da una classe base
+        method_name = codewiki_record["method_name"]
+        for base in bases.get(class_name, []):
+            base_name = f"{base}::{method_name}"
+            if base_name in db_groups:
+                return db_groups[base_name], 0.95, "inherited"
 
-    # Nessun match: registra il candidato più vicino solo come diagnostica
-    best_name, best_score = None, 0.0
-    for name in db_groups:
-        s = similarity(canonical, name)
-        if s > best_score:
-            best_name, best_score = name, s
-    return None, round(best_score, 4), "none", best_name
+    # Nessun match: la funzione non e' nel DB (tipicamente perche' priva di un commento
+    # Doxygen proprio, quindi senza Ground Truth). Nessun matching fuzzy.
+    return None, 0.0, "none"
 
 
 # ── Assembla il JSON finale ────────────────────────────────────────────────────
@@ -372,22 +578,32 @@ def match_codewiki_to_db(
 def build_output_records(
     codewiki_methods: List[Dict],
     db_functions: List[Dict],
+    library: str,
 ) -> Tuple[List[Dict], set]:
     """
     Combina le descrizioni CodeWiki con i metadati del DB di benchmark.
     Restituisce (output_records, db_matched_names).
     """
     db_groups = group_db_functions(db_functions)
+    bases = class_bases(library)
     output = []
     db_matched_names = set()
 
     for record in codewiki_methods:
-        db_fn, score, strategy, closest = match_codewiki_to_db(record, db_groups)
+        if record.get("class_name"):
+            record["mention"] = f"{record['class_name']}::{record['method_name']}"
+        db_fn, score, strategy = match_codewiki_to_db(record, db_groups, bases)
+
+        # Parser per funzioni libere: un identificatore non presente nel DB e senza sintassi
+        # di chiamata e' quasi certamente un tipo/struct/campo, non una funzione mancante.
+        if db_fn is None and not record.get("class_name") and not record.get("call_syntax", True):
+            continue
 
         out = {
-            # Identità
-            "function_name": f"{record['class_name']}::{record['method_name']}",
-            "class_name": record["class_name"],
+            # Identita'
+            "library": library,
+            "function_name": record["mention"],
+            "class_name": record.get("class_name"),
             "method_name": record["method_name"],
             "raw_method_signature": record.get("raw_method_signature", ""),
             # Documentazione CodeWiki
@@ -399,7 +615,6 @@ def build_output_records(
             "matched": db_fn is not None,
             "match_score": score,
             "match_strategy": strategy,
-            "closest_db_candidate": closest,
             # Campi dal DB (None se non matchato)
             "db_id": db_fn["db_id"] if db_fn else None,
             "db_ids": db_fn["db_ids"] if db_fn else [],
@@ -421,6 +636,7 @@ def build_output_records(
 # ── Report di copertura ────────────────────────────────────────────────────────
 
 def print_coverage_report(
+    library: str,
     output_records: List[Dict],
     db_functions: List[Dict],
     db_matched_names: set,
@@ -432,7 +648,7 @@ def print_coverage_report(
     unmatched_codewiki = total_codewiki - matched_codewiki
     documented = {
         r["db_function_name"] for r in output_records
-        if r["matched"] and r["doc_source"] == "bullet"
+        if r["matched"] and r["doc_source"] == "bullet" and r["codewiki_doc"].strip()
     }
     mention_pct = (len(db_matched_names) / total_db * 100) if total_db > 0 else 0.0
     doc_pct = (len(documented) / total_db * 100) if total_db > 0 else 0.0
@@ -444,11 +660,11 @@ def print_coverage_report(
 
     print()
     print("=" * 65)
-    print("  REPORT DI COPERTURA: CodeWiki → benchmark.db (TinyXML-2)")
+    print(f"  REPORT DI COPERTURA: CodeWiki → benchmark.db ({library})")
     print("=" * 65)
-    print(f"  Righe nel DB (varianti .h/.cpp):        {len(db_functions)}")
+    print(f"  Righe nel DB (varianti header/implementazione): {len(db_functions)}")
     print(f"  Funzioni uniche nel DB:                 {total_db}")
-    print(f"  Menzioni di metodi in CodeWiki:         {total_codewiki}")
+    print(f"  Menzioni di funzioni in CodeWiki:       {total_codewiki}")
     print(f"  ├── Matchate al DB:                     {matched_codewiki}")
     print(f"  └── Non trovate nel DB (surplus):       {unmatched_codewiki}")
     print(f"  Funzioni DB menzionate (anche Mermaid): {len(db_matched_names)} / {total_db}  ({mention_pct:.1f}%)")
@@ -461,9 +677,9 @@ def print_coverage_report(
 
     unmatched = [r for r in output_records if not r["matched"]]
     if unmatched:
-        print(f"\n  Menzioni CodeWiki senza match ({len(unmatched)}), con candidato DB più vicino:")
+        print(f"\n  Menzioni CodeWiki non presenti nel DB, senza Ground Truth ({len(unmatched)}):")
         for r in unmatched:
-            print(f"    - {r['function_name']:35s} ~ {r['closest_db_candidate']} ({r['match_score']})")
+            print(f"    - {r['function_name']}")
 
     uncovered = sorted(db_names - db_matched_names)
     if uncovered:
@@ -475,56 +691,82 @@ def print_coverage_report(
 
 # ── Punto di ingresso ──────────────────────────────────────────────────────────
 
-def main():
-    # La console Windows (cp1252) non gestisce tutti i caratteri Unicode
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+def run(library: str) -> Optional[str]:
+    """
+    Mappa la documentazione CodeWiki di `library` sul benchmark.db.
+    Restituisce il percorso del JSON prodotto, oppure None se non c'e' nulla da mappare.
+    """
+    canonical = resolve_library(library)
+    if canonical is None:
+        print(f"[ERRORE] '{library}' non e' presente in {DB_PATH}")
+        return None
+    library = canonical
+    paths = lib_paths(library)
+
     print("=" * 65)
     print("  parse_codewiki_to_benchmark.py")
-    print(f"  Target Library : {TARGET_LIBRARY}")
-    print(f"  CodeWiki Dir   : {CODEWIKI_DIR}")
+    print(f"  Target Library : {library}")
+    print(f"  CodeWiki Dir   : {paths.dir}")
     print(f"  Database       : {DB_PATH}")
-    print(f"  Output JSON    : {OUTPUT_JSON}")
+    print(f"  Output JSON    : {paths.mapped_json}")
     print("=" * 65)
     print()
+
+    if not os.path.isdir(paths.dir):
+        print(f"[ERRORE] Cartella CodeWiki non trovata: {paths.dir}")
+        return None
 
     # 1. Parsing Markdown CodeWiki
     print("[1/4] Parsing dei file Markdown CodeWiki...")
-    codewiki_methods = extract_all_codewiki_methods(CODEWIKI_DIR)
-    print(f"      Totale metodi estratti: {len(codewiki_methods)}")
+    codewiki_methods = extract_all_codewiki_methods(paths.dir, library)
+    print(f"      Totale menzioni estratte: {len(codewiki_methods)}")
     print()
 
     if not codewiki_methods:
-        print("[ERRORE] Nessun metodo estratto. Verifica i file in compare_CodeWiki/")
-        sys.exit(1)
+        print(f"[ERRORE] Nessuna menzione estratta. Verifica i file in {paths.dir}")
+        return None
 
     # 2. Carica funzioni dal database
     print("[2/4] Caricamento funzioni dal benchmark.db...")
-    db_functions = load_benchmark_functions(DB_PATH, TARGET_LIBRARY)
-    print(f"      Trovate {len(db_functions)} funzioni per '{TARGET_LIBRARY}'")
+    db_functions = load_benchmark_functions(DB_PATH, library)
+    print(f"      Trovate {len(db_functions)} funzioni per '{library}'")
     print()
 
     if not db_functions:
-        print(f"[ERRORE] Nessuna funzione trovata per '{TARGET_LIBRARY}' in {DB_PATH}")
-        sys.exit(1)
+        print(f"[ERRORE] Nessuna funzione trovata per '{library}' in {DB_PATH}")
+        return None
 
     # 3. Mapping CodeWiki → DB
     print("[3/4] Mapping CodeWiki → benchmark.db...")
-    output_records, db_matched_names = build_output_records(codewiki_methods, db_functions)
+    output_records, db_matched_names = build_output_records(codewiki_methods, db_functions, library)
     print(f"      Record output generati: {len(output_records)}")
     print()
 
     # 4. Salva JSON
-    print(f"[4/4] Salvataggio JSON in: {OUTPUT_JSON}")
-    with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
+    print(f"[4/4] Salvataggio JSON in: {paths.mapped_json}")
+    with open(paths.mapped_json, "w", encoding="utf-8") as f:
         json.dump(output_records, f, ensure_ascii=False, indent=2)
-    print(f"      Salvato con successo ({os.path.getsize(OUTPUT_JSON):,} bytes)")
+    print(f"      Salvato con successo ({os.path.getsize(paths.mapped_json):,} bytes)")
     print()
 
     # Report finale
-    print_coverage_report(output_records, db_functions, db_matched_names)
+    print_coverage_report(library, output_records, db_functions, db_matched_names)
+    return paths.mapped_json
+
+
+def main():
+    # La console Windows (cp1252) non gestisce tutti i caratteri Unicode
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    parser = argparse.ArgumentParser(
+        description="Mappa la documentazione CodeWiki di una libreria sulle funzioni del benchmark.db"
+    )
+    parser.add_argument("-l", "--library", default="TinyXML-2",
+                        help="Libreria da mappare (default: TinyXML-2); per tutte usa compare_codewiki.py")
+    args = parser.parse_args()
+    if run(args.library) is None:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
     main()
-

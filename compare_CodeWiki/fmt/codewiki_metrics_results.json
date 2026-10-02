@@ -1,0 +1,38 @@
+[
+  {
+    "function_name": "format",
+    "db_ids": [
+      "fmt_format_h_format"
+    ],
+    "codewiki_mentions": [
+      "fmt::format"
+    ],
+    "match_strategies": [
+      "namespace_stripped"
+    ],
+    "source_files": [
+      "overview.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 25,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.24,
+    "brevity_penalty": 0.0421,
+    "sbert_similarity": 0.2484,
+    "meteor_score": 0.1242,
+    "bleurt_estimate": 0.1657,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.3361,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  }
+]

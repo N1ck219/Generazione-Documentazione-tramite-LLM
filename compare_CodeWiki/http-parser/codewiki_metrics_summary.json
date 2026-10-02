@@ -1,0 +1,111 @@
+{
+  "total_db_rows": 28,
+  "total_db_functions": 15,
+  "total_codewiki_mentions": 9,
+  "total_codewiki_unmatched": 0,
+  "unmatched_mentions": [],
+  "match_strategy_counts": {
+    "exact": 9
+  },
+  "total_db_mentioned": 9,
+  "total_db_documented": 9,
+  "total_db_mentioned_only": 0,
+  "documented_coverage_rate": 0.6,
+  "mention_coverage_rate": 0.6,
+  "uncovered_db_functions": [
+    "http_message_needs_eof",
+    "http_parser_execute",
+    "http_parser_parse_url",
+    "http_parser_settings_init",
+    "http_parser_url_init",
+    "parse_url_char"
+  ],
+  "sbert_similarity": {
+    "label": "SBERT Cosine Similarity",
+    "n": 9,
+    "mean": 0.6948,
+    "std": 0.0709,
+    "min": 0.5785,
+    "max": 0.8061
+  },
+  "bertscore_f1": {
+    "label": "BERTScore F1",
+    "n": 9,
+    "mean": 0.6791,
+    "std": 0.1223,
+    "min": 0.4519,
+    "max": 0.8293
+  },
+  "rouge_l": {
+    "label": "ROUGE-L",
+    "n": 9,
+    "mean": 0.4269,
+    "std": 0.2135,
+    "min": 0.1739,
+    "max": 0.7692
+  },
+  "tfidf_cosine": {
+    "label": "TF-IDF Cosine",
+    "n": 9,
+    "mean": 0.5096,
+    "std": 0.1458,
+    "min": 0.3381,
+    "max": 0.7715
+  },
+  "meteor_score": {
+    "label": "METEOR",
+    "n": 9,
+    "mean": 0.5608,
+    "std": 0.1227,
+    "min": 0.4255,
+    "max": 0.7876
+  },
+  "bleurt_estimate": {
+    "label": "BLEURT Estimate",
+    "n": 9,
+    "mean": 0.6273,
+    "std": 0.1041,
+    "min": 0.4837,
+    "max": 0.8163
+  },
+  "concept_checklist_score": {
+    "label": "Semantic Concept Checklist",
+    "n": 9,
+    "mean": 1.0,
+    "std": 0.0,
+    "min": 1.0,
+    "max": 1.0
+  },
+  "actionability_score": {
+    "label": "Actionability Score",
+    "n": 9,
+    "mean": 0.3167,
+    "std": 0.1886,
+    "min": 0.25,
+    "max": 0.85
+  },
+  "error_doc_rate": {
+    "label": "Error Documentation Rate",
+    "n": 1,
+    "mean": 0.0,
+    "std": 0.0,
+    "min": 0.0,
+    "max": 0.0
+  },
+  "edge_case_coverage": {
+    "label": "Edge Case Coverage",
+    "n": 1,
+    "mean": 0.0,
+    "std": 0.0,
+    "min": 0.0,
+    "max": 0.0
+  },
+  "length_ratio": {
+    "label": "Length Ratio (CodeWiki/GT)",
+    "n": 9,
+    "mean": 0.7792,
+    "std": 0.3655,
+    "min": 0.088,
+    "max": 1.125
+  }
+}

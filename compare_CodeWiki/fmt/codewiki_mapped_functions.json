@@ -1,0 +1,35 @@
+[
+  {
+    "library": "fmt",
+    "function_name": "fmt::format",
+    "class_name": null,
+    "method_name": "format",
+    "raw_method_signature": "fmt::format",
+    "codewiki_doc": "The primary entry points for formatting.",
+    "doc_source": "bullet",
+    "codewiki_context": "3.1. High-Level Module Structure",
+    "source_file": "overview.md",
+    "matched": true,
+    "match_score": 0.98,
+    "match_strategy": "namespace_stripped",
+    "db_id": "fmt_format_h_format",
+    "db_ids": [
+      "fmt_format_h_format"
+    ],
+    "db_function_name": "format",
+    "signature": "std::string format(int fmt, int && args)",
+    "return_type": "std::string",
+    "parameters": [
+      {
+        "name": "fmt",
+        "type": "int"
+      },
+      {
+        "name": "args",
+        "type": "int &&"
+      }
+    ],
+    "source_code": "FMT_NODISCARD FMT_INLINE auto format(format_string<T...> fmt, T&&... args)\n    -> std::string {\n  return vformat(fmt.str, vargs<T...>{{args...}});\n}",
+    "cleaned_doc": "Formats `args` according to specifications in `fmt` and returns the result\nas a string.\n**Example**:\n    #include <fmt/format.h>\n    std::string message = fmt::format(\"The answer is {}.\", 42);"
+  }
+]

@@ -1,0 +1,11 @@
+# Funzioni http-parser documentate da CodeWiki (generato da evaluate_codewiki_metrics.py)
+# Uso: python utils/benchmark_eval.py -l http-parser -m multiagent --functions <questo file>
+http_body_is_final
+http_errno_description
+http_errno_name
+http_method_str
+http_parser_pause
+http_parser_set_max_header_size
+http_parser_version
+http_should_keep_alive
+http_status_str

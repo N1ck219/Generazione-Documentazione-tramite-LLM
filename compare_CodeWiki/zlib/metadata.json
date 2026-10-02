@@ -1,0 +1,19 @@
+{
+    "generation_info": {
+        "timestamp": "2026-10-02T11:04:16.822632",
+        "main_model": "gemini-3.5-flash-lite",
+        "generator_version": "1.0.1",
+        "repo_path": "D:\\python\\CodeWiki\\src_code\\sources\\zlib",
+        "commit_id": "4c18face91c6a634a86b3e9aebb1af6c78d66e76"
+    },
+    "statistics": {
+        "total_components": 6,
+        "leaf_nodes": 6,
+        "max_depth": 2
+    },
+    "files_generated": [
+        "overview.md",
+        "module_tree.json",
+        "first_module_tree.json"
+    ]
+}

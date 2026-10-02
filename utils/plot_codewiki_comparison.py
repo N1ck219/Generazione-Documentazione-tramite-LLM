@@ -2,14 +2,14 @@
 plot_codewiki_comparison.py
 ---------------------------
 Grafici delle metriche CodeWiki e confronto affiancato con la pipeline della tesi
-(TinyXML-2).
+di una libreria.
 
 Legge:
-  - compare_CodeWiki/codewiki_metrics_results.json   (da evaluate_codewiki_metrics.py)
+  - compare_CodeWiki/<Libreria>/codewiki_metrics_results.json   (da evaluate_codewiki_metrics.py)
   - results/**/eval_report_*.json                    (run della pipeline della tesi)
   - dataset/benchmark.db                             (codice sorgente canonico per EDR/ECC)
 
-Produce in compare_CodeWiki/charts/:
+Produce in compare_CodeWiki/<Libreria>/charts/:
   Solo CodeWiki
     cw_metrics_summary.png        media +- std di ogni metrica
     cw_metrics_distributions.png  distribuzione per funzione di ogni metrica
@@ -21,18 +21,18 @@ Produce in compare_CodeWiki/charts/:
     cmp_paired_functions.png      confronto per funzione (SBERT, BERTScore, METEOR)
     cmp_advanced_metrics.png      judge, round-trip, retrieval, CodeBERTScore (se calcolati
                                   per CodeWiki con utils/evaluate_codewiki_advanced.py)
-  e il report compare_CodeWiki/codewiki_vs_pipeline_report.md (+ .json).
+  e il report compare_CodeWiki/<Libreria>/codewiki_vs_pipeline_report.md (+ .json).
 
 Equita' del confronto:
   - Le metriche semantiche della pipeline sono quelle salvate nei suoi report:
     stesse funzioni di utils/benchmark_metrics.py, calcolate su @brief+@details vs GT.
   - EDR ed ECC vengono ricalcolate per entrambi i sistemi sullo stesso codice
-    (variante .cpp se disponibile) e sono "non applicabili" quando il codice non ha
+    (file di implementazione se disponibile) e sono "non applicabili" quando il codice non ha
     rami di errore / guardie, invece di valere 1.0 per vacuita'.
   - Per ogni funzione si usa il run piu' recente della pipeline che la contiene.
 
 Utilizzo:
-  .venv/Scripts/python utils/plot_codewiki_comparison.py [--pipeline-report PATH]
+  .venv/Scripts/python utils/plot_codewiki_comparison.py [-l LIBRERIA] [--pipeline-report PATH]
                                                          [--pipeline-mode multiagent|single|any]
 """
 
@@ -61,18 +61,8 @@ from utils.benchmark_metrics import (
 from utils.parse_codewiki_to_benchmark import (
     load_benchmark_functions,
     group_db_functions,
-    DB_PATH,
-    TARGET_LIBRARY,
 )
-
-CODEWIKI_DIR = os.path.join(ROOT_DIR, "compare_CodeWiki")
-CW_RESULTS   = os.path.join(CODEWIKI_DIR, "codewiki_metrics_results.json")
-CW_SUMMARY   = os.path.join(CODEWIKI_DIR, "codewiki_metrics_summary.json")
-CHARTS_DIR   = os.path.join(CODEWIKI_DIR, "charts")
-CMP_REPORT   = os.path.join(CODEWIKI_DIR, "codewiki_vs_pipeline_report.md")
-CMP_JSON     = os.path.join(CODEWIKI_DIR, "codewiki_vs_pipeline_summary.json")
-ADV_RESULTS  = os.path.join(CODEWIKI_DIR, "codewiki_advanced_results.json")
-RESULTS_DIR  = os.path.join(ROOT_DIR, "results")
+from utils.codewiki_config import DB_PATH, RESULTS_DIR, LibraryPaths, lib_paths, resolve_library
 
 # Metriche in scala [0, 1] (stesso asse). length_ratio ha scala diversa: grafico a parte.
 METRICS = [
@@ -203,9 +193,10 @@ def _run_timestamp(report_path: str) -> str:
     return os.path.basename(os.path.dirname(report_path))
 
 
-def load_pipeline_records(report_path: Optional[str], mode: str) -> Dict[str, Dict]:
+def load_pipeline_records(library: str, report_path: Optional[str], mode: str) -> Dict[str, Dict]:
     """
-    Restituisce {function_name: record pipeline} per TinyXML-2.
+    Restituisce {function_name: record pipeline} per la libreria (record il cui id e' nel DB
+    tra le righe della libreria).
     Senza report esplicito scandisce tutti i run in results/ (escluse le cartelle
     'latest', duplicati dell'ultimo run) e tiene il record piu' recente per funzione.
     """
@@ -218,6 +209,7 @@ def load_pipeline_records(report_path: Optional[str], mode: str) -> Dict[str, Di
             if os.path.basename(os.path.dirname(p)) != "latest"
         ]
 
+    library_ids = {fn["db_id"] for fn in load_benchmark_functions(DB_PATH, library)}
     best: Dict[str, Dict] = {}
     for p in paths:
         try:
@@ -229,7 +221,7 @@ def load_pipeline_records(report_path: Optional[str], mode: str) -> Dict[str, Di
             continue
         ts = _run_timestamp(p)
         for r in data:
-            if not isinstance(r, dict) or not str(r.get("id", "")).lower().startswith("tinyxml-2"):
+            if not isinstance(r, dict) or r.get("id") not in library_ids:
                 continue
             name = r.get("function_name")
             if name and (name not in best or ts > best[name]["_ts"]):
@@ -274,7 +266,7 @@ def codewiki_metrics_on_canonical_code(cw: Dict, canonical_code: str, cw_doc: st
 
 # ── Grafici solo CodeWiki ─────────────────────────────────────────────────────
 
-def plot_cw_summary(rows: List[Dict], path: str):
+def plot_cw_summary(rows: List[Dict], library: str, path: str):
     labels, means, stds, ns = [], [], [], []
     for key, label in METRICS:
         vals = _values(rows, key)
@@ -295,7 +287,7 @@ def plot_cw_summary(rows: List[Dict], path: str):
     ax.set_yticks(y, labels)
     _style_value_axis(ax, "x", (0, 1.1))
     ax.set_xlabel("Media (barre di errore: deviazione standard, troncata a [0, 1])")
-    ax.set_title("CodeWiki vs Ground Truth - metriche medie (TinyXML-2)")
+    ax.set_title(f"CodeWiki vs Ground Truth - metriche medie ({library})")
     fig.savefig(path)
     plt.close(fig)
 
@@ -414,7 +406,7 @@ def wilcoxon_p(a: List[float], b: List[float]) -> Optional[float]:
     return float(wilcoxon(a, b).pvalue)
 
 
-def plot_cmp_bars(stats: List[Dict], n_pairs: int, path: str):
+def plot_cmp_bars(stats: List[Dict], n_pairs: int, library: str, path: str):
     fig, ax = plt.subplots(figsize=(8.5, 6))
     y = np.arange(len(stats))[::-1]
     h = 0.36
@@ -436,7 +428,7 @@ def plot_cmp_bars(stats: List[Dict], n_pairs: int, path: str):
     _style_value_axis(ax, "x", (0, 1.08))
     ax.set_xlabel("Media sulle funzioni valutate da entrambi i sistemi"
                   "   (* = differenza significativa, Wilcoxon p < 0.05)")
-    ax.set_title(f"Pipeline tesi vs CodeWiki - metriche medie ({n_pairs} funzioni TinyXML-2 in comune)", pad=26)
+    ax.set_title(f"Pipeline tesi vs CodeWiki - metriche medie ({n_pairs} funzioni {library} in comune)", pad=26)
     ax.legend(loc="lower left", bbox_to_anchor=(0, 1.0), ncol=2, fontsize=9, borderaxespad=0.2)
     fig.savefig(path)
     plt.close(fig)
@@ -561,14 +553,15 @@ def compare_stats(cw: List[Dict], pl: List[Dict]) -> List[Dict]:
     return stats
 
 
-def write_comparison_report(stats: List[Dict], cw_common: List[Dict], pl_common: List[Dict],
+def write_comparison_report(paths: LibraryPaths, stats: List[Dict], cw_common: List[Dict], pl_common: List[Dict],
                             n_cw_eval: int, missing: List[str], runs: List[str]):
+    library = paths.library
     def f(v, nd=4):
         return f"{v:.{nd}f}" if v is not None else "N/A"
 
     n = len(cw_common)
     lines = [
-        "# Confronto: Pipeline della tesi vs CodeWiki (TinyXML-2)",
+        f"# Confronto: Pipeline della tesi vs CodeWiki ({library})",
         "",
         "> **Script**: `utils/plot_codewiki_comparison.py`  ",
         f"> **Funzioni confrontate**: {n} (valutate da entrambi i sistemi) su {n_cw_eval} documentate da CodeWiki  ",
@@ -579,8 +572,8 @@ def write_comparison_report(stats: List[Dict], cw_common: List[Dict], pl_common:
         lines += [
             f"> ⚠️ **Campione ridotto (n={n})**: le differenze non sono statisticamente affidabili.",
             "> Per un confronto completo eseguire la pipeline sulle stesse funzioni di CodeWiki:",
-            "> `.venv/Scripts/python utils/benchmark_eval.py -l TinyXML-2 -m multiagent "
-            "--functions compare_CodeWiki/codewiki_function_list.txt`",
+            f"> `.venv/Scripts/python utils/benchmark_eval.py -l {library} -m multiagent "
+            f"--functions compare_CodeWiki/{os.path.basename(paths.dir)}/codewiki_function_list.txt`",
             "",
         ]
     lines += [
@@ -606,7 +599,7 @@ def write_comparison_report(stats: List[Dict], cw_common: List[Dict], pl_common:
     if not any(s["n"] for s in stats if s["group"] == "advanced"):
         lines += [
             "*Non ancora calcolate per CodeWiki: eseguire*",
-            "`.venv/Scripts/python utils/evaluate_codewiki_advanced.py`",
+            f"`.venv/Scripts/python utils/evaluate_codewiki_advanced.py -l {library}`",
             "*(oppure `evaluate_codewiki_metrics.py --full`).*",
         ]
     else:
@@ -644,48 +637,62 @@ def write_comparison_report(stats: List[Dict], cw_common: List[Dict], pl_common:
         "- Le metriche semantiche della pipeline sono quelle salvate nei suoi report (stesse funzioni",
         "  di `utils/benchmark_metrics.py`, calcolate su `@brief` + `@details` vs GT); per CodeWiki",
         "  il candidato e' il testo dei bullet Markdown associati alla funzione.",
-        "- EDR ed ECC sono ricalcolate per entrambi i sistemi sullo stesso codice (variante `.cpp`",
-        "  se presente) e considerate solo dove il codice contiene rami di errore / guardie.",
+        "- EDR ed ECC sono ricalcolate per entrambi i sistemi sullo stesso codice (file di",
+        "  implementazione se presente) e considerate solo dove il codice contiene rami di errore / guardie.",
         "- Il test di Wilcoxon (appaiato, a due code) e' riportato solo per n >= 6.",
         "- Judge e round-trip CodeWiki usano la stessa configurazione della pipeline",
         "  (gemini-3.5-flash-lite, judge T=0.4 con 5 round per prospettiva, `RoundTripEvaluator`),",
         "  le stesse righe del DB (firma, codice, GT) e come documentazione il testo CodeWiki.",
-        "  Retrieval: stesso corpus TinyXML-2 della pipeline; query = testo della documentazione.",
+        f"  Retrieval: stesso corpus {library} della pipeline; query = testo della documentazione.",
         f"- Funzioni documentate da CodeWiki ma non ancora valutate dalla pipeline: {len(missing)}.",
         "",
         "*Report generato automaticamente da `utils/plot_codewiki_comparison.py`*",
     ]
-    with open(CMP_REPORT, "w", encoding="utf-8") as fh:
+    with open(paths.cmp_report, "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines))
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
-def generate_all_charts(pipeline_report: Optional[str] = None, pipeline_mode: str = "multiagent") -> List[str]:
-    os.makedirs(CHARTS_DIR, exist_ok=True)
-    with open(CW_RESULTS, encoding="utf-8") as f:
+def generate_all_charts(library: str, pipeline_report: Optional[str] = None,
+                        pipeline_mode: str = "multiagent") -> List[str]:
+    canonical = resolve_library(library)
+    if canonical is None:
+        raise SystemExit(f"[ERRORE] '{library}' non e' presente in {DB_PATH}")
+    library = canonical
+    paths = lib_paths(library)
+    for needed in (paths.results_json, paths.summary_json, paths.mapped_json):
+        if not os.path.exists(needed):
+            raise SystemExit(f"[ERRORE] File non trovato: {needed}\n"
+                             f"  Esegui prima evaluate_codewiki_metrics.py -l {library}")
+
+    os.makedirs(paths.charts_dir, exist_ok=True)
+    with open(paths.results_json, encoding="utf-8") as f:
         cw_all = json.load(f)
-    with open(CW_SUMMARY, encoding="utf-8") as f:
+    with open(paths.summary_json, encoding="utf-8") as f:
         summary = json.load(f)
     cw_eval = [r for r in cw_all if r["evaluated"]]
+    if not cw_eval:
+        print(f"  [WARN] {library}: nessuna funzione con testo CodeWiki valutata, grafici non generati.")
+        return []
 
     out = []
     def save(fn, *a):
-        p = os.path.join(CHARTS_DIR, a[-1])
+        p = os.path.join(paths.charts_dir, a[-1])
         fn(*a[:-1], p)
         out.append(p)
 
-    save(plot_cw_summary, cw_eval, "cw_metrics_summary.png")
+    save(plot_cw_summary, cw_eval, library, "cw_metrics_summary.png")
     save(plot_cw_distributions, cw_eval, "cw_metrics_distributions.png")
     save(plot_cw_coverage, summary, cw_all, "cw_coverage_by_class.png")
 
     # ── Confronto con la pipeline ─────────────────────────────────────────────
-    groups = group_db_functions(load_benchmark_functions(DB_PATH, TARGET_LIBRARY))
-    pipeline = load_pipeline_records(pipeline_report, pipeline_mode)
+    groups = group_db_functions(load_benchmark_functions(DB_PATH, library))
+    pipeline = load_pipeline_records(library, pipeline_report, pipeline_mode)
     common_names = sorted({r["function_name"] for r in cw_eval} & set(pipeline))
     missing = sorted({r["function_name"] for r in cw_eval} - set(pipeline))
 
-    with open(os.path.join(ROOT_DIR, "compare_CodeWiki", "codewiki_mapped_functions.json"), encoding="utf-8") as f:
+    with open(paths.mapped_json, encoding="utf-8") as f:
         mapped = json.load(f)
     cw_docs: Dict[str, List[str]] = {}
     for m in mapped:
@@ -695,8 +702,8 @@ def generate_all_charts(pipeline_report: Optional[str] = None, pipeline_mode: st
                 texts.append(m["codewiki_doc"].strip())
 
     adv_cache: Dict[str, Dict] = {}
-    if os.path.exists(ADV_RESULTS):
-        with open(ADV_RESULTS, encoding="utf-8") as f:
+    if os.path.exists(paths.adv_results):
+        with open(paths.adv_results, encoding="utf-8") as f:
             adv_cache = json.load(f)
 
     cw_common, pl_common = [], []
@@ -710,7 +717,7 @@ def generate_all_charts(pipeline_report: Optional[str] = None, pipeline_mode: st
 
     save(plot_length_ratio, cw_eval, pl_common or None, "cw_length_ratio.png")
 
-    print(f"  Pipeline: {len(pipeline)} funzioni TinyXML-2 nei run ({pipeline_mode}), "
+    print(f"  Pipeline: {len(pipeline)} funzioni {library} nei run ({pipeline_mode}), "
           f"{len(common_names)} in comune con le {len(cw_eval)} documentate da CodeWiki")
 
     if not common_names:
@@ -719,26 +726,27 @@ def generate_all_charts(pipeline_report: Optional[str] = None, pipeline_mode: st
 
     stats = compare_stats(cw_common, pl_common)
     save(plot_cmp_bars, [s for s in stats if s["group"] == "nlp" and s["metric"] != "length_ratio"],
-         len(common_names), "cmp_metrics_bars.png")
+         len(common_names), library, "cmp_metrics_bars.png")
     save(plot_cmp_distributions, cw_common, pl_common, "cmp_distributions.png")
     save(plot_cmp_paired, cw_common, pl_common, "cmp_paired_functions.png")
-    adv_path = os.path.join(CHARTS_DIR, "cmp_advanced_metrics.png")
+    adv_path = os.path.join(paths.charts_dir, "cmp_advanced_metrics.png")
     if plot_cmp_advanced(cw_common, pl_common, adv_path):
         out.append(adv_path)
     else:
         print("  [INFO] Metriche avanzate CodeWiki non ancora calcolate: grafico avanzato non generato.")
 
     runs = sorted({p["run"] for p in pl_common})
-    write_comparison_report(stats, cw_common, pl_common, len(cw_eval), missing, runs)
-    with open(CMP_JSON, "w", encoding="utf-8") as f:
+    write_comparison_report(paths, stats, cw_common, pl_common, len(cw_eval), missing, runs)
+    with open(paths.cmp_json, "w", encoding="utf-8") as f:
         json.dump({
+            "library": library,
             "n_common": len(common_names),
             "n_codewiki_documented": len(cw_eval),
             "pipeline_runs": runs,
             "missing_in_pipeline": missing,
             "metrics": stats,
         }, f, ensure_ascii=False, indent=2)
-    out += [CMP_REPORT, CMP_JSON]
+    out += [paths.cmp_report, paths.cmp_json]
     return out
 
 
@@ -746,12 +754,13 @@ def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description="Grafici CodeWiki e confronto con la pipeline della tesi")
+    parser.add_argument("-l", "--library", default="TinyXML-2", help="Libreria da confrontare (default: TinyXML-2)")
     parser.add_argument("--pipeline-report", default=None,
                         help="eval_report_*.json specifico (default: tutti i run in results/, il piu' recente per funzione)")
     parser.add_argument("--pipeline-mode", default="multiagent", choices=["multiagent", "single", "any"],
                         help="Modalita' della pipeline da confrontare (default: multiagent)")
     args = parser.parse_args()
-    for p in generate_all_charts(args.pipeline_report, args.pipeline_mode):
+    for p in generate_all_charts(args.library, args.pipeline_report, args.pipeline_mode):
         print(f"  -> {os.path.relpath(p, ROOT_DIR)}")
 
 

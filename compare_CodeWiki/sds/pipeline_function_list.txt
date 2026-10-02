@@ -1,0 +1,17 @@
+# Funzioni sds da documentare con la pipeline (batch 1/2, generato da compare_codewiki.py)
+hex_digit_to_int
+is_hex_digit
+sdsAllocPtr
+sdsAllocSize
+sdsIncrLen
+sdsRemoveFreeSpace
+sds_malloc
+sdsalloc
+sdscat
+sdscatlen
+sdscatprintf
+sdscatsds
+sdscatvprintf
+sdscmp
+sdscpy
+sdscpylen

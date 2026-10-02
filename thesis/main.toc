@@ -1,0 +1,80 @@
+\babel@toc {italian}{}\relax 
+\babel@toc {italian}{}\relax 
+\contentsline {chapter}{\numberline {1}Introduzione}{5}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Il Paradigma dei Large Language Model nell'Ingegneria del Software}{5}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Il Ruolo Critico della Documentazione del Software: Dalla Manutenzione al ``Continuous Drift''}{7}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Evoluzione Storica del Code Summarization: Le Quattro Epoche}{8}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}L'Era delle Euristiche e dei Template (pre-2010)}{8}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}L'Era dell'Information Retrieval (primi anni 2010)}{9}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}L'Era del Deep Learning Iniziale (metà anni 2010)}{9}{subsection.1.3.3}%
+\contentsline {subsection}{\numberline {1.3.4}Il ``Soffitto Tecnologico'' Pre-LLM (The Deep Learning Ceiling)}{10}{subsection.1.3.4}%
+\contentsline {section}{\numberline {1.4}Dall'Analisi Atomica alla Scala Repository: Micro-Scale vs Macro-Scale}{11}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Micro-Scale: Dalla Funzione alla Documentazione di Dettaglio}{11}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}Macro-Scale: Dalla Codebase alla Mappatura Architetturale}{12}{subsection.1.4.2}%
+\contentsline {section}{\numberline {1.5}Stato dell'Arte dei Framework di Repository: CodeWiki, RepoAgent e DocAgent}{13}{section.1.5}%
+\contentsline {subsection}{\numberline {1.5.1}CodeWiki (Hoang et al., 2026)}{13}{subsection.1.5.1}%
+\contentsline {subsection}{\numberline {1.5.2}RepoAgent (Luo et al., 2024)}{13}{subsection.1.5.2}%
+\contentsline {subsection}{\numberline {1.5.3}DocAgent (Yang et al., 2025)}{14}{subsection.1.5.3}%
+\contentsline {subsection}{\numberline {1.5.4}RepoSummary (Zhu et al., 2025)}{14}{subsection.1.5.4}%
+\contentsline {subsection}{\numberline {1.5.5}Quadro Comparativo Sinottico}{15}{subsection.1.5.5}%
+\contentsline {section}{\numberline {1.6}Obiettivo della Tesi e ``Strategic Blueprint'' Proposto}{15}{section.1.6}%
+\contentsline {subsection}{\numberline {1.6.1}Definizione dell'Obiettivo Primario}{15}{subsection.1.6.1}%
+\contentsline {subsection}{\numberline {1.6.2}L'Architettura Modulare a Quattro Livelli (Strategic Blueprint)}{15}{subsection.1.6.2}%
+\contentsline {subsection}{\numberline {1.6.3}I Tre Principi Cardine della Tesi}{17}{subsection.1.6.3}%
+\contentsline {subsection}{\numberline {1.6.4}Struttura e Organizzazione della Tesi}{18}{subsection.1.6.4}%
+\contentsline {chapter}{\numberline {2}Tassonomia e Formulazione Analitica delle Metriche di Valutazione}{21}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Introduzione e Motivazione}{21}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Stato dell'Arte e Tassonomia a Quattro Livelli}{22}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Descrizione Analitica delle Metriche di Benchmark}{23}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Livello I: Metriche Formali e Contratti AST}{24}{subsection.2.3.1}%
+\contentsline {subsubsection}{Verifier Pass Rate}{24}{section*.4}%
+\contentsline {subsubsection}{Parameter Precision, Recall ed F1-Score vs AST}{24}{section*.5}%
+\contentsline {subsubsection}{Return Contract Match}{25}{section*.6}%
+\contentsline {subsubsection}{Hallucination Rate}{25}{section*.7}%
+\contentsline {subsection}{\numberline {2.3.2}Livello II: Metriche di Qualità Software e Actionability}{26}{subsection.2.3.2}%
+\contentsline {subsubsection}{Actionability Score (AS)}{26}{section*.8}%
+\contentsline {subsubsection}{Error Documentation Rate (EDR)}{27}{section*.9}%
+\contentsline {subsubsection}{Edge Case Coverage (ECC)}{28}{section*.10}%
+\contentsline {subsubsection}{Concept Checklist Score}{28}{section*.11}%
+\contentsline {subsection}{\numberline {2.3.3}Livello III: Metriche Semantiche e Natural Language Processing}{29}{subsection.2.3.3}%
+\contentsline {subsubsection}{Sentence-BERT (SBERT) Cosine Similarity}{29}{section*.12}%
+\contentsline {subsubsection}{BERTScore e CodeBERTScore (Precision, Recall, F1)}{29}{section*.13}%
+\contentsline {subsubsection}{METEOR Score}{30}{section*.15}%
+\contentsline {subsubsection}{BLEURT Quality Score}{31}{section*.16}%
+\contentsline {subsubsection}{Fréchet Embedding Distance (FID / 2-Wasserstein)}{31}{section*.17}%
+\contentsline {subsubsection}{ROUGE-L, TF-IDF Cosine e Token Recall}{32}{section*.18}%
+\contentsline {subsection}{\numberline {2.3.4}Livello III (Avanzato): Framework LLM-as-a-Judge con Campionamento Monte Carlo}{32}{subsection.2.3.4}%
+\contentsline {subsubsection}{LLM-Judge Faithfulness, Alignment e Combined Score}{32}{section*.19}%
+\contentsline {subsection}{\numberline {2.3.5}Livello IV: Validazione Downstream e Testing Comportamentale}{34}{subsection.2.3.5}%
+\contentsline {subsubsection}{Downstream Code Retrieval (MRR, Hit@1, Hit@5)}{34}{section*.20}%
+\contentsline {subsubsection}{Round-Trip Pass Rate e Dual Agreement Rate}{34}{section*.21}%
+\contentsline {chapter}{\numberline {3}Validazione Sperimentale e Analisi dei Risultati}{37}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Setup Sperimentale e Metodologia di Benchmark}{37}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Strategie di Campionamento e Controllo Sperimentale}{38}{subsection.3.1.1}%
+\contentsline {section}{\numberline {3.2}Analisi Comparativa delle Rappresentazioni (Cross-Modal)}{38}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Analisi di CodeBERT vs SBERT/BERTScore: Resilienza Sintattica vs Cecità Semantica}{39}{subsection.3.2.1}%
+\contentsline {section}{\numberline {3.3}Valutazione Sperimentale ad Armi Pari delle Metriche NLP}{40}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Analisi Dettagliata per Singola Metrica NLP}{42}{subsection.3.3.1}%
+\contentsline {subsubsection}{Sentence-BERT (SBERT Cosine Similarity)}{42}{section*.27}%
+\contentsline {subsubsection}{BERTScore F1}{43}{section*.29}%
+\contentsline {subsubsection}{CodeBERTScore F1}{44}{section*.31}%
+\contentsline {subsubsection}{ROUGE-L (Longest Common Subsequence)}{45}{section*.33}%
+\contentsline {subsubsection}{TF-IDF Cosine Similarity}{45}{section*.35}%
+\contentsline {subsubsection}{METEOR (Metric for Evaluation of Translation with Explicit ORdering)}{46}{section*.37}%
+\contentsline {subsubsection}{BLEURT (Bilingual Evaluation Understudy with Representations from Transformers)}{47}{section*.39}%
+\contentsline {section}{\numberline {3.4}Validazione Empirica delle Metriche Avanzate di Livello II, III e IV}{48}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Concept Checklist Score}{48}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}LLM-as-a-Judge: Disaccoppiamento tra Faithfulness e Alignment}{50}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Round-Trip Differential Testing: Validazione Comportamentale a Scatola Nera}{51}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Downstream Code Retrieval MRR}{51}{subsection.3.4.4}%
+\contentsline {section}{\numberline {3.5}Studi Critici Avanzati: Stress Test, Camouflage e Finestre di Contesto}{52}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Confronto delle Metriche sotto Stress Test Avversari}{52}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Distrazione da Fluff e Camuffamento di Allucinazioni nel Giudice LLM}{54}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}Studio sui Limiti di Troncamento Contestuale e Sensibilità alla Posizione}{54}{subsection.3.5.3}%
+\contentsline {section}{\numberline {3.6}Risultati Empirici dell'Ultimo Benchmark Reale (Multi-Agent)}{56}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Analisi Disaggregata per Tassonomia Funzionale a 3 Classi}{56}{subsection.3.6.1}%
+\contentsline {paragraph}{Il Paradosso di Information Hiding nelle Classi Stateful / Object-Graph}{58}{section*.54}%
+\contentsline {paragraph}{La Fragilità di Accordo nelle Classi Pointer / Buffer-Driven}{58}{section*.55}%
+\contentsline {subsection}{\numberline {3.6.2}Diagnostica Causale degli Errori nel Round-Trip}{58}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Residui della Valutazione: Parafrasi Robusta vs Allucinazione Plausibile}{58}{subsection.3.6.3}%
+\contentsline {section}{\numberline {3.7}Conclusioni e Matrice di Applicabilità delle Metriche}{60}{section.3.7}%

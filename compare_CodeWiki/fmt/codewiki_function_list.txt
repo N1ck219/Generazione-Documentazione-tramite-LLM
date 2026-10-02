@@ -1,0 +1,3 @@
+# Funzioni fmt documentate da CodeWiki (generato da evaluate_codewiki_metrics.py)
+# Uso: python utils/benchmark_eval.py -l fmt -m multiagent --functions <questo file>
+format

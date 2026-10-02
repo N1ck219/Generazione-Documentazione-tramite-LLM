@@ -29,6 +29,7 @@ from src.agents.reader_agent import ReaderAgent
 from src.agents.searcher_agent import SearcherAgent
 from src.agents.writer_agent import WriterAgent
 from src.verifier import DocumentationVerifier
+from utils.codewiki_config import is_impl_file
 from utils.roundtrip_error_analysis import (
     analyze_roundtrip_errors,
     save_roundtrip_error_report,
@@ -129,7 +130,7 @@ def get_benchmark_candidates(
 
     # Filtro opzionale su un elenco esplicito di funzioni (es. confronto con CodeWiki).
     # Le varianti .h/.cpp della stessa funzione hanno lo stesso Ground Truth:
-    # se ne tiene una sola, preferendo la .cpp che contiene il corpo completo.
+    # se ne tiene una sola, preferendo il file di implementazione (.cpp/.c) che contiene il corpo completo.
     if function_names:
         wanted = set(function_names)
         by_name: Dict[str, Dict[str, Any]] = {}
@@ -137,7 +138,7 @@ def get_benchmark_candidates(
             if r["function_name"] not in wanted:
                 continue
             prev = by_name.get(r["function_name"])
-            if prev is None or ("_cpp_" in r["id"] and "_cpp_" not in prev["id"]):
+            if prev is None or (is_impl_file(r.get("filename")) and not is_impl_file(prev.get("filename"))):
                 by_name[r["function_name"]] = r
         missing = wanted - set(by_name)
         if missing:

@@ -1,0 +1,105 @@
+{
+  "total_db_rows": 8,
+  "total_db_functions": 8,
+  "total_codewiki_mentions": 12,
+  "total_codewiki_unmatched": 0,
+  "unmatched_mentions": [],
+  "match_strategy_counts": {
+    "exact": 8,
+    "namespace_stripped": 4
+  },
+  "total_db_mentioned": 8,
+  "total_db_documented": 8,
+  "total_db_mentioned_only": 0,
+  "documented_coverage_rate": 1.0,
+  "mention_coverage_rate": 1.0,
+  "uncovered_db_functions": [],
+  "sbert_similarity": {
+    "label": "SBERT Cosine Similarity",
+    "n": 8,
+    "mean": 0.5446,
+    "std": 0.0888,
+    "min": 0.3814,
+    "max": 0.6619
+  },
+  "bertscore_f1": {
+    "label": "BERTScore F1",
+    "n": 8,
+    "mean": 0.6008,
+    "std": 0.0459,
+    "min": 0.5473,
+    "max": 0.7034
+  },
+  "rouge_l": {
+    "label": "ROUGE-L",
+    "n": 8,
+    "mean": 0.2799,
+    "std": 0.0928,
+    "min": 0.0833,
+    "max": 0.3793
+  },
+  "tfidf_cosine": {
+    "label": "TF-IDF Cosine",
+    "n": 8,
+    "mean": 0.3961,
+    "std": 0.1371,
+    "min": 0.1406,
+    "max": 0.614
+  },
+  "meteor_score": {
+    "label": "METEOR",
+    "n": 8,
+    "mean": 0.4122,
+    "std": 0.0808,
+    "min": 0.2758,
+    "max": 0.5206
+  },
+  "bleurt_estimate": {
+    "label": "BLEURT Estimate",
+    "n": 8,
+    "mean": 0.4853,
+    "std": 0.0833,
+    "min": 0.3588,
+    "max": 0.5917
+  },
+  "concept_checklist_score": {
+    "label": "Semantic Concept Checklist",
+    "n": 8,
+    "mean": 0.5,
+    "std": 0.433,
+    "min": 0.0,
+    "max": 1.0
+  },
+  "actionability_score": {
+    "label": "Actionability Score",
+    "n": 8,
+    "mean": 0.25,
+    "std": 0.0,
+    "min": 0.25,
+    "max": 0.25
+  },
+  "error_doc_rate": {
+    "label": "Error Documentation Rate",
+    "n": 0,
+    "mean": null,
+    "std": null,
+    "min": null,
+    "max": null
+  },
+  "edge_case_coverage": {
+    "label": "Edge Case Coverage",
+    "n": 2,
+    "mean": 0.5,
+    "std": 0.5,
+    "min": 0.0,
+    "max": 1.0
+  },
+  "length_ratio": {
+    "label": "Length Ratio (CodeWiki/GT)",
+    "n": 8,
+    "mean": 0.7712,
+    "std": 0.3995,
+    "min": 0.268,
+    "max": 1.704
+  }
+}

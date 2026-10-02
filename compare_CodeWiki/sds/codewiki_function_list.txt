@@ -1,0 +1,37 @@
+# Funzioni sds documentate da CodeWiki (generato da evaluate_codewiki_metrics.py)
+# Uso: python utils/benchmark_eval.py -l sds -m multiagent --functions <questo file>
+sdsAllocSize
+sdsIncrLen
+sdsMakeRoomFor
+sdsRemoveFreeSpace
+sdsalloc
+sdscat
+sdscatfmt
+sdscatlen
+sdscatprintf
+sdscatrepr
+sdscatsds
+sdscatvprintf
+sdsclear
+sdscmp
+sdscpy
+sdscpylen
+sdsdup
+sdsempty
+sdsfree
+sdsfreesplitres
+sdsfromlonglong
+sdsgrowzero
+sdsjoin
+sdsjoinsds
+sdsmapchars
+sdsnew
+sdsnewlen
+sdsrange
+sdssplitargs
+sdssplitlen
+sdstolower
+sdstoupper
+sdstrim
+sdsull2str
+sdsupdatelen

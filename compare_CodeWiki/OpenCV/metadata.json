@@ -1,0 +1,22 @@
+{
+    "generation_info": {
+        "timestamp": "2026-10-02T10:50:34.038607",
+        "main_model": "gemini-3.5-flash-lite",
+        "generator_version": "1.0.1",
+        "repo_path": "D:\\python\\CodeWiki\\src_code\\sources\\OpenCV",
+        "commit_id": "4c18face91c6a634a86b3e9aebb1af6c78d66e76"
+    },
+    "statistics": {
+        "total_components": 26,
+        "leaf_nodes": 12,
+        "max_depth": 2
+    },
+    "files_generated": [
+        "overview.md",
+        "module_tree.json",
+        "first_module_tree.json",
+        "OpenCV_cvstd.md",
+        "OpenCV_fast_math.md",
+        "OpenCV_saturate.md"
+    ]
+}

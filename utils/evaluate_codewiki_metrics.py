@@ -2,22 +2,24 @@
 evaluate_codewiki_metrics.py
 -----------------------------
 Calcola e confronta le metriche di qualita' della documentazione prodotta da
-CodeWiki rispetto al Ground Truth presente nel benchmark.db per TinyXML-2.
+CodeWiki rispetto al Ground Truth presente nel benchmark.db, per una libreria alla volta
+(cartella compare_CodeWiki/<Libreria>/).
 
-Legge: compare_CodeWiki/codewiki_mapped_functions.json
+Legge: compare_CodeWiki/<Libreria>/codewiki_mapped_functions.json
        (generato da utils/parse_codewiki_to_benchmark.py)
 
 Produce:
-  - compare_CodeWiki/codewiki_metrics_results.json   (dati per funzione)
-  - compare_CodeWiki/codewiki_metrics_summary.json   (aggregati finali)
-  - compare_CodeWiki/codewiki_metrics_report.md      (report leggibile per la tesi)
-  - compare_CodeWiki/codewiki_function_list.txt      (funzioni documentate da CodeWiki,
+  - compare_CodeWiki/<Libreria>/codewiki_metrics_results.json   (dati per funzione)
+  - compare_CodeWiki/<Libreria>/codewiki_metrics_summary.json   (aggregati finali)
+  - compare_CodeWiki/<Libreria>/codewiki_metrics_report.md      (report leggibile per la tesi)
+  - compare_CodeWiki/<Libreria>/codewiki_function_list.txt      (funzioni documentate da CodeWiki,
                                                       input per benchmark_eval.py --functions)
-  - compare_CodeWiki/charts/*.png + codewiki_vs_pipeline_report.md
+  - compare_CodeWiki/<Libreria>/charts/*.png + codewiki_vs_pipeline_report.md
                                                      (grafici e confronto con la pipeline,
                                                       vedi utils/plot_codewiki_comparison.py)
 
-Unita' di valutazione: la funzione unica del DB ("ClassName::MethodName").
+Unita' di valutazione: la funzione unica del DB ("ClassName::MethodName" in C++, nome della
+funzione in C).
 Le varianti .h/.cpp della stessa funzione condividono il Ground Truth e
 vengono contate una sola volta. Se CodeWiki descrive la stessa funzione in
 piu' punti, le descrizioni testuali distinte vengono concatenate.
@@ -39,7 +41,8 @@ Metriche calcolate (solo sulle funzioni con testo CodeWiki e Ground Truth):
   - Mention Coverage               (% funzioni DB almeno menzionate, Mermaid incluso)
 
 Utilizzo:
-  .venv/Scripts/python utils/evaluate_codewiki_metrics.py [--no-bert] [--limit N]
+  .venv/Scripts/python utils/evaluate_codewiki_metrics.py [-l LIBRERIA] [--no-bert] [--limit N]
+  (per eseguire l'intero confronto su piu' librerie usa compare_codewiki.py)
   (usare il venv del progetto: senza sentence_transformers / bert_score le
    metriche SBERT e BERTScore ricadono silenziosamente su un'approssimazione)
 
@@ -64,6 +67,7 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
+from utils.codewiki_config import DB_PATH, lib_paths, resolve_library
 from utils.benchmark_metrics import (
     calculate_sbert_similarity,
     calculate_batch_bert_scores,
@@ -78,16 +82,6 @@ from utils.benchmark_metrics import (
     calculate_edge_case_coverage,
     evaluate_semantic_checklist,
 )
-
-# Percorsi
-DB_PATH     = os.path.join(ROOT_DIR, "dataset", "benchmark.db")
-MAPPED_JSON = os.path.join(ROOT_DIR, "compare_CodeWiki", "codewiki_mapped_functions.json")
-OUT_RESULTS = os.path.join(ROOT_DIR, "compare_CodeWiki", "codewiki_metrics_results.json")
-OUT_SUMMARY = os.path.join(ROOT_DIR, "compare_CodeWiki", "codewiki_metrics_summary.json")
-OUT_REPORT  = os.path.join(ROOT_DIR, "compare_CodeWiki", "codewiki_metrics_report.md")
-OUT_FUNCS   = os.path.join(ROOT_DIR, "compare_CodeWiki", "codewiki_function_list.txt")
-
-TARGET_LIBRARY = "TinyXML-2"
 
 COMPARISON_KEYS = [
     "rouge_l", "tfidf_cosine", "length_ratio", "brevity_penalty",
@@ -121,7 +115,7 @@ def load_db_function_names(db_path: str, library: str) -> Dict[str, int]:
     conn = sqlite3.connect(db_path)
     rows = conn.execute(
         "SELECT function_name, COUNT(*) FROM benchmark_functions "
-        "WHERE library = ? GROUP BY function_name",
+        "WHERE LOWER(library) = LOWER(?) GROUP BY function_name",
         (library,),
     ).fetchall()
     conn.close()
@@ -352,7 +346,7 @@ def uncovered_by_class(names: List[str]) -> str:
     return ", ".join(f"`{c}` ({k})" for c, k in ordered)
 
 
-def generate_markdown_report(summary: Dict, results: List[Dict]) -> str:
+def generate_markdown_report(summary: Dict, results: List[Dict], library: str) -> str:
     """Genera un report Markdown leggibile con i risultati per la tesi."""
     n_db       = summary["total_db_functions"]
     n_rows     = summary["total_db_rows"]
@@ -364,11 +358,11 @@ def generate_markdown_report(summary: Dict, results: List[Dict]) -> str:
     uncovered  = summary["uncovered_db_functions"]
 
     lines = [
-        "# Valutazione Metriche: CodeWiki vs Ground Truth (TinyXML-2)",
+        f"# Valutazione Metriche: CodeWiki vs Ground Truth ({library})",
         "",
         "> **Script**: `utils/evaluate_codewiki_metrics.py`  ",
-        "> **Libreria target**: TinyXML-2  ",
-        f"> **Funzioni uniche nel DB**: {n_db} ({n_rows} righe, varianti .h/.cpp)  ",
+        f"> **Libreria target**: {library}  ",
+        f"> **Funzioni uniche nel DB**: {n_db} ({n_rows} righe, varianti header/implementazione)  ",
         f"> **Menzioni di metodi in CodeWiki**: {n_mentions}  ",
         f"> **Funzioni DB con testo CodeWiki valutato**: {n_doc} ({pct(n_doc, n_db)} del DB)  ",
         "",
@@ -378,7 +372,7 @@ def generate_markdown_report(summary: Dict, results: List[Dict]) -> str:
         "",
         "| Metrica | Valore |",
         "|---------|--------|",
-        f"| Funzioni uniche DB TinyXML-2 | {n_db} |",
+        f"| Funzioni uniche DB {library} | {n_db} |",
         f"| Menzioni di metodi nei Markdown CodeWiki | {n_mentions} |",
         f"| Menzioni senza corrispondenza nel DB | {n_unmatch} |",
         f"| Funzioni DB menzionate (testo o diagramma Mermaid) | {n_ment} |",
@@ -443,20 +437,21 @@ def generate_markdown_report(summary: Dict, results: List[Dict]) -> str:
         "",
         "## 4. Interpretazione e Limiti",
         "",
-        f"- **Documented Coverage del {pct(n_doc, n_db)}**: CodeWiki documenta a livello di modulo/classe,",
+        f"- **Documented Coverage del {pct(n_doc, n_db)}**: CodeWiki documenta a livello di modulo,",
         "  non per singola funzione. Le funzioni non coperte, per classe, sono:",
         f"  {uncovered_by_class(uncovered)}.",
         f"  Altre {n_only} funzioni compaiono solo come firma nei diagrammi Mermaid, senza testo descrittivo.",
         "",
-        "- **Unita' di conteggio**: nel DB molte funzioni compaiono due volte (dichiarazione `.h` e",
-        "  definizione `.cpp`) con lo stesso Ground Truth; il conteggio usa le funzioni uniche.",
+        "- **Unita' di conteggio**: nel DB molte funzioni compaiono due volte (dichiarazione nell'header e",
+        "  definizione nel file di implementazione) con lo stesso Ground Truth; il conteggio usa le funzioni uniche.",
         "  Le descrizioni CodeWiki multiple di una stessa funzione sono concatenate.",
         "",
-        "- **Matching conservativo**: sono ammessi solo match esatti sul nome canonico e, per i",
-        "  metodi ereditati/ridefiniti, il match con la dichiarazione della classe base",
-        "  (es. `XMLDocument::Accept` -> `XMLNode::Accept`). Nessun matching fuzzy.",
+        "- **Matching conservativo**: sono ammessi solo match esatti sul nome canonico, la rimozione",
+        "  del namespace iniziale (`fmt::format` -> `format`) e, per i metodi ereditati/ridefiniti,",
+        "  il match con la dichiarazione della classe base (es. `XMLDocument::Accept` ->",
+        "  `XMLNode::Accept`). Nessun matching fuzzy ne' per solo nome di metodo.",
         "",
-        "- **EDR / ECC**: calcolati solo sulle funzioni il cui codice (`.cpp` se disponibile)",
+        "- **EDR / ECC**: calcolati solo sulle funzioni il cui codice (file di implementazione se disponibile)",
         "  contiene rami di errore o guardie su casi limite (colonna *n*); altrove non applicabili.",
         "",
         "- **Actionability Score**: la documentazione CodeWiki e' in prosa libera senza tag Doxygen",
@@ -476,12 +471,155 @@ def generate_markdown_report(summary: Dict, results: List[Dict]) -> str:
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+def run(library: str, no_bert: bool = False, limit: int = None, no_plots: bool = False,
+        full: bool = False, pipeline_report: str = None, pipeline_mode: str = "multiagent") -> bool:
+    """Valuta le metriche NLP di CodeWiki per `library`. Restituisce False se l'input manca."""
+    canonical = resolve_library(library)
+    if canonical is None:
+        print(f"[ERRORE] '{library}' non e' presente in {DB_PATH}")
+        return False
+    library = canonical
+    paths = lib_paths(library)
+
+    print("=" * 65)
+    print("  evaluate_codewiki_metrics.py")
+    print(f"  Libreria: {library}")
+    print(f"  Input   : {paths.mapped_json}")
+    print(f"  Output  : {paths.dir}")
+    print("=" * 65)
+    print()
+
+    if not os.path.exists(paths.mapped_json):
+        print(f"[ERRORE] File non trovato: {paths.mapped_json}")
+        print(f"  Esegui prima: python utils/parse_codewiki_to_benchmark.py -l {library}")
+        return False
+
+    with open(paths.mapped_json, "r", encoding="utf-8") as f:
+        all_records = json.load(f)
+
+    db_names = load_db_function_names(DB_PATH, library)
+
+    matched_records = [r for r in all_records if r.get("matched")]
+    groups = group_by_db_function(matched_records)
+    documented = [g for g in groups if g["has_codewiki_text"] and g["cleaned_doc"].strip()]
+
+    print(f"Funzioni uniche nel DB          : {len(db_names)}  ({sum(db_names.values())} righe)")
+    print(f"Menzioni CodeWiki nel JSON      : {len(all_records)}")
+    print(f"  matchate / senza match        : {len(matched_records)} / {len(all_records) - len(matched_records)}")
+    print(f"Funzioni DB menzionate          : {len(groups)}")
+    print(f"Funzioni DB con testo CodeWiki  : {len(documented)}")
+    print()
+
+    if limit:
+        keep = {g["db_function_name"] for g in documented[:limit]}
+        groups = [g for g in groups if g["db_function_name"] in keep or not g["has_codewiki_text"]]
+        print(f"[--limit] Valuto solo le prime {limit} funzioni documentate.")
+        print()
+
+    # ── Fase 1: Metriche per funzione ─────────────────────────────────────────
+    print(f"[1/4] Calcolo metriche per {len(groups)} funzioni DB menzionate...")
+    results = []
+    for i, g in enumerate(groups, 1):
+        r = evaluate_single(g)
+        results.append(r)
+        sbert = fmt(r["sbert_similarity"]) if r["evaluated"] else "-- (solo menzione)"
+        print(f"  [{i:3d}/{len(groups)}] {g['db_function_name']:45s} SBERT={sbert}")
+    print()
+
+    # ── Fase 2: BERTScore in batch ─────────────────────────────────────────────
+    if not no_bert:
+        print("[2/4] Calcolo BERTScore in batch...")
+        results = fill_bert_scores(results, {g["db_function_name"]: g for g in groups})
+    else:
+        print("[2/4] BERTScore saltato (--no-bert).")
+    print()
+
+    # ── Fase 3: Aggregazione e report ──────────────────────────────────────────
+    print("[3/4] Aggregazione risultati e generazione report...")
+
+    summary = compute_summary(results, db_names, all_records)
+    md_report = generate_markdown_report(summary, results, library)
+
+    with open(paths.results_json, "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+    print(f"  Risultati per funzione: {paths.results_json}")
+
+    with open(paths.summary_json, "w", encoding="utf-8") as f:
+        json.dump(summary, f, ensure_ascii=False, indent=2)
+    print(f"  Sommario aggregato    : {paths.summary_json}")
+
+    with open(paths.report_md, "w", encoding="utf-8") as f:
+        f.write(md_report)
+    print(f"  Report Markdown       : {paths.report_md}")
+
+    # Elenco funzioni documentate: permette di eseguire la pipeline sullo stesso insieme
+    with open(paths.function_list, "w", encoding="utf-8") as f:
+        f.write(f"# Funzioni {library} documentate da CodeWiki (generato da evaluate_codewiki_metrics.py)\n")
+        f.write(f"# Uso: python utils/benchmark_eval.py -l {library} -m multiagent --functions <questo file>\n")
+        for r in sorted(results, key=lambda r: r["function_name"]):
+            if r["evaluated"]:
+                f.write(r["function_name"] + "\n")
+    print(f"  Elenco funzioni       : {paths.function_list}")
+    print()
+
+    n_evaluated = sum(1 for r in results if r["evaluated"])
+    if n_evaluated == 0:
+        print("[WARN] Nessuna funzione con testo CodeWiki e Ground Truth: grafici e confronto saltati.")
+        no_plots = True
+
+    # ── Fase 3b: Metriche avanzate (judge, round-trip, retrieval, CodeBERTScore) ─
+    if full and not limit and n_evaluated:
+        print("[3b] Metriche avanzate CodeWiki (judge, round-trip, retrieval, CodeBERTScore)...")
+        from utils.evaluate_codewiki_advanced import run as run_advanced, ALL_STEPS
+        run_advanced(library, ALL_STEPS)
+        print()
+
+    # ── Fase 4: Grafici e confronto con la pipeline ───────────────────────────
+    if not no_plots and not limit:
+        print("[4/4] Generazione grafici e confronto con la pipeline...")
+        from utils.plot_codewiki_comparison import generate_all_charts
+        for p in generate_all_charts(library, pipeline_report, pipeline_mode):
+            print(f"  -> {os.path.relpath(p, ROOT_DIR)}")
+        print()
+
+    # ── Stampa sommario a video ───────────────────────────────────────────────
+    n_db = summary["total_db_functions"]
+    print("=" * 65)
+    print(f"  SOMMARIO FINALE - {library}")
+    print("=" * 65)
+    print(f"  Documented Coverage   : {summary['documented_coverage_rate']*100:.1f}%  "
+          f"({summary['total_db_documented']}/{n_db})")
+    print(f"  Mention Coverage      : {summary['mention_coverage_rate']*100:.1f}%  "
+          f"({summary['total_db_mentioned']}/{n_db})")
+    print()
+
+    for key in ["sbert_similarity", "bertscore_f1", "rouge_l", "meteor_score",
+                "bleurt_estimate", "actionability_score",
+                "concept_checklist_score", "error_doc_rate", "edge_case_coverage"]:
+        s = summary[key]
+        if s["mean"] is not None:
+            print(f"  {s['label']:<35s}: {s['mean']:.4f}  {bar(s['mean'])}")
+        else:
+            print(f"  {s['label']:<35s}: N/A")
+
+    print("=" * 65)
+    print()
+    print("Fatto! Apri il report Markdown per i dettagli:")
+    print(f"  {paths.report_md}")
+    print()
+    return True
+
+
 def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
     parser = argparse.ArgumentParser(
-        description="Valuta le metriche della documentazione CodeWiki vs Ground Truth (TinyXML-2)"
+        description="Valuta le metriche della documentazione CodeWiki vs Ground Truth per una libreria"
+    )
+    parser.add_argument(
+        "-l", "--library", default="TinyXML-2",
+        help="Libreria da valutare (default: TinyXML-2)"
     )
     parser.add_argument(
         "--no-bert", action="store_true",
@@ -509,127 +647,10 @@ def main():
         help="Modalita' della pipeline da confrontare (default: multiagent)"
     )
     args = parser.parse_args()
-
-    print("=" * 65)
-    print("  evaluate_codewiki_metrics.py")
-    print(f"  Input : {MAPPED_JSON}")
-    print(f"  Output: {os.path.dirname(OUT_RESULTS)}/")
-    print("=" * 65)
-    print()
-
-    if not os.path.exists(MAPPED_JSON):
-        print(f"[ERRORE] File non trovato: {MAPPED_JSON}")
-        print("  Esegui prima: python utils/parse_codewiki_to_benchmark.py")
+    ok = run(args.library, args.no_bert, args.limit, args.no_plots, args.full,
+             args.pipeline_report, args.pipeline_mode)
+    if not ok:
         sys.exit(1)
-
-    with open(MAPPED_JSON, "r", encoding="utf-8") as f:
-        all_records = json.load(f)
-
-    db_names = load_db_function_names(DB_PATH, TARGET_LIBRARY)
-
-    matched_records = [r for r in all_records if r.get("matched")]
-    groups = group_by_db_function(matched_records)
-    documented = [g for g in groups if g["has_codewiki_text"] and g["cleaned_doc"].strip()]
-
-    print(f"Funzioni uniche nel DB          : {len(db_names)}  ({sum(db_names.values())} righe)")
-    print(f"Menzioni CodeWiki nel JSON      : {len(all_records)}")
-    print(f"  matchate / senza match        : {len(matched_records)} / {len(all_records) - len(matched_records)}")
-    print(f"Funzioni DB menzionate          : {len(groups)}")
-    print(f"Funzioni DB con testo CodeWiki  : {len(documented)}")
-    print()
-
-    if args.limit:
-        keep = {g["db_function_name"] for g in documented[:args.limit]}
-        groups = [g for g in groups if g["db_function_name"] in keep or not g["has_codewiki_text"]]
-        print(f"[--limit] Valuto solo le prime {args.limit} funzioni documentate.")
-        print()
-
-    # ── Fase 1: Metriche per funzione ─────────────────────────────────────────
-    print(f"[1/4] Calcolo metriche per {len(groups)} funzioni DB menzionate...")
-    results = []
-    for i, g in enumerate(groups, 1):
-        r = evaluate_single(g)
-        results.append(r)
-        sbert = fmt(r["sbert_similarity"]) if r["evaluated"] else "-- (solo Mermaid)"
-        print(f"  [{i:3d}/{len(groups)}] {g['db_function_name']:45s} SBERT={sbert}")
-    print()
-
-    # ── Fase 2: BERTScore in batch ─────────────────────────────────────────────
-    if not args.no_bert:
-        print("[2/4] Calcolo BERTScore in batch...")
-        results = fill_bert_scores(results, {g["db_function_name"]: g for g in groups})
-    else:
-        print("[2/4] BERTScore saltato (--no-bert).")
-    print()
-
-    # ── Fase 3: Aggregazione e report ──────────────────────────────────────────
-    print("[3/4] Aggregazione risultati e generazione report...")
-
-    summary = compute_summary(results, db_names, all_records)
-    md_report = generate_markdown_report(summary, results)
-
-    with open(OUT_RESULTS, "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
-    print(f"  Risultati per funzione: {OUT_RESULTS}")
-
-    with open(OUT_SUMMARY, "w", encoding="utf-8") as f:
-        json.dump(summary, f, ensure_ascii=False, indent=2)
-    print(f"  Sommario aggregato    : {OUT_SUMMARY}")
-
-    with open(OUT_REPORT, "w", encoding="utf-8") as f:
-        f.write(md_report)
-    print(f"  Report Markdown       : {OUT_REPORT}")
-
-    # Elenco funzioni documentate: permette di eseguire la pipeline sullo stesso insieme
-    with open(OUT_FUNCS, "w", encoding="utf-8") as f:
-        f.write("# Funzioni TinyXML-2 documentate da CodeWiki (generato da evaluate_codewiki_metrics.py)\n")
-        f.write("# Uso: python utils/benchmark_eval.py -l TinyXML-2 -m multiagent --functions <questo file>\n")
-        for r in sorted(results, key=lambda r: r["function_name"]):
-            if r["evaluated"]:
-                f.write(r["function_name"] + "\n")
-    print(f"  Elenco funzioni       : {OUT_FUNCS}")
-    print()
-
-    # ── Fase 3b: Metriche avanzate (judge, round-trip, retrieval, CodeBERTScore) ─
-    if args.full and not args.limit:
-        print("[3b] Metriche avanzate CodeWiki (judge, round-trip, retrieval, CodeBERTScore)...")
-        from utils.evaluate_codewiki_advanced import run as run_advanced, ALL_STEPS
-        run_advanced(ALL_STEPS)
-        print()
-
-    # ── Fase 4: Grafici e confronto con la pipeline ───────────────────────────
-    if not args.no_plots and not args.limit:
-        print("[4/4] Generazione grafici e confronto con la pipeline...")
-        from utils.plot_codewiki_comparison import generate_all_charts
-        for p in generate_all_charts(args.pipeline_report, args.pipeline_mode):
-            print(f"  -> {os.path.relpath(p, ROOT_DIR)}")
-        print()
-
-    # ── Stampa sommario a video ───────────────────────────────────────────────
-    n_db = summary["total_db_functions"]
-    print("=" * 65)
-    print("  SOMMARIO FINALE")
-    print("=" * 65)
-    print(f"  Documented Coverage   : {summary['documented_coverage_rate']*100:.1f}%  "
-          f"({summary['total_db_documented']}/{n_db})")
-    print(f"  Mention Coverage      : {summary['mention_coverage_rate']*100:.1f}%  "
-          f"({summary['total_db_mentioned']}/{n_db})")
-    print()
-
-    for key in ["sbert_similarity", "bertscore_f1", "rouge_l", "meteor_score",
-                "bleurt_estimate", "actionability_score",
-                "concept_checklist_score", "error_doc_rate", "edge_case_coverage"]:
-        s = summary[key]
-        if s["mean"] is not None:
-            print(f"  {s['label']:<35s}: {s['mean']:.4f}  {bar(s['mean'])}")
-        else:
-            print(f"  {s['label']:<35s}: N/A")
-
-    print("=" * 65)
-    print()
-    print("Fatto! Apri il report Markdown per i dettagli:")
-    print(f"  {OUT_REPORT}")
-    print()
 
 
 if __name__ == "__main__":

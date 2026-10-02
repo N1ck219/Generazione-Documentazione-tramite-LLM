@@ -1,0 +1,2782 @@
+[
+  {
+    "function_name": "XMLNode::GetDocument",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_GetDocument"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::GetDocument",
+      "XMLNode::GetDocument"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 10,
+    "gt_doc_length": 7,
+    "rouge_l": 0.4444,
+    "tfidf_cosine": 0.4472,
+    "length_ratio": 1.429,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.7191,
+    "meteor_score": 0.5817,
+    "bleurt_estimate": 0.6785,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.7663,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::Value",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_Value",
+      "tinyxml-2_tinyxml2_h_XMLNode_Value"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::Value",
+      "XMLNode::Value",
+      "XMLNode::Value"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 15,
+    "gt_doc_length": 37,
+    "rouge_l": 0.2778,
+    "tfidf_cosine": 0.55,
+    "length_ratio": 0.405,
+    "brevity_penalty": 0.2307,
+    "sbert_similarity": 0.4506,
+    "meteor_score": 0.3642,
+    "bleurt_estimate": 0.3854,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "null_safety"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5611,
+    "actionability_score": 0.85,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::SetValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_SetValue",
+      "tinyxml-2_tinyxml2_h_XMLNode_SetValue"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::SetValue",
+      "XMLNode::SetValue"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 15,
+    "gt_doc_length": 9,
+    "rouge_l": 0.25,
+    "tfidf_cosine": 0.3354,
+    "length_ratio": 1.667,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.4624,
+    "meteor_score": 0.3562,
+    "bleurt_estimate": 0.4631,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.546,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::Parent",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_Parent"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::Parent"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 9,
+    "rouge_l": 0.25,
+    "tfidf_cosine": 0.25,
+    "length_ratio": 0.667,
+    "brevity_penalty": 0.6065,
+    "sbert_similarity": 0.5594,
+    "meteor_score": 0.4047,
+    "bleurt_estimate": 0.4868,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5976,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::FirstChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_FirstChild"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::FirstChild",
+      "XMLNode::FirstChild",
+      "XMLNode::FirstChild"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 10,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.6,
+    "brevity_penalty": 0.5134,
+    "sbert_similarity": 0.3949,
+    "meteor_score": 0.1974,
+    "bleurt_estimate": 0.308,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "null_safety"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.4799,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::LastChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_LastChild"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::LastChild"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 10,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.6,
+    "brevity_penalty": 0.5134,
+    "sbert_similarity": 0.4074,
+    "meteor_score": 0.2037,
+    "bleurt_estimate": 0.3161,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "null_safety"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.4762,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::NextSibling",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_NextSibling"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::NextSibling",
+      "XMLNode::NextSibling"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_Serialization_and_Printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 9,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.667,
+    "brevity_penalty": 0.6065,
+    "sbert_similarity": 0.3807,
+    "meteor_score": 0.1903,
+    "bleurt_estimate": 0.3081,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4775,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::PreviousSibling",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_PreviousSibling"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::PreviousSibling"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 9,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.667,
+    "brevity_penalty": 0.6065,
+    "sbert_similarity": 0.3783,
+    "meteor_score": 0.1892,
+    "bleurt_estimate": 0.3065,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.478,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::FirstChildElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_FirstChildElement",
+      "tinyxml-2_tinyxml2_h_XMLNode_FirstChildElement"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::FirstChildElement",
+      "XMLNode::FirstChildElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 13,
+    "gt_doc_length": 15,
+    "rouge_l": 0.3158,
+    "tfidf_cosine": 0.3333,
+    "length_ratio": 0.867,
+    "brevity_penalty": 0.8574,
+    "sbert_similarity": 0.5758,
+    "meteor_score": 0.4458,
+    "bleurt_estimate": 0.539,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5862,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::LastChildElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_LastChildElement",
+      "tinyxml-2_tinyxml2_h_XMLNode_LastChildElement"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::LastChildElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 13,
+    "gt_doc_length": 15,
+    "rouge_l": 0.3158,
+    "tfidf_cosine": 0.3333,
+    "length_ratio": 0.867,
+    "brevity_penalty": 0.8574,
+    "sbert_similarity": 0.5223,
+    "meteor_score": 0.4191,
+    "bleurt_estimate": 0.5042,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.576,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::NextSiblingElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_NextSiblingElement",
+      "tinyxml-2_tinyxml2_h_XMLNode_NextSiblingElement"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::NextSiblingElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 13,
+    "gt_doc_length": 14,
+    "rouge_l": 0.3333,
+    "tfidf_cosine": 0.3333,
+    "length_ratio": 0.929,
+    "brevity_penalty": 0.926,
+    "sbert_similarity": 0.5428,
+    "meteor_score": 0.438,
+    "bleurt_estimate": 0.5287,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5433,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::PreviousSiblingElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_PreviousSiblingElement",
+      "tinyxml-2_tinyxml2_h_XMLNode_PreviousSiblingElement"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::PreviousSiblingElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 13,
+    "gt_doc_length": 14,
+    "rouge_l": 0.3333,
+    "tfidf_cosine": 0.3333,
+    "length_ratio": 0.929,
+    "brevity_penalty": 0.926,
+    "sbert_similarity": 0.5182,
+    "meteor_score": 0.4257,
+    "bleurt_estimate": 0.5128,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5452,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::InsertEndChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_InsertEndChild",
+      "tinyxml-2_tinyxml2_h_XMLNode_InsertEndChild"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::InsertEndChild",
+      "XMLNode::InsertEndChild"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 46,
+    "rouge_l": 0.1176,
+    "tfidf_cosine": 0.3612,
+    "length_ratio": 0.196,
+    "brevity_penalty": 0.0164,
+    "sbert_similarity": 0.5935,
+    "meteor_score": 0.3556,
+    "bleurt_estimate": 0.4168,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5802,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "XMLNode::InsertFirstChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_InsertFirstChild",
+      "tinyxml-2_tinyxml2_h_XMLNode_InsertFirstChild"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::InsertFirstChild"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 46,
+    "rouge_l": 0.1176,
+    "tfidf_cosine": 0.3612,
+    "length_ratio": 0.196,
+    "brevity_penalty": 0.0164,
+    "sbert_similarity": 0.59,
+    "meteor_score": 0.3538,
+    "bleurt_estimate": 0.4145,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5791,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "XMLNode::InsertAfterChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_InsertAfterChild",
+      "tinyxml-2_tinyxml2_h_XMLNode_InsertAfterChild"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::InsertAfterChild"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 57,
+    "rouge_l": 0.1,
+    "tfidf_cosine": 0.4058,
+    "length_ratio": 0.158,
+    "brevity_penalty": 0.0048,
+    "sbert_similarity": 0.6577,
+    "meteor_score": 0.3788,
+    "bleurt_estimate": 0.453,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5735,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "XMLNode::DeleteChildren",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_DeleteChildren",
+      "tinyxml-2_tinyxml2_h_XMLNode_DeleteChildren"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::DeleteChildren",
+      "XMLNode::DeleteChildren"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 5,
+    "gt_doc_length": 7,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.714,
+    "brevity_penalty": 0.6703,
+    "sbert_similarity": 0.7193,
+    "meteor_score": 0.3597,
+    "bleurt_estimate": 0.5346,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "ownership_memory"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5302,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::DeleteChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_DeleteChild",
+      "tinyxml-2_tinyxml2_h_XMLNode_DeleteChild"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::DeleteChild"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 5,
+    "gt_doc_length": 6,
+    "rouge_l": 0.2857,
+    "tfidf_cosine": 0.2887,
+    "length_ratio": 0.833,
+    "brevity_penalty": 0.8187,
+    "sbert_similarity": 0.7166,
+    "meteor_score": 0.5011,
+    "bleurt_estimate": 0.6191,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "ownership_memory"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.532,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "XMLNode::ShallowClone",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_ShallowClone"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::ShallowClone",
+      "XMLNode::ShallowClone"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 17,
+    "gt_doc_length": 53,
+    "rouge_l": 0.1333,
+    "tfidf_cosine": 0.3565,
+    "length_ratio": 0.321,
+    "brevity_penalty": 0.1203,
+    "sbert_similarity": 0.5841,
+    "meteor_score": 0.3587,
+    "bleurt_estimate": 0.425,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "ownership_memory",
+      "null_safety"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5386,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::DeepClone",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLNode_DeepClone",
+      "tinyxml-2_tinyxml2_h_XMLNode_DeepClone"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::DeepClone"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 17,
+    "gt_doc_length": 64,
+    "rouge_l": 0.1455,
+    "tfidf_cosine": 0.1848,
+    "length_ratio": 0.266,
+    "brevity_penalty": 0.063,
+    "sbert_similarity": 0.5724,
+    "meteor_score": 0.3589,
+    "bleurt_estimate": 0.4147,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "ownership_memory",
+      "null_safety"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5146,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "XMLNode::ShallowEqual",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_ShallowEqual"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::ShallowEqual",
+      "XMLNode::ShallowEqual"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 33,
+    "rouge_l": 0.1379,
+    "tfidf_cosine": 0.197,
+    "length_ratio": 0.273,
+    "brevity_penalty": 0.0695,
+    "sbert_similarity": 0.5298,
+    "meteor_score": 0.3339,
+    "bleurt_estimate": 0.3858,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5373,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::Name",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLElement_Name"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::Name",
+      "XMLElement::Name"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 8,
+    "gt_doc_length": 13,
+    "rouge_l": 0.4,
+    "tfidf_cosine": 0.4082,
+    "length_ratio": 0.615,
+    "brevity_penalty": 0.5353,
+    "sbert_similarity": 0.5562,
+    "meteor_score": 0.4781,
+    "bleurt_estimate": 0.5151,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.6623,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::SetName",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLElement_SetName"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::SetName",
+      "XMLElement::SetName"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 8,
+    "gt_doc_length": 6,
+    "rouge_l": 0.5714,
+    "tfidf_cosine": 0.5774,
+    "length_ratio": 1.333,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.8555,
+    "meteor_score": 0.7135,
+    "bleurt_estimate": 0.7989,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.8344,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::Attribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_Attribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_Attribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::Attribute",
+      "XMLElement::Attribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 91,
+    "rouge_l": 0.0857,
+    "tfidf_cosine": 0.3922,
+    "length_ratio": 0.132,
+    "brevity_penalty": 0.0014,
+    "sbert_similarity": 0.3622,
+    "meteor_score": 0.224,
+    "bleurt_estimate": 0.257,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "null_safety",
+      "error_contract",
+      "mutation_const"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.4293,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "XMLElement::IntAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_IntAttribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_IntAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::IntAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 40,
+    "rouge_l": 0.125,
+    "tfidf_cosine": 0.3728,
+    "length_ratio": 0.3,
+    "brevity_penalty": 0.097,
+    "sbert_similarity": 0.5478,
+    "meteor_score": 0.3364,
+    "bleurt_estimate": 0.397,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5531,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::UnsignedAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_UnsignedAttribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_UnsignedAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::UnsignedAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 42,
+    "rouge_l": 0.1176,
+    "tfidf_cosine": 0.3631,
+    "length_ratio": 0.286,
+    "brevity_penalty": 0.0821,
+    "sbert_similarity": 0.5584,
+    "meteor_score": 0.338,
+    "bleurt_estimate": 0.4006,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5436,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::BoolAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_BoolAttribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_BoolAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::BoolAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 42,
+    "rouge_l": 0.1176,
+    "tfidf_cosine": 0.3631,
+    "length_ratio": 0.286,
+    "brevity_penalty": 0.0821,
+    "sbert_similarity": 0.5244,
+    "meteor_score": 0.321,
+    "bleurt_estimate": 0.3785,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5415,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::DoubleAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_DoubleAttribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_DoubleAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::DoubleAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 42,
+    "rouge_l": 0.1176,
+    "tfidf_cosine": 0.3631,
+    "length_ratio": 0.286,
+    "brevity_penalty": 0.0821,
+    "sbert_similarity": 0.5456,
+    "meteor_score": 0.3316,
+    "bleurt_estimate": 0.3922,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5432,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::FloatAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_FloatAttribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_FloatAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::FloatAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 12,
+    "gt_doc_length": 42,
+    "rouge_l": 0.1176,
+    "tfidf_cosine": 0.3631,
+    "length_ratio": 0.286,
+    "brevity_penalty": 0.0821,
+    "sbert_similarity": 0.554,
+    "meteor_score": 0.3358,
+    "bleurt_estimate": 0.3977,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5433,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::SetAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLElement_SetAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::SetAttribute",
+      "XMLElement::SetAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 17,
+    "gt_doc_length": 6,
+    "rouge_l": 0.1333,
+    "tfidf_cosine": 0.3015,
+    "length_ratio": 2.833,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.5242,
+    "meteor_score": 0.3287,
+    "bleurt_estimate": 0.4741,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.602,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::DeleteAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_DeleteAttribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_DeleteAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::DeleteAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 5,
+    "gt_doc_length": 3,
+    "rouge_l": 0.4,
+    "tfidf_cosine": 0.4082,
+    "length_ratio": 1.667,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.7912,
+    "meteor_score": 0.5956,
+    "bleurt_estimate": 0.7143,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "ownership_memory"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.7959,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 1,
+    "edge_case_coverage": 0.0
+  },
+  {
+    "function_name": "XMLElement::FirstAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLElement_FirstAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::FirstAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 3,
+    "gt_doc_length": 7,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.429,
+    "brevity_penalty": 0.2636,
+    "sbert_similarity": 0.3761,
+    "meteor_score": 0.188,
+    "bleurt_estimate": 0.2708,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.6182,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::FindAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_FindAttribute",
+      "tinyxml-2_tinyxml2_h_XMLElement_FindAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::FindAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 3,
+    "gt_doc_length": 7,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 0.429,
+    "brevity_penalty": 0.2636,
+    "sbert_similarity": 0.4301,
+    "meteor_score": 0.215,
+    "bleurt_estimate": 0.3059,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.6464,
+    "actionability_score": 0.25,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::GetText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_GetText",
+      "tinyxml-2_tinyxml2_h_XMLElement_GetText"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::GetText",
+      "XMLElement::GetText"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 13,
+    "gt_doc_length": 138,
+    "rouge_l": 0.1031,
+    "tfidf_cosine": 0.3233,
+    "length_ratio": 0.094,
+    "brevity_penalty": 0.0001,
+    "sbert_similarity": 0.4976,
+    "meteor_score": 0.3004,
+    "bleurt_estimate": 0.3492,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "null_safety",
+      "mutation_const"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.4664,
+    "actionability_score": 0.85,
+    "has_code_error_branch": true,
+    "error_doc_rate": 0.0,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::SetText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_SetText",
+      "tinyxml-2_tinyxml2_h_XMLElement_SetText"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::SetText",
+      "XMLElement::SetText",
+      "XMLElement::SetText"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_Parsing_and_Utility.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 13,
+    "gt_doc_length": 13,
+    "rouge_l": 0.4444,
+    "tfidf_cosine": 0.4472,
+    "length_ratio": 1.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.7197,
+    "meteor_score": 0.582,
+    "bleurt_estimate": 0.6789,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.6813,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::InsertNewChildElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_InsertNewChildElement",
+      "tinyxml-2_tinyxml2_h_XMLElement_InsertNewChildElement"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::InsertNewChildElement",
+      "XMLElement::InsertNewChildElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 23,
+    "rouge_l": 0.2857,
+    "tfidf_cosine": 0.303,
+    "length_ratio": 0.391,
+    "brevity_penalty": 0.2111,
+    "sbert_similarity": 0.5731,
+    "meteor_score": 0.4294,
+    "bleurt_estimate": 0.4651,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.6436,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::InsertNewComment",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_InsertNewComment",
+      "tinyxml-2_tinyxml2_h_XMLElement_InsertNewComment"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::InsertNewComment"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 2,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 4.5,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.286,
+    "meteor_score": 0.143,
+    "bleurt_estimate": 0.2859,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.3497,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::InsertNewText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_InsertNewText",
+      "tinyxml-2_tinyxml2_h_XMLElement_InsertNewText"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::InsertNewText"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 2,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 4.5,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.286,
+    "meteor_score": 0.143,
+    "bleurt_estimate": 0.2859,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.3497,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::InsertNewDeclaration",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_InsertNewDeclaration",
+      "tinyxml-2_tinyxml2_h_XMLElement_InsertNewDeclaration"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::InsertNewDeclaration"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 2,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 4.5,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.286,
+    "meteor_score": 0.143,
+    "bleurt_estimate": 0.2859,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.3497,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::InsertNewUnknown",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_InsertNewUnknown",
+      "tinyxml-2_tinyxml2_h_XMLElement_InsertNewUnknown"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::InsertNewUnknown"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 2,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 4.5,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.286,
+    "meteor_score": 0.143,
+    "bleurt_estimate": 0.2859,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.3497,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::Name",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_Name",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_Name"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::Name",
+      "XMLAttribute::Name",
+      "XMLAttribute::Name"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 6,
+    "gt_doc_length": 5,
+    "rouge_l": 0.8,
+    "tfidf_cosine": 0.8165,
+    "length_ratio": 1.2,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.7455,
+    "meteor_score": 0.7728,
+    "bleurt_estimate": 0.7846,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.8466,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::Value",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_Value",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_Value"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::Value",
+      "XMLAttribute::Value",
+      "XMLAttribute::Value"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 7,
+    "gt_doc_length": 5,
+    "rouge_l": 0.6667,
+    "tfidf_cosine": 0.7071,
+    "length_ratio": 1.4,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.7225,
+    "meteor_score": 0.6946,
+    "bleurt_estimate": 0.7363,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.8157,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::GetLineNum",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_GetLineNum"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::GetLineNum"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 16,
+    "rouge_l": 0.625,
+    "tfidf_cosine": 0.6299,
+    "length_ratio": 0.562,
+    "brevity_penalty": 0.4594,
+    "sbert_similarity": 0.841,
+    "meteor_score": 0.733,
+    "bleurt_estimate": 0.7488,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.7852,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::Next",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_Next"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::Next",
+      "XMLAttribute::Next",
+      "XMLAttribute::Next"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 6,
+    "rouge_l": 0.6667,
+    "tfidf_cosine": 0.8165,
+    "length_ratio": 1.5,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.6659,
+    "meteor_score": 0.6663,
+    "bleurt_estimate": 0.6995,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.7288,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::IntValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_IntValue"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::IntValue",
+      "XMLAttribute::IntValue"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 33,
+    "rouge_l": 0.1379,
+    "tfidf_cosine": 0.2132,
+    "length_ratio": 0.273,
+    "brevity_penalty": 0.0695,
+    "sbert_similarity": 0.5141,
+    "meteor_score": 0.326,
+    "bleurt_estimate": 0.3756,
+    "concept_checklist_score": 0.0,
+    "concept_ref_active": [
+      "error_contract"
+    ],
+    "concept_matched": [],
+    "bertscore_f1": 0.5863,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::UnsignedValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_UnsignedValue"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::UnsignedValue"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 7,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 1.286,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.4442,
+    "meteor_score": 0.2221,
+    "bleurt_estimate": 0.3887,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.507,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::BoolValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_BoolValue"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::BoolValue"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 6,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 1.5,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.3764,
+    "meteor_score": 0.1882,
+    "bleurt_estimate": 0.3447,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4851,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::DoubleValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_DoubleValue"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::DoubleValue"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 6,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 1.5,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.4139,
+    "meteor_score": 0.2069,
+    "bleurt_estimate": 0.369,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.4863,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::FloatValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLAttribute_FloatValue"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::FloatValue"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 6,
+    "rouge_l": 0.0,
+    "tfidf_cosine": 0.0,
+    "length_ratio": 1.5,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.4341,
+    "meteor_score": 0.217,
+    "bleurt_estimate": 0.3822,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.5009,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::SetAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_SetAttribute",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_SetAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::SetAttribute",
+      "XMLAttribute::SetAttribute",
+      "XMLAttribute::SetAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_Parsing_and_Utility.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 5,
+    "rouge_l": 0.6,
+    "tfidf_cosine": 0.6547,
+    "length_ratio": 1.8,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.6825,
+    "meteor_score": 0.6412,
+    "bleurt_estimate": 0.6936,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.7089,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLText::SetCData",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLText_SetCData"
+    ],
+    "codewiki_mentions": [
+      "XMLText::SetCData",
+      "XMLText::SetCData"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 9,
+    "gt_doc_length": 9,
+    "rouge_l": 0.5,
+    "tfidf_cosine": 0.6667,
+    "length_ratio": 1.0,
+    "brevity_penalty": 1.0,
+    "sbert_similarity": 0.8625,
+    "meteor_score": 0.6813,
+    "bleurt_estimate": 0.7856,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.7326,
+    "actionability_score": 0.25,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLText::CData",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLText_CData"
+    ],
+    "codewiki_mentions": [
+      "XMLText::CData",
+      "XMLText::CData"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Core_XML_Structures.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": true,
+    "evaluated": true,
+    "codewiki_doc_length": 7,
+    "gt_doc_length": 9,
+    "rouge_l": 0.7273,
+    "tfidf_cosine": 0.9129,
+    "length_ratio": 0.778,
+    "brevity_penalty": 0.7515,
+    "sbert_similarity": 0.9239,
+    "meteor_score": 0.8256,
+    "bleurt_estimate": 0.8575,
+    "concept_checklist_score": 1.0,
+    "concept_ref_active": [],
+    "concept_matched": [],
+    "bertscore_f1": 0.7884,
+    "actionability_score": 0.85,
+    "has_code_error_branch": false,
+    "error_doc_rate": null,
+    "code_guard_count": 0,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLDocument::Parse",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLDocument_Parse",
+      "tinyxml-2_tinyxml2_h_XMLDocument_Parse"
+    ],
+    "codewiki_mentions": [
+      "XMLDocument::Parse",
+      "XMLDocument::Parse"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Parsing_and_Utility.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 46,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLAttribute::QueryIntValue",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLAttribute_QueryIntValue",
+      "tinyxml-2_tinyxml2_h_XMLAttribute_QueryIntValue"
+    ],
+    "codewiki_mentions": [
+      "XMLAttribute::QueryIntValue",
+      "XMLAttribute::QueryIntValue"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Parsing_and_Utility.md",
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 30,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::QueryIntText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLElement_QueryIntText",
+      "tinyxml-2_tinyxml2_h_XMLElement_QueryIntText"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::QueryIntText"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Parsing_and_Utility.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 118,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLPrinter::PushAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_PushAttribute",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_PushAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLPrinter::PushAttribute",
+      "XMLPrinter::PushAttribute",
+      "XMLPrinter::PushAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Parsing_and_Utility.md",
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_visitor.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 9,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLPrinter::PushText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_PushText",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_PushText"
+    ],
+    "codewiki_mentions": [
+      "XMLPrinter::PushText",
+      "XMLPrinter::PushText",
+      "XMLPrinter::PushText"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Parsing_and_Utility.md",
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_visitor.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 7,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLNode::Accept",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLNode_Accept"
+    ],
+    "codewiki_mentions": [
+      "XMLNode::Accept",
+      "XMLDocument::Accept",
+      "XMLNode::Accept",
+      "XMLNode::Accept",
+      "XMLDocument::Accept",
+      "XMLElement::Accept"
+    ],
+    "match_strategies": [
+      "exact",
+      "inherited"
+    ],
+    "source_files": [
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_dom.md",
+      "TinyXML-2_visitor.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 100,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLDocument::Print",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLDocument_Print",
+      "tinyxml-2_tinyxml2_h_XMLDocument_Print"
+    ],
+    "codewiki_mentions": [
+      "XMLDocument::Print",
+      "XMLDocument::Print",
+      "XMLDocument::Print"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_dom.md",
+      "TinyXML-2_visitor.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 59,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLVisitor::Visit",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLVisitor_Visit"
+    ],
+    "codewiki_mentions": [
+      "XMLVisitor::Visit",
+      "XMLPrinter::Visit",
+      "XMLVisitor::Visit"
+    ],
+    "match_strategies": [
+      "exact",
+      "inherited"
+    ],
+    "source_files": [
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_visitor.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 4,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLPrinter::XMLPrinter",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_XMLPrinter",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_XMLPrinter"
+    ],
+    "codewiki_mentions": [
+      "XMLPrinter::XMLPrinter"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Serialization_and_Printing.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 43,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLPrinter::OpenElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_OpenElement",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_OpenElement"
+    ],
+    "codewiki_mentions": [
+      "XMLPrinter::OpenElement",
+      "XMLPrinter::OpenElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_visitor.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 13,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLPrinter::CloseElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLPrinter_CloseElement",
+      "tinyxml-2_tinyxml2_h_XMLPrinter_CloseElement"
+    ],
+    "codewiki_mentions": [
+      "XMLPrinter::CloseElement",
+      "XMLPrinter::CloseElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_visitor.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 5,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLPrinter::CStr",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLPrinter_CStr"
+    ],
+    "codewiki_mentions": [
+      "XMLPrinter::CStr",
+      "XMLPrinter::CStr"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_Serialization_and_Printing.md",
+      "TinyXML-2_visitor.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 15,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLDocument::LoadFile",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLDocument_LoadFile",
+      "tinyxml-2_tinyxml2_h_XMLDocument_LoadFile"
+    ],
+    "codewiki_mentions": [
+      "XMLDocument::LoadFile"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 43,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLDocument::SaveFile",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLDocument_SaveFile",
+      "tinyxml-2_tinyxml2_h_XMLDocument_SaveFile"
+    ],
+    "codewiki_mentions": [
+      "XMLDocument::SaveFile"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 23,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLDocument::NewElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLDocument_NewElement",
+      "tinyxml-2_tinyxml2_h_XMLDocument_NewElement"
+    ],
+    "codewiki_mentions": [
+      "XMLDocument::NewElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 18,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLDocument::NewText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_cpp_XMLDocument_NewText",
+      "tinyxml-2_tinyxml2_h_XMLDocument_NewText"
+    ],
+    "codewiki_mentions": [
+      "XMLDocument::NewText"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 18,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLDocument::RootElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLDocument_RootElement"
+    ],
+    "codewiki_mentions": [
+      "XMLDocument::RootElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 16,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLElement::QueryIntAttribute",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLElement_QueryIntAttribute"
+    ],
+    "codewiki_mentions": [
+      "XMLElement::QueryIntAttribute"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 69,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLHandle::FirstChild",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLHandle_FirstChild"
+    ],
+    "codewiki_mentions": [
+      "XMLHandle::FirstChild"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 7,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLHandle::FirstChildElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLHandle_FirstChildElement"
+    ],
+    "codewiki_mentions": [
+      "XMLHandle::FirstChildElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 8,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLHandle::ToElement",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLHandle_ToElement"
+    ],
+    "codewiki_mentions": [
+      "XMLHandle::ToElement"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 8,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLHandle::ToText",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLHandle_ToText"
+    ],
+    "codewiki_mentions": [
+      "XMLHandle::ToText"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_dom.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 8,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLPrinter::CStrSize",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLPrinter_CStrSize"
+    ],
+    "codewiki_mentions": [
+      "XMLPrinter::CStrSize"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_visitor.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 23,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  },
+  {
+    "function_name": "XMLPrinter::ClearBuffer",
+    "db_ids": [
+      "tinyxml-2_tinyxml2_h_XMLPrinter_ClearBuffer"
+    ],
+    "codewiki_mentions": [
+      "XMLPrinter::ClearBuffer"
+    ],
+    "match_strategies": [
+      "exact"
+    ],
+    "source_files": [
+      "TinyXML-2_visitor.md"
+    ],
+    "has_ground_truth": true,
+    "has_codewiki_text": false,
+    "evaluated": false,
+    "codewiki_doc_length": 0,
+    "gt_doc_length": 12,
+    "rouge_l": null,
+    "tfidf_cosine": null,
+    "length_ratio": null,
+    "brevity_penalty": null,
+    "sbert_similarity": null,
+    "meteor_score": null,
+    "bleurt_estimate": null,
+    "concept_checklist_score": null,
+    "bertscore_f1": null,
+    "actionability_score": null,
+    "error_doc_rate": null,
+    "edge_case_coverage": null
+  }
+]

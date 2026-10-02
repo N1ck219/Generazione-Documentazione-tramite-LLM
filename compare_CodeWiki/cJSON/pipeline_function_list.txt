@@ -1,0 +1,22 @@
+# Funzioni cJSON da documentare con la pipeline (batch 3/3, generato da compare_codewiki.py)
+cJSON_IsString
+cJSON_IsTrue
+cJSON_New_Item
+cJSON_Parse
+cJSON_ParseWithLength
+cJSON_ParseWithOpts
+cJSON_Print
+cJSON_PrintBuffered
+cJSON_PrintPreallocated
+cJSON_PrintUnformatted
+cJSON_SetNumberHelper
+cJSON_SetValuestring
+cJSON_Version
+case_insensitive_strcmp
+compare_double
+get_decimal_point
+parse_array
+parse_hex4
+print_object
+suffix_object
+update_offset

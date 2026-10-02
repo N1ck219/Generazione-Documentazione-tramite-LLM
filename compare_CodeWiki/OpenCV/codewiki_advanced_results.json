@@ -1,0 +1,666 @@
+{
+  "cvCeil": {
+    "doc_hash": "821eba20bc95",
+    "db_id": "opencv_fast_math_hpp_cvCeil",
+    "codewiki_doc": "- **Purpose**: Rounds a floating-point number to the nearest integer not smaller than the original ($\\lceil \\text{value} \\rceil$). - **Behavior**: Uses compiler builtins (`__builtin_ceil`), ARM64/LoongArch instructions, or fallback arithmetic. Overloaded for `int`.",
+    "retrieval": {
+      "rank": 3,
+      "reciprocal_rank": 0.3333,
+      "hit_at_1": 0.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "cvFloor",
+      "top_similarity": 0.3962
+    },
+    "codebert": {
+      "precision": 0.7613,
+      "recall": 0.7805,
+      "f1": 0.7708
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-5: The generated documentation states the function is 'Overloaded for int', which is technically inaccurate and an over-specification since it takes a `double` and is a C inline function without C++ function overloading in this context. Otherwise, the documentation is concise, accurately reflects the purpose and conditional compilation behavior, and aligns with the ground truth. Score adjusted from 4.0 to 3.0 due to the minor hallucination/over-specification."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1: The generated documentation completely misses the critical warning regarding the undefined behavior when the input value is outside the INT_MIN to INT_MAX range. However, it successfully captures the core functional intent of rounding up and mentions internal optimizations."
+      },
+      "combined_score": 3.0
+    },
+    "roundtrip": {
+      "function_name": "cvCeil",
+      "library": "OpenCV",
+      "signature": "int cvCeil(double value)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "",
+      "reference_code": "import math\n\ndef cvCeil(value: float) -> int:\n    \"\"\"\n    Transpiled equivalent of OpenCV's cvCeil function.\n    Calculates the ceiling of a floating-point value and returns it as an integer.\n    \"\"\"\n    # Using Python's built-in math.ceil, which returns the smallest integer >= value.\n    # We cast to int to match the C function signature returning an int.\n    return int(math.ceil(value))",
+      "test_suite": "import math\nimport pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_positive_integers():\n    # Verify exact integers remain unchanged\n    assert cvCeil(5.0) == 5\n    assert cvCeil(0.0) == 0\n\n\ndef test_semantic_positive_fractions():\n    # Verify ceiling behavior rounds up to the next integer\n    assert cvCeil(5.1) == 6\n    assert cvCeil(5.9) == 6\n    assert cvCeil(0.0001) == 1\n\n\ndef test_semantic_negative_fractions_and_integers():\n    # Verify negative number ceiling behavior (closer to positive infinity)\n    assert cvCeil(-5.0) == -5\n    assert cvCeil(-5.1) == -5\n    assert cvCeil(-5.9) == -5\n    assert cvCeil(-0.0001) == 0\n\n\ndef test_semantic_large_values():\n    # Verify boundary handling with larger double values\n    assert cvCeil(1000000.1) == 1000001\n    assert cvCeil(-1000000.1) == -1000000\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.floats(allow_nan=False, allow_infinity=False))\ndef test_auto_property_math_ceil_equivalence(val):\n    # Property test: cvCeil should match standard math.ceil behavior for all finite floats\n    expected = math.ceil(val)\n    result = cvCeil(val)\n    assert result == expected\n    assert isinstance(result, int)",
+      "execution": {
+        "total_tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_positive_integers PASSED                                 [ 20%]\n::test_semantic_positive_fractions PASSED                                [ 40%]\n::test_semantic_negative_fractions_and_integers PASSED                   [ 60%]\n::test_semantic_large_values PASSED                                      [ 80%]\n::test_auto_property_math_ceil_equivalence PASSED                        [100%]\n\n============================== 5 passed in 3.47s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 5,
+          "reference_total": 5,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 5
+        }
+      }
+    }
+  },
+  "cvFloor": {
+    "doc_hash": "d1104666a603",
+    "db_id": "opencv_fast_math_hpp_cvFloor",
+    "codewiki_doc": "- **Purpose**: Rounds a floating-point number to the nearest integer not larger than the original ($\\lfloor \\text{value} \\rfloor$). - **Behavior**: Leverages compiler builtins (`__builtin_floor`), ARM64/LoongArch specific instructions, or inline fallback arithmetic. Overloaded for `int`.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "cvFloor",
+      "top_similarity": 0.4781
+    },
+    "codebert": {
+      "precision": 0.7641,
+      "recall": 0.7824,
+      "f1": 0.7731
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.2,
+        "std": 0.4,
+        "sample_reasoning": "DEF-5: The generated documentation states the function is 'Overloaded for int', which is incorrect for a C function as C does not support function overloading. Otherwise, it accurately reflects the purpose and platform-specific optimizations found in the C source code. Starting from the baseline of 4.0, the minor inaccuracy regarding function overloading drops the score slightly to 3.5, rounded to 3 for integer scale, or 4 with minor penalty. Let's assign 3 due to the C language overload misconception."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1: The generated documentation completely misses the critical warning regarding the undefined behavior when the value is outside the INT_MIN to INT_MAX range. Consequently, it achieves partial alignment by capturing the core mathematical purpose but omitting this essential constraint."
+      },
+      "combined_score": 3.1
+    },
+    "roundtrip": {
+      "function_name": "cvFloor",
+      "library": "OpenCV",
+      "signature": "int cvFloor(double value)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "import math\n\ndef cvFloor(value: float) -> int:\n    \"\"\"\n    Rounds a floating-point number to the nearest integer not larger than the original (floor).\n    \n    Parameters:\n    - value: A floating-point number (double in C).\n    \n    Returns:\n    - An integer representing the rounded floor value.\n    \"\"\"\n    return math.floor(value)",
+      "reference_code": "import math\n\ndef cvFloor(value: float) -> int:\n    \"\"\"\n    Transpiled equivalent of OpenCV's cvFloor function.\n    Computes the largest integer less than or equal to the specified value.\n    \"\"\"\n    i = int(value)\n    return i - (i > value)",
+      "test_suite": "import math\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_positive_floats():\n    assert cvFloor(3.0) == 3\n    assert cvFloor(3.14) == 3\n    assert cvFloor(3.99) == 3\n\n\ndef test_semantic_negative_floats():\n    assert cvFloor(-3.0) == -3\n    assert cvFloor(-3.14) == -4\n    assert cvFloor(-3.99) == -4\n\n\ndef test_semantic_exact_integers():\n    assert cvFloor(0.0) == 0\n    assert cvFloor(42.0) == 42\n    assert cvFloor(-42.0) == -42\n\n\ndef test_semantic_boundaries():\n    assert cvFloor(0.0001) == 0\n    assert cvFloor(-0.0001) == -1\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.floats(allow_nan=False, allow_infinity=False, min_value=-1e6, max_value=1e6))\ndef test_auto_property_floor_mathematical_definition(val):\n    result = cvFloor(val)\n    expected = math.floor(val)\n    assert isinstance(result, int)\n    assert result == expected\n    assert result <= val\n    assert result > val - 1.0",
+      "execution": {
+        "total_tests": 5,
+        "passed": 4,
+        "failed": 1,
+        "errors": 0,
+        "pass_rate": 80.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 0,
+          "failed": 1,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_positive_floats PASSED                                   [ 20%]\n::test_semantic_negative_floats PASSED                                   [ 40%]\n::test_semantic_exact_integers PASSED                                    [ 60%]\n::test_semantic_boundaries PASSED                                        [ 80%]\n::test_auto_property_floor_mathematical_definition FAILED                [100%]\n\n================================== FAILURES ===================================\n______________ test_auto_property_floor_mathematical_definition _______________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmp2qigm0mq.py:160: in test_auto_property_floor_mathematical_definition\n    @given(st.floats(allow_nan=False, allow_infinity=False, min_value=-1e6, max_value=1e6))\n                   ^^^\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmp2qigm0mq.py:167: in test_auto_property_floor_mathematical_definition\n    assert result > val - 1.0\nE   assert -1 > (-3.2998570360555895e-96 - 1.0)\nE   Failing test case: test_auto_property_floor_mathematical_definition(\nE       val=-3.2998570360555895e-96,\nE   )\n=========================== short test summary info ===========================\nFAILED ::test_auto_property_floor_mathematical_definition - assert -1 > (-3.2...\n========================= 1 failed, 4 passed in 4.25s =========================\n",
+        "differential": {
+          "reference_pass_rate": 80.0,
+          "reference_passed": 4,
+          "reference_total": 5,
+          "differential_agreement_rate": 80.0,
+          "both_passed_count": 4
+        }
+      }
+    }
+  },
+  "cvIsInf": {
+    "doc_hash": "1f1cf9f470b4",
+    "db_id": "opencv_fast_math_hpp_cvIsInf",
+    "codewiki_doc": "- **Purpose**: Determines if a floating-point number represents positive or negative infinity (IEEE 754 standard). - **Behavior**: Evaluates IEEE 754 bit patterns or uses compiler builtins (`__builtin_isinf`). ---",
+    "retrieval": {
+      "rank": 3,
+      "reciprocal_rank": 0.3333,
+      "hit_at_1": 0.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "cvRound",
+      "top_similarity": 0.272
+    },
+    "codebert": {
+      "precision": 0.7609,
+      "recall": 0.7744,
+      "f1": 0.7676
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          5.0,
+          3.0,
+          3.0,
+          4.0,
+          5.0
+        ],
+        "mean": 4.0,
+        "std": 0.894,
+        "sample_reasoning": "None. The generated documentation accurately captures the purpose of the function (determining infinity based on the IEEE 754 standard) and correctly identifies its internal mechanics (evaluating bit patterns or compiler builtins) without hallucinating behaviors or introducing contractual mismatches."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "mean": 5.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately captures the primary functional intent of checking for IEEE 754 positive or negative infinity and mentions the standard appropriately, aligning well with the ground truth."
+      },
+      "combined_score": 4.5
+    },
+    "roundtrip": {
+      "function_name": "cvIsInf",
+      "library": "OpenCV",
+      "signature": "int cvIsInf(double value)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "import math\n\ndef cvIsInf(value: float) -> int:\n    \"\"\"\n    Determines if a floating-point number represents positive or negative infinity (IEEE 754 standard).\n    \n    Parameters:\n    - value (float): The double precision floating-point value to evaluate.\n    \n    Returns:\n    - int: Non-zero (typically 1) if the value is positive or negative infinity, otherwise 0.\n    \"\"\"\n    if math.isinf(value):\n        return 1\n    return 0",
+      "reference_code": "import struct\n\n\ndef cvIsInf(value: float) -> int:\n    \"\"\"Check if a double-precision floating-point number is infinite.\n\n    Equivalent to OpenCV's cvIsInf using IEEE-754 bit-level manipulation.\n    \"\"\"\n    # Pack the float into an 8-byte (64-bit) little-endian/big-endian unsigned long long (double format)\n    # Using 'd' for float and unpacking as 'Q' for unsigned 64-bit integer\n    try:\n        # Pack float to 8 bytes and interpret as 64-bit unsigned integer\n        packed = struct.pack(\">d\", value)\n        (ieee754_u,) = struct.unpack(\">Q\", packed)\n    except (struct.error, OverflowError):\n        return 0\n\n    # Bit-level check equivalent to OpenCV's 64-bit platform branch:\n    # return (ieee754.u & 0x7fffffffffffffff) == 0x7ff0000000000000;\n    return 1 if (ieee754_u & 0x7FFFFFFFFFFFFFFF) == 0x7FF0000000000000 else 0",
+      "test_suite": "import math\nimport pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_positive_infinity():\n    \"\"\"Verify cvIsInf returns a non-zero integer for positive infinity.\"\"\"\n    val = float('inf')\n    result = cvIsInf(val)\n    assert result != 0\n\n\ndef test_semantic_negative_infinity():\n    \"\"\"Verify cvIsInf returns a non-zero integer for negative infinity.\"\"\"\n    val = float('-inf')\n    result = cvIsInf(val)\n    assert result != 0\n\n\ndef test_semantic_finite_numbers():\n    \"\"\"Verify cvIsInf returns 0 for ordinary finite numbers.\"\"\"\n    test_values = [0.0, -0.0, 1.0, -1.0, 3.14159, -2.71828, 1e308, -1e308]\n    for val in test_values:\n        result = cvIsInf(val)\n        assert result == 0\n\n\ndef test_semantic_nan():\n    \"\"\"Verify cvIsInf returns 0 (or strictly is not infinite) for NaN values according to IEEE 754.\"\"\"\n    val = float('nan')\n    result = cvIsInf(val)\n    # NaN is not infinity, so cvIsInf should return 0\n    assert result == 0\n\n\ndef test_semantic_boundary_subnormal():\n    \"\"\"Verify cvIsInf handles very small numbers (subnormals) correctly by returning 0.\"\"\"\n    val = 5e-324\n    result = cvIsInf(val)\n    assert result == 0\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.floats(allow_nan=True, allow_infinity=True))\ndef test_auto_property_cvIsInf(value):\n    \"\"\"Property-based test verifying consistency between cvIsInf and Python's math.isinf.\"\"\"\n    result = cvIsInf(value)\n    if math.isinf(value):\n        assert result != 0\n    else:\n        assert result == 0",
+      "execution": {
+        "total_tests": 6,
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 5,
+          "failed": 0,
+          "total": 5
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 6 items\n\n::test_semantic_positive_infinity PASSED                                 [ 16%]\n::test_semantic_negative_infinity PASSED                                 [ 33%]\n::test_semantic_finite_numbers PASSED                                    [ 50%]\n::test_semantic_nan PASSED                                               [ 66%]\n::test_semantic_boundary_subnormal PASSED                                [ 83%]\n::test_auto_property_cvIsInf PASSED                                      [100%]\n\n============================== 6 passed in 3.65s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 6,
+          "reference_total": 6,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 6
+        }
+      }
+    }
+  },
+  "cvIsNaN": {
+    "doc_hash": "46d4bf2781a2",
+    "db_id": "opencv_fast_math_hpp_cvIsNaN",
+    "codewiki_doc": "- **Purpose**: Determines if a floating-point number is \"Not a Number\" (IEEE 754 standard). - **Behavior**: Checks bit representation via `Cv32suf` / `Cv64suf` unions or optimized compiler builtins (`__builtin_isnan`).",
+    "retrieval": {
+      "rank": 6,
+      "reciprocal_rank": 0.1667,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "cvRound",
+      "top_similarity": 0.3713
+    },
+    "codebert": {
+      "precision": 0.7282,
+      "recall": 0.775,
+      "f1": 0.7509
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          4.0,
+          4.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.4,
+        "std": 0.49,
+        "sample_reasoning": "DEF-5 (Over-specification / Invention): The generated documentation mentions `Cv32suf` and `__builtin_isnan`, whereas the actual C code only utilizes `Cv64suf` (or `CV_INLINE_ISNAN_DBL`). While the general concept is correct, hallucinating specific internal macro/union names not present in the code introduces a minor over-specification/invention defect. Therefore, the score is adjusted down from 4.0."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately captures the primary functional intent of checking for NaN according to the IEEE 754 standard, though it slightly over-specifies internal implementation details (unions/builtins) not explicitly mentioned in the brief Ground Truth."
+      },
+      "combined_score": 3.7
+    },
+    "roundtrip": {
+      "function_name": "cvIsNaN",
+      "library": "OpenCV",
+      "signature": "int cvIsNaN(double value)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "import math\n\ndef cvIsNaN(value: float) -> int:\n    \"\"\"\n    Determines if a floating-point number is \"Not a Number\" (IEEE 754 standard).\n    Checks bit representation via Cv32suf / Cv64suf unions or optimized compiler builtins.\n    \n    Parameters:\n    value (float): The double precision floating-point value to check.\n    \n    Returns:\n    int: Non-zero (1) if the value is NaN, 0 otherwise.\n    \"\"\"\n    if math.isnan(value):\n        return 1\n    return 0",
+      "reference_code": "import struct\n\n\ndef cvIsNaN(value: float) -> int:\n    \"\"\"Transpiled equivalent of OpenCV's cvIsNaN for double precision floating-point numbers.\n\n    Checks if the given double-precision floating-point value is NaN (Not a\n    Number)\n    following the IEEE 754 bit-level representation logic used in OpenCV.\n    \"\"\"\n    # Pack the double into an 8-byte big-endian/native byte string and unpack as a 64-bit unsigned integer (Cv64suf equivalent)\n    # Using 'd' for double and 'Q' for unsigned 64-bit integer.\n    try:\n        packed = struct.pack(\">d\", value)\n        ieee754_u = struct.unpack(\">Q\", packed)[0]\n    except (struct.error, OverflowError):\n        # Fallback if standard isnan check is needed or overflow occurs\n        return 0\n\n    # Replicate the bit-manipulation logic from the C code:\n    # return ((unsigned)(ieee754.u >> 32) & 0x7fffffff) + ((unsigned)ieee754.u != 0) > 0x7ff00000;\n    upper_32 = (ieee754_u >> 32) & 0x7fffffff\n    lower_nonzero = 1 if (ieee754_u & 0xFFFFFFFFFFFFFFFF) != 0 else 0\n\n    result = upper_32 + lower_nonzero\n    return 1 if result > 0x7FF00000 else 0",
+      "test_suite": "import math\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_nan_values():\n    \"\"\"Verify that cvIsNaN correctly identifies standard and quiet NaNs as true (non-zero).\"\"\"\n    nan_val = float('nan')\n    result = cvIsNaN(nan_val)\n    assert isinstance(result, int)\n    assert result != 0\n\n\ndef test_semantic_normal_numbers():\n    \"\"\"Verify that normal floating-point numbers return false (0).\"\"\"\n    assert cvIsNaN(0.0) == 0\n    assert cvIsNaN(1.0) == 0\n    assert cvIsNaN(-42.5) == 0\n    assert cvIsNaN(3.1415926535) == 0\n\n\ndef test_semantic_infinite_values():\n    \"\"\"Verify that positive and negative infinity return false (0) for NaN checks.\"\"\"\n    assert cvIsNaN(float('inf')) == 0\n    assert cvIsNaN(float('-inf')) == 0\n\n\ndef test_semantic_subnormal_and_extreme_boundaries():\n    \"\"\"Verify subnormal numbers and extreme boundaries return false (0).\"\"\"\n    # Smallest positive subnormal / denormal float64\n    smallest_subnormal = 5e-324\n    assert cvIsNaN(smallest_subnormal) == 0\n    \n    # Maximum float64 value\n    max_double = 1.7976931348623157e+308\n    assert cvIsNaN(max_double) == 0\n    assert cvIsNaN(-max_double) == 0\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.floats())\ndef test_auto_property_cv_is_nan_behavior(val):\n    \"\"\"Property-based test ensuring cvIsNaN agrees with math.isnan for standard floats.\"\"\"\n    res = cvIsNaN(val)\n    assert isinstance(res, int)\n    if math.isnan(val):\n        assert res != 0\n    else:\n        assert res == 0",
+      "execution": {
+        "total_tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_nan_values PASSED                                        [ 20%]\n::test_semantic_normal_numbers PASSED                                    [ 40%]\n::test_semantic_infinite_values PASSED                                   [ 60%]\n::test_semantic_subnormal_and_extreme_boundaries PASSED                  [ 80%]\n::test_auto_property_cv_is_nan_behavior PASSED                           [100%]\n\n============================== 5 passed in 3.83s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 60.0,
+          "reference_passed": 3,
+          "reference_total": 5,
+          "differential_agreement_rate": 60.0,
+          "both_passed_count": 3
+        }
+      }
+    }
+  },
+  "cvRound": {
+    "doc_hash": "ec8aae4d282f",
+    "db_id": "opencv_fast_math_hpp_cvRound",
+    "codewiki_doc": "- **Purpose**: Rounds a floating-point number (`float` or `double`) to the nearest integer. - **Behavior**: Utilizes hardware instructions (e.g., SSE2 `_mm_cvtsd_si32`, ARM Neon `vcvtn`, x87 `fistp`) or compiler builtins (`__builtin_lrint`) when available, falling back to standard `lrint` implementation. Overloaded for `int` to return the value directly.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "cvRound",
+      "top_similarity": 0.511
+    },
+    "codebert": {
+      "precision": 0.703,
+      "recall": 0.7761,
+      "f1": 0.7378
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          4.0,
+          4.0,
+          3.0,
+          4.0
+        ],
+        "mean": 3.6,
+        "std": 0.49,
+        "sample_reasoning": "DEF-5 (Over-specification / Invention): The generated documentation incorrectly states that the function is 'Overloaded for int to return the value directly', which is not present in the provided C source code (the signature is strictly `int cvRound(double value)`). Aside from this hallucinated overload detail, the documentation accurately captures the hardware instructions and fallback mechanisms. Due to this minor over-specification defect, the score is adjusted to 3."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.2,
+        "std": 0.4,
+        "sample_reasoning": "ALIGN-1: The generated documentation completely misses the critical warning that results are undefined if the input value is outside the INT_MIN to INT_MAX range. However, it captures the core functional intent and provides useful implementation details."
+      },
+      "combined_score": 3.4
+    },
+    "roundtrip": {
+      "function_name": "cvRound",
+      "library": "OpenCV",
+      "signature": "int cvRound(double value)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "import math\n\ndef cvRound(value: float) -> int:\n    \"\"\"\n    Rounds a floating-point number (float or double) to the nearest integer.\n    Utilizes standard rounding behavior (round to nearest, ties to even or away depending on lrint/standard behavior).\n    Overloaded for int conceptually, handles numeric inputs.\n    \"\"\"\n    # Using standard math.comb/lrint equivalent in Python:\n    # round() in Python 3 uses round-half-to-even.\n    # To match standard lrint behavior (round to nearest integer, rounding halfway cases away from zero or to even\n    # depending on the platform/lrint), math.frexp / standard round can be used. \n    # Python's built-in round() rounds half to even, which aligns with standard IEEE 754 / lrint behavior.\n    return int(round(value))",
+      "reference_code": "import math\n\ndef cvRound(value: float) -> int:\n    \"\"\"\n    Rounds a floating-point number to the nearest integer.\n    Equivalent to OpenCV's cvRound function (which typically uses round-to-nearest-even, \n    matching standard C's lrint behavior).\n    \"\"\"\n    return int(math.lrint(value))",
+      "test_suite": "import math\nimport pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_rounding_positives():\n    # Test typical positive rounding cases including round-half-to-even behavior (banker's rounding or standard IEEE-754 lrint)\n    assert cvRound(0.0) == 0\n    assert cvRound(0.4) == 0\n    assert cvRound(0.5) == 0 or cvRound(0.5) == 1  # Depending on lrint / hardware mode (typically even or away)\n    assert cvRound(0.6) == 1\n    assert cvRound(1.0) == 1\n    assert cvRound(2.7) == 3\n\n\ndef test_semantic_rounding_negatives():\n    # Test negative floating-point rounding\n    assert cvRound(-0.4) == 0\n    assert cvRound(-0.6) == -1\n    assert cvRound(-1.0) == -1\n    assert cvRound(-2.7) == -3\n\n\ndef test_semantic_boundary_values():\n    # Test boundary values near integers\n    assert cvRound(1000000.1) == 1000000\n    assert cvRound(1000000.9) == 1000001\n    assert cvRound(-1000000.1) == -1000000\n    assert cvRound(-1000000.9) == -1000001\n\n\ndef test_semantic_integer_range_limits():\n    # Test near standard 32-bit signed integer limits fitting into double safely\n    assert cvRound(2147483640.0) == 2147483640\n    assert cvRound(-2147483640.0) == -2147483640\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.floats(min_value=-1e7, max_value=1e7, allow_nan=False, allow_infinity=False))\ndef test_auto_property_cvround_behavior(val):\n    result = cvRound(val)\n    # Check that the return type is an integer and closely matches math.floor/math.ceil/round behavior\n    assert isinstance(result, int)\n    # The rounded result should be within 1 of the input value\n    assert abs(result - val) <= 0.51\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.integers(min_value=-100000, max_value=100000))\ndef test_auto_property_cvround_exact_integers(i):\n    # Rounding an exact integer represented as double should return the exact same integer value\n    val = float(i)\n    assert cvRound(val) == i",
+      "execution": {
+        "total_tests": 6,
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 2,
+          "failed": 0,
+          "total": 2
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 6 items\n\n::test_semantic_rounding_positives PASSED                                [ 16%]\n::test_semantic_rounding_negatives PASSED                                [ 33%]\n::test_semantic_boundary_values PASSED                                   [ 50%]\n::test_semantic_integer_range_limits PASSED                              [ 66%]\n::test_auto_property_cvround_behavior PASSED                             [ 83%]\n::test_auto_property_cvround_exact_integers PASSED                       [100%]\n\n============================== 6 passed in 3.95s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 0.0,
+          "reference_passed": 0,
+          "reference_total": 6,
+          "differential_agreement_rate": 0.0,
+          "both_passed_count": 0
+        }
+      }
+    }
+  },
+  "fastFree": {
+    "doc_hash": "c3e107036cea",
+    "db_id": "opencv_cvstd_hpp_fastFree",
+    "codewiki_doc": "Low-level functions that allocate and deallocate aligned memory buffers (aligned to 16 bytes when the buffer size is 16 bytes or more).",
+    "retrieval": {
+      "rank": 2,
+      "reciprocal_rank": 0.5,
+      "hit_at_1": 0.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "fastMalloc",
+      "top_similarity": 0.3714
+    },
+    "codebert": {
+      "precision": 0.7328,
+      "recall": 0.7157,
+      "f1": 0.7241
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-3: The generated documentation is largely tautological and focuses on general aligned memory behavior rather than the specific operational logic of fastFree (such as handling NULL pointers or clearing pointers in the C version). However, it remains technically aligned with the broader memory management context without introducing severe hallucinations. Therefore, applying the rubric from a baseline of 4.0 and penalizing for the vague/tautological nature yields a score of 3."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "mean": 1.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1 and ALIGN-4: The generated documentation completely misses the crucial warning that passing a NULL pointer is handled gracefully, and it ignores the C version's behavior of clearing the pointer (*pptr*) to prevent double deallocation. The provided text is overly superficial and fails to capture the operational nuances of the fastFree function."
+      },
+      "combined_score": 2.0
+    },
+    "roundtrip": {
+      "function_name": "fastFree",
+      "library": "OpenCV",
+      "signature": "void fastFree(void * ptr)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "# -*- coding: utf-8 -*-\n\n# Module-level tracking for pure Python mock memory management of fastFree\n_FAST_ALLOCATED_BUFFERS = {}\n\n\ndef fastFree(ptr):\n    \"\"\"Low-level functions that allocate and deallocate aligned memory buffers (aligned to 16 bytes when the buffer size is 16 bytes or more).\"\"\"\n    if ptr is None:\n        return\n    \n    # If ptr is passed as an integer address or a tracker ID\n    if isinstance(ptr, int):\n        _FAST_ALLOCATED_BUFFERS.pop(ptr, None)\n    elif hasattr(ptr, \"value\"):\n        # Handle potential mutable container or mock pointer object\n        val = ptr.value\n        if isinstance(val, int):\n            _FAST_ALLOCATED_BUFFERS.pop(val, None)\n        else:\n            _FAST_ALLOCATED_BUFFERS.pop(id(val), None)\n        try:\n            ptr.value = None\n        except Exception:\n            pass\n    elif isinstance(ptr, list):\n        if len(ptr) > 0:\n            item = ptr[0]\n            _FAST_ALLOCATED_BUFFERS.pop(id(item), None)\n            ptr[0] = None\n    else:\n        _FAST_ALLOCATED_BUFFERS.pop(id(ptr), None)",
+      "reference_code": "import gc\n\n\ndef fastFree(ptr) -> None:\n    \"\"\"Equivalent of OpenCV's fastFree function.\n\n    In Python, memory management and garbage collection are handled\n    automatically. This function acts as a safe, compatible no-op or triggers\n    garbage collection if a custom object wrapper is provided.\n    \"\"\"\n    if ptr is not None:\n        # If the passed object has a custom release/free method, call it.\n        if hasattr(ptr, \"release\") and callable(ptr.release):\n            ptr.release()\n        # Otherwise, relying on Python's reference counting and GC.\n        # We can explicitly delete the reference if passed as a mutable container,\n        # but in Python, passing a pointer/reference just frees the local reference.\n        # To mimic C's free behavior closely, we allow standard Python GC.\n        pass",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_null_pointer():\n    \"\"\"Verify that passing a NULL pointer (None) to fastFree executes safely without crashing.\"\"\"\n    # fastFree(void * ptr) allows NULL according to standard memory management semantics\n    fastFree(None)\n\n\ndef test_semantic_allocated_memory():\n    \"\"\"Verify that fastFree successfully frees memory allocated via fastMalloc (or a mock/compatible mechanism if applicable).\"\"\"\n    # Since we are testing black-box with pure python objects where fastMalloc isn't directly exposed \n    # in the test scope, we simulate valid pointer handling or verify it accepts standard types if wrapped.\n    # Here we verify with a basic integer/object representation that is treated as a pointer reference.\n    # Note: In OpenCV C++ backend, fastFree expects a pointer. In pure Python bindings, \n    # we verify that passing None or handled references does not throw unhandled contract errors.\n    fastFree(None)\n\n\ndef test_semantic_boundary_pointer_references():\n    \"\"\"Verify multiple consecutive calls with null or default pointers.\"\"\"\n    fastFree(None)\n    fastFree(None)\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.none())\ndef test_auto_property_none_pointer(ptr_val):\n    \"\"\"Property-based test ensuring fastFree handles none/null inputs robustly across randomized runs.\"\"\"\n    fastFree(ptr_val)",
+      "execution": {
+        "total_tests": 4,
+        "passed": 4,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 3,
+          "failed": 0,
+          "total": 3
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 4 items\n\n::test_semantic_null_pointer PASSED                                      [ 25%]\n::test_semantic_allocated_memory PASSED                                  [ 50%]\n::test_semantic_boundary_pointer_references PASSED                       [ 75%]\n::test_auto_property_none_pointer PASSED                                 [100%]\n\n============================== 4 passed in 3.92s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 4,
+          "reference_total": 4,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 4
+        }
+      }
+    }
+  },
+  "fastMalloc": {
+    "doc_hash": "c3e107036cea",
+    "db_id": "opencv_cvstd_hpp_fastMalloc",
+    "codewiki_doc": "Low-level functions that allocate and deallocate aligned memory buffers (aligned to 16 bytes when the buffer size is 16 bytes or more).",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "fastMalloc",
+      "top_similarity": 0.3714
+    },
+    "codebert": {
+      "precision": 0.8381,
+      "recall": 0.7905,
+      "f1": 0.8136
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 3.8,
+        "std": 0.4,
+        "sample_reasoning": "DEF-2: Fails to specify memory ownership (i.e., that the returned buffer must be deallocated using the corresponding fastFree function). The generated documentation is otherwise technically accurate and aligns with the ground truth regarding the 16-byte alignment behavior, resulting in a score of 4."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          4.0,
+          5.0,
+          4.0,
+          5.0,
+          5.0
+        ],
+        "mean": 4.6,
+        "std": 0.49,
+        "sample_reasoning": "ALIGN-1: The generated documentation successfully captures the core functionality and the 16-byte alignment condition, but it omits the formal Doxygen parameter documentation (@param bufSize) specified in the Ground Truth. Overall, it provides a substantial summary of the intended behavior."
+      },
+      "combined_score": 4.2
+    },
+    "roundtrip": {
+      "function_name": "fastMalloc",
+      "library": "OpenCV",
+      "signature": "void * fastMalloc(size_t bufSize)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "import sys\n\ndef fastMalloc(bufSize: int) -> int:\n    \"\"\"\n    Low-level function that allocates aligned memory buffers (aligned to 16 bytes \n    when the buffer size is 16 bytes or more).\n    \n    Parameters:\n    - bufSize (int): The size of the buffer to allocate in bytes.\n    \n    Returns:\n    - int: A simulated memory address or identifier representing the allocated buffer.\n    \"\"\"\n    # Pure Python mock implementation for memory allocation with 16-byte alignment simulation.\n    # We store allocated buffers globally to prevent garbage collection if necessary,\n    # or simply return an integer memory address representing the allocation.\n    \n    if not hasattr(fastMalloc, \"_allocations\"):\n        fastMalloc._allocations = {}\n        fastMalloc._next_address = 1024  # Start mock addresses at a baseline\n\n    # Determine alignment requirement: 16 bytes if bufSize >= 16 else default/natural alignment\n    alignment = 16 if bufSize >= 16 else 1\n    \n    # Allocate a bytearray of the requested size\n    buffer = bytearray(bufSize)\n    \n    addr = fastMalloc._next_address\n    # Ensure address respects the alignment mathematically for consistency\n    if addr % alignment != 0:\n        addr += alignment - (addr % alignment)\n        \n    fastMalloc._next_address = addr + bufSize + 16  # Add padding for safety between allocations\n    fastMalloc._allocations[addr] = buffer\n    \n    return addr",
+      "reference_code": "import sys\n\n\ndef fastMalloc(bufSize: int) -> bytearray:\n    \"\"\"Allocates a memory buffer of the specified size.\n\n    In the context of OpenCV, fastMalloc allocates memory with a certain\n    alignment. In pure Python, we can simulate this using a bytearray or\n    bytes object. A bytearray is mutable and mimics a raw memory buffer.\n    \"\"\"\n    if bufSize == 0:\n        return bytearray()\n    # Allocate a bytearray of size `bufSize`, initialized to zeros.\n    return bytearray(bufSize)",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\ndef test_semantic_zero_size():\n    # Calling fastMalloc with size 0 (edge case)\n    ptr = fastMalloc(0)\n    # Even for size 0, implementation may return a valid pointer or nullptr, \n    # but it should not crash. If it returns a pointer, we can free it if needed, \n    # or just assert the call executes safely.\n    assert ptr is not None or ptr is None\n\ndef test_semantic_small_allocation():\n    # Requesting allocation smaller than 16 bytes\n    size = 8\n    ptr = fastMalloc(size)\n    assert ptr is not None\n\ndef test_semantic_exact_alignment_boundary():\n    # Requesting exactly 16 bytes (alignment threshold)\n    size = 16\n    ptr = fastMalloc(size)\n    assert ptr is not None\n\ndef test_semantic_large_allocation():\n    # Requesting a larger buffer allocation\n    size = 1024 * 1024  # 1 MB\n    ptr = fastMalloc(size)\n    assert ptr is not None\n\ndef test_semantic_unaligned_size():\n    # Requesting an unaligned size larger than 16 bytes\n    size = 100\n    ptr = fastMalloc(size)\n    assert ptr is not None\n\n\n@settings(max_examples=50, deadline=None)\n@given(bufSize=st.integers(min_value=0, max_value=10 * 1024 * 1024))\ndef test_auto_property_fast_malloc_sizes(bufSize):\n    # Property test: fastMalloc should handle various buffer sizes safely without crashing\n    ptr = fastMalloc(bufSize)\n    # The function returns a void* (in Python bindings represented as an integer address or a memory buffer)\n    # We just ensure the call completes and returns a result representation.\n    assert ptr is not None or ptr is None",
+      "execution": {
+        "total_tests": 6,
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 5,
+          "failed": 0,
+          "total": 5
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 6 items\n\n::test_semantic_zero_size PASSED                                         [ 16%]\n::test_semantic_small_allocation PASSED                                  [ 33%]\n::test_semantic_exact_alignment_boundary PASSED                          [ 50%]\n::test_semantic_large_allocation PASSED                                  [ 66%]\n::test_semantic_unaligned_size PASSED                                    [ 83%]\n::test_auto_property_fast_malloc_sizes PASSED                            [100%]\n\n============================== 6 passed in 3.94s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 6,
+          "reference_total": 6,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 6
+        }
+      }
+    }
+  },
+  "saturate_cast": {
+    "doc_hash": "a689fa535750",
+    "db_id": "opencv_saturate_hpp_saturate_cast",
+    "codewiki_doc": "- **Purpose**: Converts a value from one primitive type to another while clipping out-of-range values instead of wrapping around. - **Floating-point Handling**: When converting from floating-point types (`float`, `double`) to integer types, values are first rounded to the nearest integer using [OpenCV_fast_math](OpenCV_fast_math.md) utilities (`cvRound`), then clipped if necessary. ---",
+    "retrieval": {
+      "rank": 6,
+      "reciprocal_rank": 0.1667,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "cvRound",
+      "top_similarity": 0.5928
+    },
+    "codebert": {
+      "precision": 0.757,
+      "recall": 0.6865,
+      "f1": 0.72
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          4.0,
+          4.0,
+          4.0,
+          3.0
+        ],
+        "mean": 3.6,
+        "std": 0.49,
+        "sample_reasoning": "DEF-5: The generated documentation mentions floating-point handling and rounding using cvRound, which matches the ground truth description of the overall saturate_cast utility family, but the specific source code provided for this evaluation takes `uchar v` and casts it to `_Tp`, meaning the floating-point rounding behavior is technically an over-specification or mismatch for this specific overload. However, it captures the general intent well, leading to a score of 3 due to minor over-specification against the provided code snippet."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1: The generated documentation successfully captures the core purpose and floating-point handling with rounding, but fails to explicitly enumerate the specific target types where clipping occurs (unsigned/signed char and short) versus 32-bit integers where no clipping is done. Overall, it provides a substantial alignment with the author's intent while missing minor nuance."
+      },
+      "combined_score": 3.8
+    },
+    "roundtrip": {
+      "function_name": "saturate_cast",
+      "library": "OpenCV",
+      "signature": "_Tp saturate_cast(int v)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Constants and limits for standard C integer types typically targeted by saturate_cast\n# (Assuming 32-bit int bounds or general integer limits as per standard OpenCV saturate_cast)\n\nINT_MIN = -2147483648\nINT_MAX = 2147483647\nUINT_MAX = 4294967295\n\nUCHAR_MAX = 255\nSCHAR_MAX = 127\nSCHAR_MIN = -128\nUSHRT_MAX = 65535\nSHRT_MAX = 32767\nSHRT_MIN = -32768\n\n\ndef saturate_cast(v: int) -> int:\n    \"\"\"Converts a value from one primitive type to another while clipping\n\n    out-of-range values instead of wrapping around.\n    C/C++ Signature: _Tp saturate_cast(int v)\n    \"\"\"\n    # Assuming integer target type (_Tp) capacity bounds.\n    # Depending on the specific template instantiation, saturate_cast clips\n    # to the destination type's limits. For general int -> int, we clip to INT_MIN and INT_MAX.\n    if v < INT_MIN:\n        return INT_MIN\n    if v > INT_MAX:\n        return INT_MAX\n    return int(v)",
+      "reference_code": "def saturate_cast(v: int) -> int:\n    \"\"\"\n    Python implementation of OpenCV's saturate_cast for uchar.\n    C/C++ Signature: template<typename _Tp> static inline _Tp saturate_cast(uchar v)\n    \"\"\"\n    # Assuming the target type is standard integer/uchar and clamping if needed,\n    # or simply returning the value cast to the target range (0-255 for uchar).\n    # Since the original C++ code is `return _Tp(v);`, in Python we ensure \n    # it fits within the standard 8-bit unsigned integer range [0, 255].\n    return max(0, min(255, v))",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_within_range():\n    \"\"\"Verify saturate_cast correctly preserves values within the target type range.\"\"\"\n    # Assuming standard target type (e.g., uchar or short) where 100 is valid\n    val = 100\n    res = saturate_cast(val)\n    assert res == 100\n\n\ndef test_semantic_upper_bound_clipping():\n    \"\"\"Verify saturate_cast clips values exceeding the upper bound of the target type.\"\"\"\n    # Passing a value larger than typical 8-bit or 16-bit limits, e.g. 1000000\n    val = 1000000\n    res = saturate_cast(val)\n    # Should be clipped to the maximum representable value of the destination type _Tp\n    # We verify it returns a valid clamped integer without wrapping around negatively.\n    assert isinstance(res, int)\n    assert res > 0\n    assert res <= 1000000\n\n\ndef test_semantic_lower_bound_clipping():\n    \"\"\"Verify saturate_cast clips values falling below the lower bound of the target type.\"\"\"\n    val = -1000000\n    res = saturate_cast(val)\n    # Should be clipped to the minimum representable value of the destination type _Tp\n    assert isinstance(res, int)\n    assert res < 0\n\n\ndef test_semantic_zero():\n    \"\"\"Verify saturate_cast handles zero correctly.\"\"\"\n    val = 0\n    res = saturate_cast(val)\n    assert res == 0\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.integers(min_value=-2147483648, max_value=2147483647))\ndef test_auto_property_integer_saturation(v):\n    \"\"\"Property-based test ensuring saturate_cast handles any 32-bit signed integer safely.\"\"\"\n    res = saturate_cast(v)\n    assert isinstance(res, int)",
+      "execution": {
+        "total_tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_within_range PASSED                                      [ 20%]\n::test_semantic_upper_bound_clipping PASSED                              [ 40%]\n::test_semantic_lower_bound_clipping PASSED                              [ 60%]\n::test_semantic_zero PASSED                                              [ 80%]\n::test_auto_property_integer_saturation PASSED                           [100%]\n\n============================== 5 passed in 3.53s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 80.0,
+          "reference_passed": 4,
+          "reference_total": 5,
+          "differential_agreement_rate": 80.0,
+          "both_passed_count": 4
+        }
+      }
+    }
+  }
+}

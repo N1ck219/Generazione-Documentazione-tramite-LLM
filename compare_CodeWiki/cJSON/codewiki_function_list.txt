@@ -1,0 +1,22 @@
+# Funzioni cJSON documentate da CodeWiki (generato da evaluate_codewiki_metrics.py)
+# Uso: python utils/benchmark_eval.py -l cJSON -m multiagent --functions <questo file>
+cJSON_Compare
+cJSON_Delete
+cJSON_Duplicate
+cJSON_Minify
+cJSON_Parse
+cJSON_ParseWithOpts
+cJSON_Print
+cJSON_PrintBuffered
+cJSON_PrintPreallocated
+cJSON_PrintUnformatted
+parse_array
+parse_number
+parse_object
+parse_string
+parse_value
+print_array
+print_number
+print_object
+print_string
+print_value
