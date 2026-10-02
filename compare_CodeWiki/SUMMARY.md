@@ -1,6 +1,6 @@
 # Confronto CodeWiki vs pipeline della tesi - riepilogo per libreria
 
-> Generato da `compare_codewiki.py` il 2026-10-02 15:55. Dettagli, grafici e report completi in `compare_CodeWiki/<Libreria>/`.
+> Generato da `compare_codewiki.py` il 2026-10-02 16:22. Dettagli, grafici e report completi in `compare_CodeWiki/<Libreria>/`.
 
 ## Copertura di CodeWiki
 
@@ -27,10 +27,10 @@
 
 | Libreria | parse | metrics | pipeline | advanced | compare |
 |----------|---|---|---|---|---|
-| OpenCV | ok (0s) | ok (70s) | ok (576s) - 5 funzioni documentate | ok (581s) - compare_CodeWiki\OpenCV\codewiki_advanced_results.json | ok (11s) - 10 file generati |
-| TinyXML-2 | ok (0s) | ok (51s) | ERRORE | - | - |
-| cJSON | ok (0s) | ok (45s) | ok (0s) - nulla da fare (tutte le funzioni gia' documentate dalla pipeline) | ok (23s) - compare_CodeWiki\cJSON\codewiki_advanced_results.json | ok (23s) - 10 file generati |
-| fmt | ok (0s) | ok (6s) | ERRORE | - | - |
-| http-parser | ok (0s) | ok (15s) | ERRORE | - | - |
-| miniz | ok (0s) | ok (34s) | ERRORE | - | - |
-| sds | ok (0s) | ok (52s) | ERRORE | - | - |
+| OpenCV | - | - | - | - | - |
+| TinyXML-2 | - | - | - | - | ok (39s) - 15 file generati |
+| cJSON | - | - | - | - | - |
+| fmt | - | - | - | - | - |
+| http-parser | - | - | - | - | - |
+| miniz | - | - | - | - | - |
+| sds | - | - | - | - | - |

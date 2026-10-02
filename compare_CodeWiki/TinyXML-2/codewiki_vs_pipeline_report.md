@@ -1,7 +1,7 @@
 # Confronto: Pipeline della tesi vs CodeWiki (TinyXML-2)
 
 > **Script**: `utils/plot_codewiki_comparison.py`  
-> **Funzioni confrontate**: 47 (valutate da entrambi i sistemi) su 47 documentate da CodeWiki  
+> **Funzioni confrontate**: 47 (valutate da entrambi i sistemi) su 51 documentate da CodeWiki  
 > **Run della pipeline usati**: `results\benchmark_tinyxml-2\run_20261001_180647_multiagent\eval_report_multiagent.json`  
 
 ## Metriche medie sulle funzioni in comune
@@ -94,6 +94,85 @@ Metriche della pipeline non applicabili a CodeWiki:
 | `XMLText::CData` | 0.6895 | 0.9239 | `results\benchmark_tinyxml-2\run_20261001_180647_multiagent\eval_report_multiagent.json` |
 | `XMLText::SetCData` | 0.6646 | 0.8625 | `results\benchmark_tinyxml-2\run_20261001_180647_multiagent\eval_report_multiagent.json` |
 
+## Round-trip: dettaglio per funzione
+
+| Funzione | Pass % pipeline (test) | Pass % CodeWiki (test) | Dual pipeline | Dual CodeWiki | Anomalie |
+|----------|-----------------------|------------------------|---------------|---------------|----------|
+| `XMLAttribute::BoolValue` | 75.0 (8) | 0.0 (7) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLAttribute::DoubleValue` | 100.0 (8) | 100.0 (6) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLAttribute::FloatValue` | 100.0 (7) | 100.0 (7) | 100.0 | 100.0 | - |
+| `XMLAttribute::GetLineNum` | 100.0 (3) | 100.0 (4) | 100.0 | 100.0 | - |
+| `XMLAttribute::IntValue` | 100.0 (7) | 50.0 (8) | 100.0 | 50.0 | - |
+| `XMLAttribute::Name` | 100.0 (5) | 100.0 (4) | 0.0 | 100.0 | pipeline: test falliscono sul reference |
+| `XMLAttribute::Next` | 100.0 (4) | 100.0 (5) | 100.0 | 100.0 | - |
+| `XMLAttribute::SetAttribute` | 100.0 (5) | 0.0 (6) | 100.0 | 0.0 | CodeWiki: test falliscono sul reference |
+| `XMLAttribute::UnsignedValue` | 100.0 (8) | 0.0 (6) | 100.0 | 0.0 | CodeWiki: test falliscono sul reference |
+| `XMLAttribute::Value` | 100.0 (4) | 100.0 (5) | 100.0 | 100.0 | - |
+| `XMLElement::Attribute` | 100.0 (6) | 100.0 (7) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLElement::DeleteAttribute` | 33.3 (6) | 75.0 (4) | 33.3 | 0.0 | CodeWiki: test falliscono sul reference |
+| `XMLElement::FindAttribute` | 100.0 (7) | 85.7 (7) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLElement::FirstAttribute` | 20.0 (5) | 20.0 (5) | 20.0 | 0.0 | CodeWiki: test falliscono sul reference |
+| `XMLElement::GetText` | 20.0 (5) | 100.0 (5) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLElement::InsertNewChildElement` | 57.1 (7) | 0.0 (6) | 57.1 | 0.0 | - |
+| `XMLElement::InsertNewComment` | 0.0 (5) | 0.0 (5) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLElement::InsertNewDeclaration` | 0.0 (5) | 100.0 (5) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLElement::InsertNewText` | 0.0 (5) | 0.0 (5) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLElement::InsertNewUnknown` | 0.0 (5) | 20.0 (5) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLElement::IntAttribute` | 100.0 (7) | 100.0 (7) | 14.3 | 0.0 | CodeWiki: test falliscono sul reference |
+| `XMLElement::Name` | 100.0 (5) | 100.0 (5) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLElement::SetAttribute` | 100.0 (7) | 16.7 (6) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLElement::SetName` | 0.0 (6) | 0.0 (5) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLElement::SetText` | 0.0 (1) | 0.0 (1) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLNode::DeepClone` | 50.0 (2) | 16.7 (6) | 50.0 | 16.7 | - |
+| `XMLNode::DeleteChild` | 100.0 (4) | 100.0 (5) | 100.0 | 0.0 | CodeWiki: test falliscono sul reference |
+| `XMLNode::DeleteChildren` | 20.0 (5) | 100.0 (3) | 20.0 | 100.0 | - |
+| `XMLNode::FirstChild` | 100.0 (4) | 100.0 (5) | 100.0 | 100.0 | - |
+| `XMLNode::FirstChildElement` | 100.0 (4) | 100.0 (5) | 100.0 | 100.0 | - |
+| `XMLNode::GetDocument` | 0.0 (5) | 20.0 (5) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLNode::InsertAfterChild` | 0.0 (7) | 0.0 (6) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLNode::InsertEndChild` | 0.0 (6) | 100.0 (5) | 0.0 | 60.0 | - |
+| `XMLNode::InsertFirstChild` | 83.3 (6) | 100.0 (5) | 83.3 | 80.0 | - |
+| `XMLNode::LastChild` | 100.0 (5) | 100.0 (4) | 100.0 | 100.0 | - |
+| `XMLNode::LastChildElement` | 0.0 (7) | 100.0 (5) | 0.0 | 100.0 | pipeline: test falliscono sul reference |
+| `XMLNode::NextSibling` | 60.0 (5) | 100.0 (4) | 60.0 | 100.0 | - |
+| `XMLNode::NextSiblingElement` | 0.0 (6) | 100.0 (4) | 0.0 | 100.0 | pipeline: test falliscono sul reference |
+| `XMLNode::Parent` | 60.0 (5) | 50.0 (6) | 60.0 | 50.0 | - |
+| `XMLNode::PreviousSibling` | 100.0 (4) | 100.0 (4) | 100.0 | 100.0 | - |
+| `XMLNode::PreviousSiblingElement` | 100.0 (4) | 0.0 (1) | 100.0 | 0.0 | - |
+| `XMLNode::SetValue` | 33.3 (6) | 0.0 (6) | 33.3 | 0.0 | CodeWiki: test falliscono sul reference |
+| `XMLNode::ShallowClone` | 100.0 (5) | 100.0 (5) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `XMLNode::ShallowEqual` | 100.0 (5) | 100.0 (5) | 0.0 | 100.0 | pipeline: test falliscono sul reference |
+| `XMLNode::Value` | 16.7 (6) | 100.0 (4) | 16.7 | 100.0 | - |
+| `XMLText::CData` | 100.0 (4) | 60.0 (5) | 100.0 | 60.0 | - |
+| `XMLText::SetCData` | 0.0 (5) | 100.0 (4) | 0.0 | 100.0 | pipeline: test falliscono sul reference |
+
+### Funzioni senza test eseguiti
+
+Nessuna: tutte le funzioni hanno eseguito almeno un test in entrambi i sistemi.
+
+Funzioni in cui la suite di test fallisce *tutta* anche sul codice reference (suite probabilmente inaffidabile): pipeline 21, CodeWiki 23.
+
+### Medie escludendo le funzioni senza test eseguiti
+
+Sulle 47 funzioni con test eseguiti in entrambi i sistemi:
+
+| Metrica | Pipeline | CodeWiki | Wilcoxon p |
+|---------|----------|----------|------------|
+| Round-trip pass rate (%) | 60.2 | 64.1 | 0.5705 |
+| Dual agreement (%) | 39.3 | 40.8 | 0.8903 |
+
+### Tipologie di errore (test falliti)
+
+Stessa classificazione di `utils/roundtrip_error_analysis.py`, applicata a entrambi i sistemi sulle stesse funzioni. Il dettaglio dei singoli errori e' in `codewiki_advanced_results.json` (CodeWiki) e nei `roundtrip_results.json` dei run (pipeline).
+
+| Tipologia | Pipeline | % | CodeWiki | % |
+|-----------|----------|---|----------|---|
+| Missing Symbol / Environment | 54 | 55.1 | 61 | 71.8 |
+| Behavioral / Contract Failure | 24 | 24.5 | 22 | 25.9 |
+| Interface / Signature Mismatch | 11 | 11.2 | 0 | 0.0 |
+| Other Execution Error | 9 | 9.2 | 2 | 2.4 |
+| **Totale** | **98** | | **85** | |
+
 ## Note metodologiche
 
 - Le metriche semantiche della pipeline sono quelle salvate nei suoi report (stesse funzioni
@@ -106,6 +185,6 @@ Metriche della pipeline non applicabili a CodeWiki:
   (gemini-3.5-flash-lite, judge T=0.4 con 5 round per prospettiva, `RoundTripEvaluator`),
   le stesse righe del DB (firma, codice, GT) e come documentazione il testo CodeWiki.
   Retrieval: stesso corpus TinyXML-2 della pipeline; query = testo della documentazione.
-- Funzioni documentate da CodeWiki ma non ancora valutate dalla pipeline: 0.
+- Funzioni documentate da CodeWiki ma non ancora valutate dalla pipeline: 4.
 
 *Report generato automaticamente da `utils/plot_codewiki_comparison.py`*

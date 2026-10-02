@@ -1,0 +1,13 @@
+pdfa.xmpi
+thesis*.aux
+thesis*.bbl
+thesis*.blg
+thesis*.log
+thesis*.out
+thesis*.pdf
+thesis*.synctex.gz
+thesis*.toc
+thesis*.lof
+thesis*.lot
+thesis*.fls
+thesis*.fdb_latexmk

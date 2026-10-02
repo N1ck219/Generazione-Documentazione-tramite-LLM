@@ -1,11 +1,16 @@
 {
   "library": "TinyXML-2",
   "n_common": 47,
-  "n_codewiki_documented": 47,
+  "n_codewiki_documented": 51,
   "pipeline_runs": [
     "results\\benchmark_tinyxml-2\\run_20261001_180647_multiagent\\eval_report_multiagent.json"
   ],
-  "missing_in_pipeline": [],
+  "missing_in_pipeline": [
+    "XMLElement::BoolAttribute",
+    "XMLElement::DoubleAttribute",
+    "XMLElement::FloatAttribute",
+    "XMLElement::UnsignedAttribute"
+  ],
   "metrics": [
     {
       "metric": "sbert_similarity",
@@ -207,5 +212,1207 @@
       "delta": -1.4617,
       "p_value": 0.8903452962420233
     }
-  ]
+  ],
+  "extra": {
+    "n_functions": 47,
+    "n_valid_both": 47,
+    "no_tests": {
+      "pipeline": 0,
+      "codewiki": 0
+    },
+    "reference_suite_fails": {
+      "pipeline": 21,
+      "codewiki": 23
+    },
+    "pass_rate": {
+      "pipeline": 60.18510638297872,
+      "codewiki": 64.12978723404257,
+      "p_value": 0.5704869370886854,
+      "n": 47
+    },
+    "dual": {
+      "pipeline": 39.319148936170215,
+      "codewiki": 40.780851063829786,
+      "p_value": 0.8903452962420233,
+      "n": 47
+    },
+    "error_categories": {
+      "Missing Symbol / Environment": {
+        "pipeline": 54,
+        "codewiki": 61
+      },
+      "Behavioral / Contract Failure": {
+        "pipeline": 24,
+        "codewiki": 22
+      },
+      "Interface / Signature Mismatch": {
+        "pipeline": 11,
+        "codewiki": 0
+      },
+      "Other Execution Error": {
+        "pipeline": 9,
+        "codewiki": 2
+      }
+    },
+    "per_function": {
+      "XMLAttribute::BoolValue": {
+        "pipeline": {
+          "pass_rate": 75.0,
+          "total_tests": 8,
+          "passed": 6,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 7,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLAttribute::DoubleValue": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 8,
+          "passed": 8,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLAttribute::FloatValue": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLAttribute::GetLineNum": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 3,
+          "passed": 3,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLAttribute::IntValue": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 50.0,
+          "total_tests": 8,
+          "passed": 4,
+          "dual": 50.0,
+          "ref_pass": 50.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLAttribute::Name": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLAttribute::Next": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLAttribute::SetAttribute": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLAttribute::UnsignedValue": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 8,
+          "passed": 8,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLAttribute::Value": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLElement::Attribute": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::DeleteAttribute": {
+        "pipeline": {
+          "pass_rate": 33.3,
+          "total_tests": 6,
+          "passed": 2,
+          "dual": 33.3,
+          "ref_pass": 33.3,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 75.0,
+          "total_tests": 4,
+          "passed": 3,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::FindAttribute": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 85.7,
+          "total_tests": 7,
+          "passed": 6,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::FirstAttribute": {
+        "pipeline": {
+          "pass_rate": 20.0,
+          "total_tests": 5,
+          "passed": 1,
+          "dual": 20.0,
+          "ref_pass": 20.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 20.0,
+          "total_tests": 5,
+          "passed": 1,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::GetText": {
+        "pipeline": {
+          "pass_rate": 20.0,
+          "total_tests": 5,
+          "passed": 1,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::InsertNewChildElement": {
+        "pipeline": {
+          "pass_rate": 57.1,
+          "total_tests": 7,
+          "passed": 4,
+          "dual": 57.1,
+          "ref_pass": 71.4,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 83.3,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLElement::InsertNewComment": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::InsertNewDeclaration": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::InsertNewText": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::InsertNewUnknown": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 20.0,
+          "total_tests": 5,
+          "passed": 1,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::IntAttribute": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 14.3,
+          "ref_pass": 14.3,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::Name": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::SetAttribute": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 16.7,
+          "total_tests": 6,
+          "passed": 1,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::SetName": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::SetText": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 1,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 1,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLNode::DeepClone": {
+        "pipeline": {
+          "pass_rate": 50.0,
+          "total_tests": 2,
+          "passed": 1,
+          "dual": 50.0,
+          "ref_pass": 50.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 16.7,
+          "total_tests": 6,
+          "passed": 1,
+          "dual": 16.7,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::DeleteChild": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLNode::DeleteChildren": {
+        "pipeline": {
+          "pass_rate": 20.0,
+          "total_tests": 5,
+          "passed": 1,
+          "dual": 20.0,
+          "ref_pass": 20.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 3,
+          "passed": 3,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::FirstChild": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::FirstChildElement": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::GetDocument": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 20.0,
+          "total_tests": 5,
+          "passed": 1,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLNode::InsertAfterChild": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 7,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLNode::InsertEndChild": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 66.7,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 60.0,
+          "ref_pass": 60.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::InsertFirstChild": {
+        "pipeline": {
+          "pass_rate": 83.3,
+          "total_tests": 6,
+          "passed": 5,
+          "dual": 83.3,
+          "ref_pass": 83.3,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 80.0,
+          "ref_pass": 80.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::LastChild": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::LastChildElement": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 7,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::NextSibling": {
+        "pipeline": {
+          "pass_rate": 60.0,
+          "total_tests": 5,
+          "passed": 3,
+          "dual": 60.0,
+          "ref_pass": 60.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::NextSiblingElement": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::Parent": {
+        "pipeline": {
+          "pass_rate": 60.0,
+          "total_tests": 5,
+          "passed": 3,
+          "dual": 60.0,
+          "ref_pass": 60.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 50.0,
+          "total_tests": 6,
+          "passed": 3,
+          "dual": 50.0,
+          "ref_pass": 50.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::PreviousSibling": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::PreviousSiblingElement": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 1,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::SetValue": {
+        "pipeline": {
+          "pass_rate": 33.3,
+          "total_tests": 6,
+          "passed": 2,
+          "dual": 33.3,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLNode::ShallowClone": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLNode::ShallowEqual": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLNode::Value": {
+        "pipeline": {
+          "pass_rate": 16.7,
+          "total_tests": 6,
+          "passed": 1,
+          "dual": 16.7,
+          "ref_pass": 16.7,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLText::CData": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 60.0,
+          "total_tests": 5,
+          "passed": 3,
+          "dual": 60.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "XMLText::SetCData": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      }
+    },
+    "win_loss": [
+      {
+        "metric": "sbert_similarity",
+        "label": "SBERT",
+        "n": 47,
+        "pipeline_wins": 31,
+        "ties": 1,
+        "codewiki_wins": 15
+      },
+      {
+        "metric": "bertscore_f1",
+        "label": "BERTScore F1",
+        "n": 47,
+        "pipeline_wins": 25,
+        "ties": 6,
+        "codewiki_wins": 16
+      },
+      {
+        "metric": "bleurt_estimate",
+        "label": "BLEURT (stima)",
+        "n": 47,
+        "pipeline_wins": 30,
+        "ties": 2,
+        "codewiki_wins": 15
+      },
+      {
+        "metric": "meteor_score",
+        "label": "METEOR",
+        "n": 47,
+        "pipeline_wins": 27,
+        "ties": 2,
+        "codewiki_wins": 18
+      },
+      {
+        "metric": "tfidf_cosine",
+        "label": "TF-IDF cosine",
+        "n": 47,
+        "pipeline_wins": 31,
+        "ties": 4,
+        "codewiki_wins": 12
+      },
+      {
+        "metric": "rouge_l",
+        "label": "ROUGE-L",
+        "n": 47,
+        "pipeline_wins": 19,
+        "ties": 5,
+        "codewiki_wins": 23
+      },
+      {
+        "metric": "concept_checklist_score",
+        "label": "Concept checklist",
+        "n": 47,
+        "pipeline_wins": 10,
+        "ties": 37,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "actionability_score",
+        "label": "Actionability",
+        "n": 47,
+        "pipeline_wins": 31,
+        "ties": 16,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "error_doc_rate",
+        "label": "Error doc. rate",
+        "n": 12,
+        "pipeline_wins": 12,
+        "ties": 0,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "edge_case_coverage",
+        "label": "Edge case coverage",
+        "n": 7,
+        "pipeline_wins": 5,
+        "ties": 2,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "codebert_f1",
+        "label": "CodeBERTScore F1",
+        "n": 47,
+        "pipeline_wins": 22,
+        "ties": 2,
+        "codewiki_wins": 23
+      },
+      {
+        "metric": "retrieval_rr",
+        "label": "Retrieval MRR",
+        "n": 47,
+        "pipeline_wins": 26,
+        "ties": 16,
+        "codewiki_wins": 5
+      },
+      {
+        "metric": "judge_a",
+        "label": "Judge A - Faithfulness",
+        "n": 47,
+        "pipeline_wins": 39,
+        "ties": 4,
+        "codewiki_wins": 4
+      },
+      {
+        "metric": "judge_b",
+        "label": "Judge B - Alignment",
+        "n": 47,
+        "pipeline_wins": 41,
+        "ties": 3,
+        "codewiki_wins": 3
+      },
+      {
+        "metric": "roundtrip_pass_rate",
+        "label": "Round-trip pass rate",
+        "n": 47,
+        "pipeline_wins": 12,
+        "ties": 22,
+        "codewiki_wins": 13
+      },
+      {
+        "metric": "roundtrip_dual_agreement",
+        "label": "Dual agreement",
+        "n": 47,
+        "pipeline_wins": 14,
+        "ties": 24,
+        "codewiki_wins": 9
+      }
+    ]
+  }
 }

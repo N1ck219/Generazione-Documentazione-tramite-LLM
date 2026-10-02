@@ -67,6 +67,65 @@ Metriche della pipeline non applicabili a CodeWiki:
 | `print_string` | 0.6373 | 0.2857 | `results\benchmark_all\run_20260917_161553_multiagent\eval_report_multiagent.json` |
 | `print_value` | 0.4004 | 0.0688 | `results\benchmark_all\run_20260921_155351_multiagent\eval_report_multiagent.json` |
 
+## Round-trip: dettaglio per funzione
+
+| Funzione | Pass % pipeline (test) | Pass % CodeWiki (test) | Dual pipeline | Dual CodeWiki | Anomalie |
+|----------|-----------------------|------------------------|---------------|---------------|----------|
+| `cJSON_Compare` | 0.0 (6) | 0.0 (0) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: sintesi vuota, timeout, test falliscono sul reference |
+| `cJSON_Delete` | 100.0 (5) | 100.0 (7) | 100.0 | 14.3 | - |
+| `cJSON_Duplicate` | 100.0 (5) | 16.7 (6) | 20.0 | 16.7 | - |
+| `cJSON_Minify` | 83.3 (6) | 100.0 (6) | 33.3 | 100.0 | - |
+| `cJSON_Parse` | 85.7 (7) | 100.0 (8) | 42.9 | 50.0 | - |
+| `cJSON_ParseWithOpts` | 71.4 (7) | 80.0 (5) | 28.6 | 40.0 | - |
+| `cJSON_Print` | 100.0 (8) | 77.8 (9) | 37.5 | 22.2 | - |
+| `cJSON_PrintBuffered` | 85.7 (7) | 57.1 (7) | 57.1 | 0.0 | - |
+| `cJSON_PrintPreallocated` | 85.7 (7) | 25.0 (8) | 85.7 | 0.0 | - |
+| `cJSON_PrintUnformatted` | 100.0 (9) | 50.0 (8) | 0.0 | 37.5 | pipeline: test falliscono sul reference |
+| `parse_array` | 0.0 (7) | 66.7 (6) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `parse_number` | 0.0 (7) | 100.0 (8) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: test falliscono sul reference |
+| `parse_object` | 14.3 (7) | 60.0 (5) | 14.3 | 20.0 | - |
+| `parse_string` | 14.3 (7) | 33.3 (6) | 14.3 | 0.0 | CodeWiki: test falliscono sul reference |
+| `parse_value` | 100.0 (9) | 0.0 (7) | 100.0 | 0.0 | CodeWiki: test falliscono sul reference |
+| `print_array` | 0.0 (7) | 0.0 (0) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: timeout, test falliscono sul reference |
+| `print_number` | 100.0 (8) | 83.3 (6) | 87.5 | 66.7 | - |
+| `print_object` | 66.7 (6) | 100.0 (5) | 16.7 | 0.0 | - |
+| `print_string` | 16.7 (6) | 0.0 (0) | 0.0 | 0.0 | pipeline: test falliscono sul reference; CodeWiki: timeout, test falliscono sul reference |
+| `print_value` | 100.0 (6) | 0.0 (8) | 50.0 | 0.0 | CodeWiki: test falliscono sul reference |
+
+### Funzioni senza test eseguiti
+
+Un pass rate 0% con **0 test eseguiti** non misura la qualita' della documentazione: i test non sono nemmeno partiti.
+
+| Funzione | Sistema | Causa | Test generati passano sul reference |
+|----------|---------|-------|-------------------------------------|
+| `cJSON_Compare` | CodeWiki | sintesi vuota, timeout, test falliscono sul reference | 0.0% |
+| `print_array` | CodeWiki | timeout, test falliscono sul reference | 0.0% |
+| `print_string` | CodeWiki | timeout, test falliscono sul reference | 0.0% |
+
+Funzioni in cui la suite di test fallisce *tutta* anche sul codice reference (suite probabilmente inaffidabile): pipeline 6, CodeWiki 8.
+
+### Medie escludendo le funzioni senza test eseguiti
+
+Sulle 17 funzioni con test eseguiti in entrambi i sistemi:
+
+| Metrica | Pipeline | CodeWiki | Wilcoxon p |
+|---------|----------|----------|------------|
+| Round-trip pass rate (%) | 71.0 | 61.8 | 0.5177 |
+| Dual agreement (%) | 40.5 | 21.6 | 0.0883 |
+
+### Tipologie di errore (test falliti)
+
+Stessa classificazione di `utils/roundtrip_error_analysis.py`, applicata a entrambi i sistemi sulle stesse funzioni. Il dettaglio dei singoli errori e' in `codewiki_advanced_results.json` (CodeWiki) e nei `roundtrip_results.json` dei run (pipeline).
+
+| Tipologia | Pipeline | % | CodeWiki | % |
+|-----------|----------|---|----------|---|
+| Behavioral / Contract Failure | 13 | 25.0 | 33 | 68.8 |
+| Missing Symbol / Environment | 31 | 59.6 | 2 | 4.2 |
+| Interface / Signature Mismatch | 7 | 13.5 | 8 | 16.7 |
+| Other Execution Error | 0 | 0.0 | 5 | 10.4 |
+| Test Harness / Generator Bug | 1 | 1.9 | 0 | 0.0 |
+| **Totale** | **52** | | **48** | |
+
 ## Note metodologiche
 
 - Le metriche semantiche della pipeline sono quelle salvate nei suoi report (stesse funzioni

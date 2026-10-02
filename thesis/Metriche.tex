@@ -1,0 +1,246 @@
+\chapter{Validation metrics}
+\label{ch:metrics}
+
+% =============================================================================
+% Convention used in this file:
+%   - every metric has: a 2-3 line description, "Inputs", "Range", "Limits".
+%   - "% CITE:" comments list the papers to cite (BibTeX keys in thud.bib).
+%     Keys marked [Paper/] are in the project's Paper folder; keys marked
+%     [added] were appended to thud.bib and are NOT in Paper/ (verify them).
+%   - "% TODO:" comments mark what to fill in with project data.
+% =============================================================================
+
+\section{Introduction and motivation}
+\label{sec:metrics-intro}
+% Why evaluating generated documentation is hard: no single ground truth,
+% many valid paraphrases, but small wording changes ("must" vs "must not")
+% can invert the contract.
+% CITE: rai_review_2022 [Paper/]  (quality attributes of code documentation)
+% CITE: zhang_survey_2022, zhu_automatic_2019 [Paper/]  (how summarization is evaluated)
+% CITE: hoang_codewiki_2026 [Paper/]  (BLEU/ROUGE fail to capture documentation quality)
+% TODO: state the research question answered by this chapter and by Chapter~\ref{ch:validation}.
+
+\section{Evaluation setting and notation}
+\label{sec:metrics-setting}
+% Define: function $f$, AST metadata $\mathcal{A}(f)$, generated documentation $d_{\mathrm{gen}}$,
+% reference documentation $d_{\mathrm{ref}}$ (ground truth, dataset/ground_truth.jsonl),
+% source code $c$.
+% Define the three kinds of input pairs used below:
+%   [AST vs Doc], [Doc vs Doc], [Doc vs Code / behaviour].
+% TODO: short description of the benchmark dataset (libraries, number of functions).
+
+\section{Metric taxonomy}
+\label{sec:metrics-taxonomy}
+% Overview figure/table: 4 levels, input pair, needs reference?, needs LLM?, deterministic?
+% CITE: yang_docagent_2025 [Paper/]  (Completeness / Helpfulness / Truthfulness axes)
+% CITE: zhang_survey_2022, zhu_automatic_2019 [Paper/]  (classic evaluation families)
+\begin{table}[ht]
+	\centering
+	\caption{Metric levels used in this thesis.}
+	\label{tab:metric-taxonomy}
+	\begin{tabular}{lll}
+		\hline
+		\textbf{Level} & \textbf{What it measures} & \textbf{Reference needed?} \\
+		\hline
+		I\ \ Formal / AST        & Contract consistency with the compiler AST  & No (AST is the oracle) \\
+		II\ Software quality     & Actionability, error and edge-case coverage & No (source code is the oracle) \\
+		III Semantic similarity  & Closeness to reference documentation       & Yes \\
+		III-b LLM-as-a-judge     & Faithfulness and alignment, graded 1--5    & Optional \\
+		IV\ Downstream           & Retrieval utility and behavioural fidelity & No / tests \\
+		\hline
+	\end{tabular}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\section{Level I: Formal and AST-based metrics}
+\label{sec:metrics-level1}
+% Common idea: libclang AST is a deterministic oracle for signature and contract.
+% CITE (whole level): pomian_together_2024 [Paper/]  (static analysis as a guard on LLM output)
+% CITE (whole level): lomshakov_proconsul_2024 [Paper/]  (compiler-provided structure for summarization)
+
+\subsection{Verifier Pass Rate}
+\label{sec:m-verifier}
+% Fraction of functions whose documentation passes all formal checks of the Verifier
+% (existence ratio $\ge 0.80$, tags consistent with the AST, mandatory tags present).
+% Inputs: [AST vs Doc]. Range: [0,100]\%. Limit: checks form, not semantics.
+% CITE: yang_docagent_2025 [Paper/]  (deterministic verifier + Truthfulness)
+% CITE: pomian_together_2024 [Paper/]
+
+\subsection{Parameter Precision, Recall and F1}
+\label{sec:m-param-f1}
+% Compares the set of \texttt{@param} names with the formal parameters of the AST
+% (slot filling). Precision penalises invented parameters, recall penalises omitted ones.
+% Inputs: [AST vs Doc]. Range: [0,1]. Limit: says nothing about the quality of each description.
+% CITE: yang_docagent_2025 [Paper/]  (Completeness: documented parameters vs. code)
+% CITE: rai_review_2022 [Paper/]  (completeness as a documentation-quality attribute)
+
+\subsection{Return Contract Match}
+\label{sec:m-return}
+% Binary check: \texttt{void} functions must not document \texttt{@return};
+% non-void functions must.
+% Inputs: [AST vs Doc]. Range: \{0,1\}. Limit: presence only, not correctness of the description.
+% CITE: yang_docagent_2025 [Paper/]
+
+\subsection{Existence Ratio and Hallucination Rate}
+\label{sec:m-hallucination}
+% Existence Ratio: share of code entities named in the documentation that exist in the
+% call graph / standard library. Hallucination Rate: complementary count of invented symbols.
+% Inputs: [AST/call graph vs Doc]. Range: [0,1] and [0,100]\%.
+% Limit: detects invented names, not wrong claims about real entities.
+% CITE: yang_docagent_2025 [Paper/]  (introduces Existence Ratio for Truthfulness)
+% CITE: ji_survey_2023 [added]  (definition and taxonomy of hallucination in NLG)
+% CITE: lomshakov_proconsul_2024 [Paper/]  (hallucinations reduced with project context)
+
+% -----------------------------------------------------------------------------
+\section{Level II: Software-quality metrics}
+\label{sec:metrics-level2}
+% Metrics designed in this thesis; they have no direct counterpart in the literature, so
+% the justification is the quality attributes of documentation and the DocAgent axes.
+% CITE (whole level): rai_review_2022 [Paper/]  (accuracy, completeness, ... of documentation)
+% CITE (whole level): yang_docagent_2025 [Paper/]  (Helpfulness axis)
+
+\subsection{Actionability Score}
+\label{sec:m-actionability}
+% Weighted sum of four binary/continuous signals:
+% \[ \mathrm{AS} = 0.35\,S_{\mathrm{dir}} + 0.20\,S_{\mathrm{brief}} + 0.25\,S_{\mathrm{ret}} + 0.20\,S_{\mathrm{mem}} \]
+% directionality of parameters ([in]/[out]/[in,out]), quality of the brief, return clause,
+% memory-safety clauses (ownership, \texttt{@pre}, \texttt{@warning}).
+% Inputs: [Doc (+AST)]. Range: [0,1]. Limit: weights are heuristic -> justify with ablation.
+% CITE: yang_docagent_2025 [Paper/]  (Helpfulness)
+% CITE: rai_review_2022 [Paper/]
+% CITE: khan_automatic_2023 [Paper/]  (structured docstring templates with @param/@return)
+
+\subsection{Error Documentation Rate}
+\label{sec:m-edr}
+% Share of error branches present in the source (early returns, error codes, NULL returns)
+% that are described in the documentation.
+% Inputs: [Code/AST vs Doc]. Range: [0,100]\%.
+% CITE: rai_review_2022 [Paper/]  (completeness)
+% CITE: yang_docagent_2025 [Paper/]
+
+\subsection{Edge Case Coverage}
+\label{sec:m-ecc}
+% Coverage of the guards found in the code (null, zero/negative, empty/boundary)
+% by the corresponding statements in the documentation.
+% Inputs: [Code/AST vs Doc]. Range: [0,100]\%.
+% CITE: rai_review_2022 [Paper/]
+% CITE: claessen_quickcheck_2000 [added]  (boundary values motivate property-based testing, see \ref{sec:m-roundtrip})
+
+\subsection{Concept Checklist Score}
+\label{sec:m-checklist}
+% Share of critical facts (ownership, bounds, error behaviour, side effects) extracted from the
+% code that are preserved by the documentation.
+% Inputs: [Code facts vs Doc]. Range: [0,1].
+% CITE: hoang_codewiki_2026 [Paper/]  (rubric-based evaluation derived from reference material)
+% CITE: patel_assetopsbench_2026 [Paper/]  (rubric / characteristic form as soft ground truth)
+
+% -----------------------------------------------------------------------------
+\section{Level III: Semantic and NLP metrics}
+\label{sec:metrics-level3}
+% Reference-based metrics: compare $d_{\mathrm{gen}}$ with $d_{\mathrm{ref}}$.
+% CITE (whole level): zhang_survey_2022, zhu_deep_2024 [Paper/]  (BLEU/ROUGE/METEOR as standard in code summarization)
+% CITE (whole level): wu_can_2024 [Paper/]  (compares BLEU/ROUGE/METEOR/BERTScore with an LLM evaluator for code summaries)
+
+\subsection{Lexical metrics: BLEU, ROUGE-L, TF-IDF cosine}
+\label{sec:m-lexical}
+% BLEU: n-gram precision with brevity penalty. ROUGE-L: longest common subsequence.
+% TF-IDF cosine: bag-of-words vectors weighted by term specificity.
+% Inputs: [Doc vs Doc]. Range: [0,1]. Limit: no semantics, fail on paraphrases.
+% CITE: papineni_bleu_2002, lin_rouge_2004 [Paper/ bib]
+% CITE: sparckjones_statistical_1972 [added]  (TF-IDF)
+% CITE: zhu_deep_2024 [Paper/]  (TF-IDF/BM25 in IR-based code summarization)
+% CITE: hoang_codewiki_2026 [Paper/]  (limits of BLEU/ROUGE for documentation)
+
+\subsection{METEOR}
+\label{sec:m-meteor}
+% Unigram alignment with exact, stem and WordNet-synonym matches and a fragmentation penalty.
+% Inputs: [Doc vs Doc]. Range: [0,1].
+% CITE: banerjee_meteor_2005 [bib]
+% CITE: wu_can_2024, xu_prompt_2024, geng_large_2023 [Paper/]  (METEOR used for code summaries)
+
+\subsection{Sentence-BERT cosine similarity}
+\label{sec:m-sbert}
+% Cosine similarity between mean-pooled sentence embeddings (all-MiniLM-L6-v2, 384 dim.).
+% \[ \mathrm{sim}(d_{\mathrm{gen}},d_{\mathrm{ref}}) = \frac{\mathbf{e}_{\mathrm{gen}}\cdot\mathbf{e}_{\mathrm{ref}}}{\|\mathbf{e}_{\mathrm{gen}}\|\,\|\mathbf{e}_{\mathrm{ref}}\|} \]
+% Inputs: [Doc vs Doc]. Limit: 256-token window; blind to negations.
+% CITE: reimers_sentence-bert_2019 [bib]
+% CITE: zhu_reposummary_2025 [Paper/]  (embeddings to compare/cluster repository summaries)
+
+\subsection{BERTScore and CodeBERTScore}
+\label{sec:m-bertscore}
+% Greedy token-to-token matching of contextual embeddings with IDF weights -> P, R, F1.
+% CodeBERTScore uses a code-specific encoder (microsoft/codebert-base).
+% Inputs: [Doc vs Doc] (BERTScore), [Doc vs Doc / Code] (CodeBERTScore). Limit: 512 tokens,
+% score compression, insensitive to polarity.
+% CITE: zhang_bertscore_2020 [bib]
+% CITE: feng_codebert_2020 [Paper/]  (encoder underlying CodeBERTScore)
+% CITE: guo_graphcodebert_2021 [Paper/]  (data-flow-aware variant, optional)
+% CITE: zhou_codebertscore_2023 [added]  (CodeBERTScore definition; also cited in zhang_deep_2024 survey)
+% CITE: wu_can_2024 [Paper/]  (BERTScore on code summarization)
+
+\subsection{BLEURT}
+\label{sec:m-bleurt}
+% BERT fine-tuned on human ratings to regress a quality score for a candidate vs a reference.
+% Inputs: [Doc vs Doc]. Limit: trained on general text, not on technical documentation.
+% CITE: sellam_bleurt_2020 [bib]
+
+\subsection{Fr\'echet Embedding Distance}
+\label{sec:m-fid}
+% Distance between the Gaussian fits of the embedding sets of generated and reference
+% documentation (distribution level, not per function):
+% \[ d^2 = \|\mu_1-\mu_2\|^2 + \mathrm{tr}\bigl(\Sigma_1+\Sigma_2-2(\Sigma_1\Sigma_2)^{1/2}\bigr) \]
+% CITE: dowson_frechet_1982 [bib]  (closed form of the Fr\'echet distance)
+% CITE: heusel_gans_2017 [added]  (FID: use on embedding distributions)
+
+\subsection{LLM-as-a-Judge}
+\label{sec:m-judge}
+% An LLM grades \emph{Faithfulness} (agreement with the code) and \emph{Alignment}
+% (agreement with the reference/intent) on a 1--5 scale using a rubric with a defect taxonomy
+% (DEF-1\ldots DEF-5, ALIGN-1\ldots ALIGN-4). Monte Carlo sampling: 5 runs, $T=0.4$,
+% report mean $\pm$ std. Judge critique is fed back to the Writer (up to 3 iterations).
+% Inputs: [Doc vs Code], [Doc vs Doc]. Limits: cost, self-preference, fluff camouflage.
+% CITE: liu_g-eval_2023 [Paper/]  (CoT + form-filling rubric; probability-weighted scoring)
+% CITE: zhu_judgelm_2025 [Paper/]  (judges, position/format biases, rubric-based scoring)
+% CITE: bai_mt-bench-101_2024 [Paper/]  (fine-grained, multi-dimensional judging)
+% CITE: wu_can_2024 [Paper/]  (LLM evaluators for code summarization -- closest to our setting)
+% CITE: patel_assetopsbench_2026, hoang_codewiki_2026 [Paper/]  (rubric-based LLM-judge in agent / repository documentation benchmarks)
+% CITE: yang_docagent_2025 [Paper/]  (LLM-as-judge for Completeness and Helpfulness)
+
+% -----------------------------------------------------------------------------
+\section{Level IV: Downstream and behavioural metrics}
+\label{sec:metrics-level4}
+% Idea: evaluate documentation by what it enables, not by how it reads.
+
+\subsection{Code retrieval: MRR and Hit@K}
+\label{sec:m-retrieval}
+% Use the documentation as a query over the function database; rank of the target function.
+% \[ \mathrm{MRR}=\frac{1}{|Q|}\sum_{i=1}^{|Q|}\frac{1}{\mathrm{rank}_i} \]
+% Hit@K: share of queries whose target is in the top $K$.
+% Inputs: [Doc vs function database]. Range: [0,1].
+% CITE: iyer_summarizing_2016 [Paper/]  (MRR for code retrieval with natural-language queries)
+% CITE: feng_codebert_2020, guo_graphcodebert_2021 [Paper/]  (NL code search evaluated with MRR)
+% CITE: husain_codesearchnet_2019 [added]  (code search benchmark)
+% CITE: voorhees_trec8_1999 [added]  (original MRR definition)
+
+\subsection{Round-trip differential testing}
+\label{sec:m-roundtrip}
+% (1) A coder LLM re-implements the function \emph{from the documentation only} ($f_{\mathrm{doc}}$);
+% (2) the original C/C++ is transpiled to Python ($f_{\mathrm{ref}}$);
+% (3) a black-box test suite (pytest + Hypothesis) is generated and run on both.
+%   Self-Consistency Pass Rate: tests passed by $f_{\mathrm{doc}}$.
+%   Dual Agreement Rate: tests where $f_{\mathrm{doc}}(x)\equiv f_{\mathrm{ref}}(x)$.
+% Failure taxonomy: behavioural, interface mismatch, missing symbol, other.
+% Limits: stateful code and information hiding (legitimate divergence), cost of test generation.
+% CITE: chen_evaluating_2021 [added]  (functional correctness via tests, pass@k)
+% CITE: nijkamp_codegen_2023, xu_systematic_2022 [Paper/]  (pass@k on HumanEval for code generation)
+% CITE: zhang_deep_2024 [Paper/]  (survey of evaluation of code generation)
+% CITE: mckeeman_differential_1998 [added]  (differential testing)
+% CITE: claessen_quickcheck_2000, maciver_hypothesis_2019 [added]  (property-based testing, Hypothesis)
+% CITE: yang_swe-agent_2024 [Paper/]  (test execution as feedback for agents)
+
+% -----------------------------------------------------------------------------
+\section{Summary of the metric suite}
+\label{sec:metrics-summary}
+% One-page table: metric | level | input pair | range | cost | expected weakness.
+% The \emph{measured} reliability of each metric goes in Chapter~\ref{ch:validation}.
+% TODO: build the table once the validation chapter is final.

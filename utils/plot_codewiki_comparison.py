@@ -554,7 +554,8 @@ def compare_stats(cw: List[Dict], pl: List[Dict]) -> List[Dict]:
 
 
 def write_comparison_report(paths: LibraryPaths, stats: List[Dict], cw_common: List[Dict], pl_common: List[Dict],
-                            n_cw_eval: int, missing: List[str], runs: List[str]):
+                            n_cw_eval: int, missing: List[str], runs: List[str],
+                            extra_lines: Optional[List[str]] = None):
     library = paths.library
     def f(v, nd=4):
         return f"{v:.{nd}f}" if v is not None else "N/A"
@@ -630,6 +631,7 @@ def write_comparison_report(paths: LibraryPaths, stats: List[Dict], cw_common: L
         p = pl_by[c["function_name"]]
         lines.append(f"| `{c['function_name']}` | {f(p.get('sbert_similarity'))} | "
                      f"{f(c.get('sbert_similarity'))} | `{p['run']}` |")
+    lines += extra_lines or []
     lines += [
         "",
         "## Note metodologiche",
@@ -736,7 +738,14 @@ def generate_all_charts(library: str, pipeline_report: Optional[str] = None,
         print("  [INFO] Metriche avanzate CodeWiki non ancora calcolate: grafico avanzato non generato.")
 
     runs = sorted({p["run"] for p in pl_common})
-    write_comparison_report(paths, stats, cw_common, pl_common, len(cw_eval), missing, runs)
+
+    # Grafici e analisi aggiuntivi: round-trip per funzione, tassonomia errori, panoramica metriche
+    from utils.plot_codewiki_extra import generate_extra
+    extra_files, extra_lines, extra_summary = generate_extra(
+        paths, library, cw_common, pl_common, common_names, pipeline, adv_cache)
+    out += extra_files
+
+    write_comparison_report(paths, stats, cw_common, pl_common, len(cw_eval), missing, runs, extra_lines)
     with open(paths.cmp_json, "w", encoding="utf-8") as f:
         json.dump({
             "library": library,
@@ -745,7 +754,8 @@ def generate_all_charts(library: str, pipeline_report: Optional[str] = None,
             "pipeline_runs": runs,
             "missing_in_pipeline": missing,
             "metrics": stats,
-        }, f, ensure_ascii=False, indent=2)
+            "extra": extra_summary,
+        }, f, ensure_ascii=False, indent=2, default=list)
     out += [paths.cmp_report, paths.cmp_json]
     return out
 
