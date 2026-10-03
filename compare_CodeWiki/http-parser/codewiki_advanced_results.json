@@ -1,0 +1,749 @@
+{
+  "http_body_is_final": {
+    "doc_hash": "cb95742d03b3",
+    "db_id": "http-parser_http_parser_c_http_body_is_final",
+    "codewiki_doc": "Checks if the body parsing is complete.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "http_body_is_final",
+      "top_similarity": 0.5388
+    },
+    "codebert": {
+      "precision": 0.877,
+      "recall": 0.8303,
+      "f1": 0.853
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-3: The generated documentation slightly rephrases the function name and purpose without detailing the specific internal state check (`s_message_done`), making it slightly tautological. However, it is technically accurate and faithful to the ground truth and source code without introducing hallucinations. Therefore, starting from a baseline of 4.0 and considering the minor tautological defect, the score remains a solid 4."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately captures the primary functional goal of checking if the body parsing is complete, aligning closely with the author's intent without introducing any significant defects."
+      },
+      "combined_score": 4.0
+    },
+    "roundtrip": {
+      "function_name": "http_body_is_final",
+      "library": "http-parser",
+      "signature": "int http_body_is_final(const struct http_parser * parser)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "class http_parser:\n    def __init__(self, *args, **kwargs):\n        self.type = kwargs.get('type', 0)\n        self.flags = kwargs.get('flags', 0)\n        self.state = kwargs.get('state', 0)\n        self.header_state = kwargs.get('header_state', 0)\n        self.index = kwargs.get('index', 0)\n        self.uses_transfer_encoding = kwargs.get('uses_transfer_encoding', 0)\n        self.allow_chunked_length = kwargs.get('allow_chunked_length', 0)\n        self.lenient_http_headers = kwargs.get('lenient_http_headers', 0)\n\n\ndef http_body_is_final(parser):\n    \"\"\"\n    Checks if the body parsing is complete.\n    \"\"\"\n    # Pure Python implementation based on http-parser internals where http_body_is_final\n    # checks if state indicates parsing is in a final state (or similar logic depending on implementation).\n    # Since the exact C implementation logic is internal, we evaluate standard indicator fields or default to 0/1.\n    # In http-parser, http_body_is_final usually checks if the parser has reached the end of the body.\n    # We can inspect parser.state or flags if needed, or implement a basic check.\n    if parser is None:\n        return 0\n    \n    # In http-parser source, http_body_is_final checks specific states or flags.\n    # Without deeper internal state machine definitions in the spec, we provide a safe fallback \n    # relying on the parser attributes provided.\n    return 1 if getattr(parser, 'state', 0) == 0 else 0",
+      "reference_code": "# State constant corresponding to s_message_done in http-parser\ns_message_done = 38  # Matches the typical internal parser state value for message completion\n\n\ndef http_body_is_final(parser) -> int:\n    \"\"\"Check if the HTTP parser has reached the final body state.\n\n    Corresponds to C function: int http_body_is_final(const struct http_parser\n    *parser)\n    \"\"\"\n    return 1 if parser.state == s_message_done else 0",
+      "test_suite": "from hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_body_is_final_null_pointer():\n    \"\"\"Verify behavior when passing None (NULL pointer) to http_body_is_final.\"\"\"\n    result = http_body_is_final(None)\n    # Depending on implementation, NULL parser pointer returns 0 (false) or equivalent\n    assert result == 0\n\n\ndef test_semantic_body_is_final_uninitialized_parser():\n    \"\"\"Verify behavior with a basic uninitialized http_parser struct instance.\"\"\"\n    class MockParser:\n        def __init__(self):\n            self.type = 0\n            self.flags = 0\n            self.state = 0\n            self.header_state = 0\n            self.index = 0\n            self.uses_transfer_encoding = 0\n            self.allow_chunked_length = 0\n            self.lenient_http_headers = 0\n\n    parser = MockParser()\n    result = http_body_is_final(parser)\n    # Default state usually indicates body is not final (0)\n    assert isinstance(result, int)\n    assert result == 0\n\n\ndef test_semantic_body_is_final_skip_body_flag():\n    \"\"\"Verify behavior when F_SKIPBODY flag is set.\"\"\"\n    class MockParser:\n        def __init__(self):\n            self.type = 0\n            self.flags = 64  # F_SKIPBODY = 64\n            self.state = 0\n            self.header_state = 0\n            self.index = 0\n            self.uses_transfer_encoding = 0\n            self.allow_chunked_length = 0\n            self.lenient_http_headers = 0\n\n    parser = MockParser()\n    result = http_body_is_final(parser)\n    # With skip body, body parsing is effectively final/complete\n    assert isinstance(result, int)\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    parser_type=st.integers(min_value=0, max_value=2),\n    flags=st.integers(min_value=0, max_value=255),\n    state=st.integers(min_value=0, max_value=100),\n    header_state=st.integers(min_value=0, max_value=100),\n    index=st.integers(min_value=0, max_value=1000),\n)\ndef test_auto_property_http_body_is_final(parser_type, flags, state, header_state, index):\n    \"\"\"Property-based test for http_body_is_final with randomized parser fields.\"\"\"\n    class MockParser:\n        def __init__(self):\n            self.type = parser_type\n            self.flags = flags\n            self.state = state\n            self.header_state = header_state\n            self.index = index\n            self.uses_transfer_encoding = 0\n            self.allow_chunked_length = 0\n            self.lenient_http_headers = 0\n\n    parser = MockParser()\n    result = http_body_is_final(parser)\n    # Ensure it always returns an integer (boolean indicator 0 or 1 typically)\n    assert isinstance(result, int)",
+      "execution": {
+        "total_tests": 4,
+        "passed": 3,
+        "failed": 1,
+        "errors": 0,
+        "pass_rate": 75.0,
+        "semantic_tests": {
+          "passed": 2,
+          "failed": 1,
+          "total": 3
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 4 items\n\n::test_semantic_body_is_final_null_pointer PASSED                        [ 25%]\n::test_semantic_body_is_final_uninitialized_parser FAILED                [ 50%]\n::test_semantic_body_is_final_skip_body_flag PASSED                      [ 75%]\n::test_auto_property_http_body_is_final PASSED                           [100%]\n\n================================== FAILURES ===================================\n______________ test_semantic_body_is_final_uninitialized_parser _______________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpymyfy7cu.py:263: in test_semantic_body_is_final_uninitialized_parser\n    assert result == 0\nE   assert 1 == 0\n=========================== short test summary info ===========================\nFAILED ::test_semantic_body_is_final_uninitialized_parser - assert 1 == 0\n========================= 1 failed, 3 passed in 2.61s =========================\n",
+        "differential": {
+          "reference_pass_rate": 75.0,
+          "reference_passed": 3,
+          "reference_total": 4,
+          "differential_agreement_rate": 50.0,
+          "both_passed_count": 2
+        }
+      }
+    }
+  },
+  "http_errno_description": {
+    "doc_hash": "7d8543dd7bfd",
+    "db_id": "http-parser_http_parser_c_http_errno_description",
+    "codewiki_doc": "Returns a human-readable description of an HTTP parser error.",
+    "retrieval": {
+      "rank": 3,
+      "reciprocal_rank": 0.3333,
+      "hit_at_1": 0.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "http_message_needs_eof",
+      "top_similarity": 0.6091
+    },
+    "codebert": {
+      "precision": 0.8186,
+      "recall": 0.8731,
+      "f1": 0.845
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "mean": 5.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately describes the function's behavior in returning a human-readable description for an HTTP parser error, aligning well with the ground truth and source code without introducing hallucinations, memory ownership issues, or contract mismatches."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "mean": 5.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately captures the primary functional intent of returning a string description for the error, while appropriately enhancing it as a human-readable explanation without introducing any defects."
+      },
+      "combined_score": 5.0
+    },
+    "roundtrip": {
+      "function_name": "http_errno_description",
+      "library": "http-parser",
+      "signature": "const char * http_errno_description(enum http_errno err)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "from enum import IntEnum\n\nclass http_errno(IntEnum):\n    HPE_OK = 0\n    HPE_CB_message_begin = 1\n    HPE_CB_url = 2\n    HPE_CB_header_field = 3\n    HPE_CB_header_value = 4\n    HPE_CB_headers_complete = 5\n    HPE_CB_body = 6\n    HPE_CB_message_complete = 7\n\n# Mapping based on typical http-parser error descriptions\n_HTTP_ERRNO_DESCRIPTIONS = {\n    http_errno.HPE_OK: \"Success\",\n    http_errno.HPE_CB_message_begin: \"The callback on_message_begin failed\",\n    http_errno.HPE_CB_url: \"The callback on_url failed\",\n    http_errno.HPE_CB_header_field: \"The callback on_header_field failed\",\n    http_errno.HPE_CB_header_value: \"The callback on_header_value failed\",\n    http_errno.HPE_CB_headers_complete: \"The callback on_headers_complete failed\",\n    http_errno.HPE_CB_body: \"The callback on_body failed\",\n    http_errno.HPE_CB_message_complete: \"The callback on_message_complete failed\",\n}\n\ndef http_errno_description(err: http_errno) -> str:\n    \"\"\"\n    Returns a human-readable description of an HTTP parser error.\n    \"\"\"\n    try:\n        err_enum = http_errno(err)\n    except ValueError:\n        return \"Unknown error\"\n    \n    return _HTTP_ERRNO_DESCRIPTIONS.get(err_enum, \"Unknown error\")",
+      "reference_code": "class http_errno:\n    HPE_OK = 0\n    HPE_CB_message_begin = 1\n    HPE_CB_url = 2\n    HPE_CB_header_field = 3\n    HPE_CB_header_value = 4\n    HPE_CB_headers_complete = 5\n    HPE_CB_body = 6\n    HPE_CB_message_complete = 7\n    # Additional error codes can be added as needed by http-parser\n    HPE_INVALID_EOF_STATE = 8\n    HPE_HEADER_OVERFLOW = 9\n    HPE_CLOSED_CONNECTION = 10\n    HPE_INVALID_VERSION = 11\n    HPE_INVALID_STATUS = 12\n    HPE_INVALID_METHOD = 13\n    HPE_INVALID_URI = 14\n    HPE_INVALID_PATH = 15\n    HPE_INVALID_QUERYSTRING = 16\n    HPE_INVALID_FRAGMENT = 17\n    HPE_INVALID_HOST = 18\n    HPE_INVALID_PORT = 19\n    HPE_INVALID_PAST_PATH = 20\n    HPE_INVALID_CHUNK_SIZE = 21\n    HPE_INVALID_CONTENT_LENGTH = 22\n    HPE_INVALID_EOF = 23\n    HPE_INVALID_TRANSFER_ENCODING = 24\n    HPE_CB_CHUNK_COMPLETE = 25\n    HPE_CB_CHUNK_HEADER = 26\n    HPE_PAUSED = 27\n    HPE_UNKNOWN = 28\n\n\n# Table mapping http_errno to description\nhttp_strerror_tab = [\n    {\"name\": \"HPE_OK\", \"description\": \"success\"},\n    {\"name\": \"HPE_CB_message_begin\", \"description\": \"callback error on_message_begin\"},\n    {\"name\": \"HPE_CB_url\", \"description\": \"callback error on_url\"},\n    {\"name\": \"HPE_CB_header_field\", \"description\": \"callback error on_header_field\"},\n    {\"name\": \"HPE_CB_header_value\", \"description\": \"callback error on_header_value\"},\n    {\"name\": \"HPE_CB_headers_complete\", \"description\": \"callback error on_headers_complete\"},\n    {\"name\": \"HPE_CB_body\", \"description\": \"callback error on_body\"},\n    {\"name\": \"HPE_CB_message_complete\", \"description\": \"callback error on_message_complete\"},\n    {\"name\": \"HPE_INVALID_EOF_STATE\", \"description\": \"stream ended at an unexpected time\"},\n    {\"name\": \"HPE_HEADER_OVERFLOW\", \"description\": \"too many header bytes seen; overflow detected\"},\n    {\"name\": \"HPE_CLOSED_CONNECTION\", \"description\": \"data received after completed connection: close message\"},\n    {\"name\": \"HPE_INVALID_VERSION\", \"description\": \"invalid HTTP version\"},\n    {\"name\": \"HPE_INVALID_STATUS\", \"description\": \"invalid HTTP status code\"},\n    {\"name\": \"HPE_INVALID_METHOD\", \"description\": \"invalid HTTP method\"},\n    {\"name\": \"HPE_INVALID_URI\", \"description\": \"invalid URI\"},\n    {\"name\": \"HPE_INVALID_PATH\", \"description\": \"invalid path\"},\n    {\"name\": \"HPE_INVALID_QUERYSTRING\", \"description\": \"invalid query string\"},\n    {\"name\": \"HPE_INVALID_FRAGMENT\", \"description\": \"invalid fragment\"},\n    {\"name\": \"HPE_INVALID_HOST\", \"description\": \"invalid host\"},\n    {\"name\": \"HPE_INVALID_PORT\", \"description\": \"invalid port\"},\n    {\"name\": \"HPE_INVALID_PAST_PATH\", \"description\": \"invalid path\"},\n    {\"name\": \"HPE_INVALID_CHUNK_SIZE\", \"description\": \"invalid chunk size\"},\n    {\"name\": \"HPE_INVALID_CONTENT_LENGTH\", \"description\": \"invalid content length\"},\n    {\"name\": \"HPE_INVALID_EOF\", \"description\": \"unexpected end of file\"},\n    {\"name\": \"HPE_INVALID_TRANSFER_ENCODING\", \"description\": \"invalid transfer encoding\"},\n    {\"name\": \"HPE_CB_CHUNK_COMPLETE\", \"description\": \"callback error on_chunk_complete\"},\n    {\"name\": \"HPE_CB_CHUNK_HEADER\", \"description\": \"callback error on_chunk_header\"},\n    {\"name\": \"HPE_PAUSED\", \"description\": \"parser is paused\"},\n    {\"name\": \"HPE_UNKNOWN\", \"description\": \"an unknown error occurred\"}\n]\n\n\ndef http_errno_description(err: int) -> str:\n    \"\"\"Returns the description string for a given http_errno.\"\"\"\n    assert 0 <= err < len(http_strerror_tab)\n    return http_strerror_tab[err][\"description\"]",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_success_error():\n    \"\"\"Verify description for HPE_OK (0).\"\"\"\n    desc = http_errno_description(0)\n    assert isinstance(desc, str)\n    assert len(desc) > 0\n\n\ndef test_semantic_callback_errors():\n    \"\"\"Verify descriptions for standard callback error codes.\"\"\"\n    # HPE_CB_message_begin = 1, HPE_CB_url = 2, etc.\n    for err_code in range(1, 8):\n        desc = http_errno_description(err_code)\n        assert isinstance(desc, str)\n        assert len(desc) > 0\n\n\ndef test_semantic_unknown_error_boundary():\n    \"\"\"Verify handling of out-of-bounds or unknown error numbers.\"\"\"\n    # Passing an arbitrary large integer representing an unknown/invalid error code\n    desc = http_errno_description(9999)\n    # Even for unknown errors, the implementation typically returns a generic \"Unknown error\" string\n    assert desc is None or isinstance(desc, str)\n\n\ndef test_semantic_negative_error_code():\n    \"\"\"Verify behavior with negative error codes.\"\"\"\n    desc = http_errno_description(-1)\n    assert desc is None or isinstance(desc, str)\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.integers(min_value=-1000, max_value=10000))\ndef test_auto_property_errno_description(err_code):\n    \"\"\"Property-based test for various integer error codes.\"\"\"\n    desc = http_errno_description(err_code)\n    # The function should either return a valid C-string (represented as a Python str) or None\n    assert desc is None or isinstance(desc, str)",
+      "execution": {
+        "total_tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_success_error PASSED                                     [ 20%]\n::test_semantic_callback_errors PASSED                                   [ 40%]\n::test_semantic_unknown_error_boundary PASSED                            [ 60%]\n::test_semantic_negative_error_code PASSED                               [ 80%]\n::test_auto_property_errno_description PASSED                            [100%]\n\n============================== 5 passed in 2.19s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 40.0,
+          "reference_passed": 2,
+          "reference_total": 5,
+          "differential_agreement_rate": 40.0,
+          "both_passed_count": 2
+        }
+      }
+    }
+  },
+  "http_errno_name": {
+    "doc_hash": "77919ac0a708",
+    "db_id": "http-parser_http_parser_c_http_errno_name",
+    "codewiki_doc": "Returns the name of an HTTP parser error.",
+    "retrieval": {
+      "rank": 2,
+      "reciprocal_rank": 0.5,
+      "hit_at_1": 0.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "http_parser_parse_url",
+      "top_similarity": 0.5839
+    },
+    "codebert": {
+      "precision": 0.8178,
+      "recall": 0.8257,
+      "f1": 0.8217
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-3: The generated documentation is slightly tautological as it merely rephrases the function name ('Returns the name of an HTTP parser error'). However, it remains technically faithful, accurate, and contains no hallucinations or critical contract violations."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "mean": 5.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately captures the primary functional intent of returning the string name of the given error without introducing any defects or distortions."
+      },
+      "combined_score": 4.5
+    },
+    "roundtrip": {
+      "function_name": "http_errno_name",
+      "library": "http-parser",
+      "signature": "const char * http_errno_name(enum http_errno err)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "# Enums / Error Codes\nHPE_OK = 0\nHPE_CB_message_begin = 1\nHPE_CB_url = 2\nHPE_CB_header_field = 3\nHPE_CB_header_value = 4\nHPE_CB_headers_complete = 5\nHPE_CB_body = 6\nHPE_CB_message_complete = 7\n\n# Mapping of http_errno values to their string names based on standard http-parser\n_HTTP_ERRNO_NAMES = {\n    HPE_OK: \"HPE_OK\",\n    HPE_CB_message_begin: \"HPE_CB_message_begin\",\n    HPE_CB_url: \"HPE_CB_url\",\n    HPE_CB_header_field: \"HPE_CB_header_field\",\n    HPE_CB_header_value: \"HPE_CB_header_value\",\n    HPE_CB_headers_complete: \"HPE_CB_headers_complete\",\n    HPE_CB_body: \"HPE_CB_body\",\n    HPE_CB_message_complete: \"HPE_CB_message_complete\",\n}\n\ndef http_errno_name(err: int) -> str:\n    \"\"\"\n    Returns the name of an HTTP parser error.\n    \n    C Signature: const char * http_errno_name(enum http_errno err)\n    \"\"\"\n    # If err is passed as an Enum member or its integer value, handle both.\n    err_val = err.value if hasattr(err, \"value\") else err\n    return _HTTP_ERRNO_NAMES.get(err_val, \"HPE_UNKNOWN\")",
+      "reference_code": "from enum import IntEnum\n\nclass http_errno(IntEnum):\n    HPE_OK = 0\n    HPE_CB_message_begin = 1\n    HPE_CB_url = 2\n    HPE_CB_header_field = 3\n    HPE_CB_header_value = 4\n    HPE_CB_headers_complete = 5\n    HPE_CB_body = 6\n    HPE_CB_message_complete = 7\n    HPE_CB_status = 8\n    HPE_CB_chunk_header = 9\n    HPE_CB_chunk_complete = 10\n    HPE_INVALID_EOF_STATE = 11\n    HPE_HEADER_OVERFLOW = 12\n    HPE_CLOSED_CONNECTION = 13\n    HPE_INVALID_VERSION = 14\n    HPE_INVALID_STATUS = 15\n    HPE_INVALID_METHOD = 16\n    HPE_INVALID_URI = 17\n    HPE_INVALID_PATH = 18\n    HPE_INVALID_QUERYSTRING = 19\n    HPE_INVALID_FRAGMENT = 20\n    HPE_INVALID_HOST = 21\n    HPE_INVALID_PORT = 22\n    HPE_INVALID_PATH = 23\n    HPE_INVALID_TOKEN = 24\n    HPE_INVALID_CONTENT_LENGTH = 25\n    HPE_UNEXPECTED_CONTENT_LENGTH = 26\n    HPE_INVALID_CHUNK_SIZE = 27\n    HPE_INVALID_CONSTANT = 28\n    HPE_INVALID_INTERNAL_STATE = 29\n    HPE_STRICT = 30\n    HPE_PAUSED = 31\n    HPE_UNKNOWN = 32\n\nclass HttpStrErrorEntry:\n    def __init__(self, name: str, description: str):\n        self.name = name\n        self.description = description\n\n# Mapping corresponding to http_strerror_tab in http-parser\nhttp_strerror_tab = [\n    HttpStrErrorEntry(\"HPE_OK\", \"success\"),\n    HttpStrErrorEntry(\"HPE_CB_message_begin\", \"the on_message_begin callback failed\"),\n    HttpStrErrorEntry(\"HPE_CB_url\", \"the on_url callback failed\"),\n    HttpStrErrorEntry(\"HPE_CB_header_field\", \"the on_header_field callback failed\"),\n    HttpStrErrorEntry(\"HPE_CB_header_value\", \"the on_header_value callback failed\"),\n    HttpStrErrorEntry(\"HPE_CB_headers_complete\", \"the on_headers_complete callback failed\"),\n    HttpStrErrorEntry(\"HPE_CB_body\", \"the on_body callback failed\"),\n    HttpStrErrorEntry(\"HPE_CB_message_complete\", \"the on_message_complete callback failed\"),\n    HttpStrErrorEntry(\"HPE_CB_status\", \"the on_status callback failed\"),\n    HttpStrErrorEntry(\"HPE_CB_chunk_header\", \"the on_chunk_header callback failed\"),\n    HttpStrErrorEntry(\"HPE_CB_chunk_complete\", \"the on_chunk_complete callback failed\"),\n    HttpStrErrorEntry(\"HPE_INVALID_EOF_STATE\", \"stream ended at an unexpected time\"),\n    HttpStrErrorEntry(\"HPE_HEADER_OVERFLOW\", \"too many header bytes seen; overflow detected\"),\n    HttpStrErrorEntry(\"HPE_CLOSED_CONNECTION\", \"data received after connection was closed\"),\n    HttpStrErrorEntry(\"HPE_INVALID_VERSION\", \"invalid HTTP version\"),\n    HttpStrErrorEntry(\"HPE_INVALID_STATUS\", \"invalid HTTP status code\"),\n    HttpStrErrorEntry(\"HPE_INVALID_METHOD\", \"invalid HTTP method\"),\n    HttpStrErrorEntry(\"HPE_INVALID_URI\", \"invalid URI\"),\n    HttpStrErrorEntry(\"HPE_INVALID_PATH\", \"invalid path\"),\n    HttpStrErrorEntry(\"HPE_INVALID_QUERYSTRING\", \"invalid query string\"),\n    HttpStrErrorEntry(\"HPE_INVALID_FRAGMENT\", \"invalid fragment\"),\n    HttpStrErrorEntry(\"HPE_INVALID_HOST\", \"invalid host name\"),\n    HttpStrErrorEntry(\"HPE_INVALID_PORT\", \"invalid port number\"),\n    HttpStrErrorEntry(\"HPE_INVALID_PATH\", \"invalid path\"),\n    HttpStrErrorEntry(\"HPE_INVALID_TOKEN\", \"invalid token\"),\n    HttpStrErrorEntry(\"HPE_INVALID_CONTENT_LENGTH\", \"invalid Content-Length header\"),\n    HttpStrErrorEntry(\"HPE_UNEXPECTED_CONTENT_LENGTH\", \"unexpected content-length header\"),\n    HttpStrErrorEntry(\"HPE_INVALID_CHUNK_SIZE\", \"invalid chunk size\"),\n    HttpStrErrorEntry(\"HPE_INVALID_CONSTANT\", \"invalid constant\"),\n    HttpStrErrorEntry(\"HPE_INVALID_INTERNAL_STATE\", \"feature has not been activated\"),\n    HttpStrErrorEntry(\"HPE_STRICT\", \"strict mode assertion failed\"),\n    HttpStrErrorEntry(\"HPE_PAUSED\", \"parser is paused\"),\n    HttpStrErrorEntry(\"HPE_UNKNOWN\", \"an unknown error occurred\"),\n]\n\ndef http_errno_name(err: http_errno) -> str:\n    \"\"\"\n    Returns the string representation of the given http_errno.\n    Equivalent to C function: const char * http_errno_name(enum http_errno err)\n    \"\"\"\n    err_val = int(err)\n    assert 0 <= err_val < len(http_strerror_tab)\n    return http_strerror_tab[err_val].name",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_happy_path_hpe_ok():\n    \"\"\"Verify that HPE_OK (0) returns a valid string representing its name.\"\"\"\n    # HPE_OK = 0\n    result = http_errno_name(0)\n    assert result is not None\n    assert isinstance(result, str)\n    assert len(result) > 0\n\n\ndef test_semantic_happy_path_standard_errors():\n    \"\"\"Verify standard error codes from enum http_errno map correctly to names.\"\"\"\n    # HPE_CB_message_begin = 1, HPE_CB_url = 2, etc.\n    res_1 = http_errno_name(1)\n    res_2 = http_errno_name(2)\n\n    assert res_1 is not None\n    assert isinstance(res_1, str)\n    \n    assert res_2 is not None\n    assert isinstance(res_2, str)\n    \n    # Names should typically be distinct for distinct error codes\n    assert res_1 != res_2\n\n\ndef test_semantic_edge_case_unknown_errno_positive():\n    \"\"\"Verify handling of out-of-range positive error codes.\"\"\"\n    # Passing an arbitrary large integer unlikely to be a valid error code\n    result = http_errno_name(99999)\n    # The C implementation typically returns a generic string like \"HPE_UNKNOWN\" or NULL/None\n    # We test that it either returns None or a valid string without raising an exception.\n    if result is not None:\n        assert isinstance(result, str)\n\n\ndef test_semantic_edge_case_negative_errno():\n    \"\"\"Verify handling of negative error codes.\"\"\"\n    result = http_errno_name(-1)\n    if result is not None:\n        assert isinstance(result, str)\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.integers(min_value=-1000, max_value=1000))\ndef test_auto_property_errno_names(err_code):\n    \"\"\"Property-based test for http_errno_name across a wide range of integers.\"\"\"\n    result = http_errno_name(err_code)\n    # The function should always return either None or a string, never raise an unhandled error.\n    assert result is None or isinstance(result, str)",
+      "execution": {
+        "total_tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_happy_path_hpe_ok PASSED                                 [ 20%]\n::test_semantic_happy_path_standard_errors PASSED                        [ 40%]\n::test_semantic_edge_case_unknown_errno_positive PASSED                  [ 60%]\n::test_semantic_edge_case_negative_errno PASSED                          [ 80%]\n::test_auto_property_errno_names PASSED                                  [100%]\n\n============================== 5 passed in 2.26s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 0.0,
+          "reference_passed": 0,
+          "reference_total": 1,
+          "differential_agreement_rate": 0.0,
+          "both_passed_count": 0
+        }
+      }
+    }
+  },
+  "http_method_str": {
+    "doc_hash": "a29333466c7a",
+    "db_id": "http-parser_http_parser_c_http_method_str",
+    "codewiki_doc": "Returns the string representation of an HTTP method enum.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "http_method_str",
+      "top_similarity": 0.7523
+    },
+    "codebert": {
+      "precision": 0.8723,
+      "recall": 0.8878,
+      "f1": 0.88
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-3: The generated documentation slightly rephrases the function name and parameter without elaborating deeply on the underlying lookup mechanism or fallback string behavior, making it somewhat tautological. However, it remains technically faithful and accurate to the ground truth without any hallucinations or contract mismatches. Therefore, a minor deduction yields a score of 4."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "mean": 5.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately conveys the core functional goal of returning a string representation for the HTTP method enum without introducing any distortions or over-bloating."
+      },
+      "combined_score": 4.5
+    },
+    "roundtrip": {
+      "function_name": "http_method_str",
+      "library": "http-parser",
+      "signature": "const char * http_method_str(enum http_method m)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "from enum import IntEnum\n\n# Enums based on http-parser technical documentation\nclass http_status(IntEnum):\n    HTTP_STATUS_CONTINUE = 100\n    HTTP_STATUS_SWITCHING_PROTOCOLS = 101\n    HTTP_STATUS_PROCESSING = 102\n    HTTP_STATUS_OK = 200\n    HTTP_STATUS_CREATED = 201\n    HTTP_STATUS_ACCEPTED = 202\n    HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION = 203\n    HTTP_STATUS_NO_CONTENT = 204\n\nclass http_method(IntEnum):\n    HTTP_DELETE = 0\n    HTTP_GET = 1\n    HTTP_HEAD = 2\n    HTTP_POST = 3\n    HTTP_PUT = 4\n    HTTP_CONNECT = 5\n    HTTP_OPTIONS = 6\n    HTTP_TRACE = 7\n\nclass http_parser_type(IntEnum):\n    HTTP_REQUEST = 0\n    HTTP_RESPONSE = 1\n    HTTP_BOTH = 2\n\nclass flags(IntEnum):\n    F_CHUNKED = 1\n    F_CONNECTION_KEEP_ALIVE = 2\n    F_CONNECTION_CLOSE = 4\n    F_CONNECTION_UPGRADE = 8\n    F_TRAILING = 16\n    F_UPGRADE = 32\n    F_SKIPBODY = 64\n    F_CONTENTLENGTH = 128\n\nclass http_errno(IntEnum):\n    HPE_OK = 0\n    HPE_CB_message_begin = 1\n    HPE_CB_url = 2\n    HPE_CB_header_field = 3\n    HPE_CB_header_value = 4\n    HPE_CB_headers_complete = 5\n    HPE_CB_body = 6\n    HPE_CB_message_complete = 7\n\nclass http_parser:\n    def __init__(self, *args, **kwargs):\n        self.type = kwargs.get('type', 0)\n        self.flags = kwargs.get('flags', 0)\n        self.state = kwargs.get('state', 0)\n        self.header_state = kwargs.get('header_state', 0)\n        self.index = kwargs.get('index', 0)\n        self.uses_transfer_encoding = kwargs.get('uses_transfer_encoding', 0)\n        self.allow_chunked_length = kwargs.get('allow_chunked_length', 0)\n        self.lenient_http_headers = kwargs.get('lenient_http_headers', 0)\n\nclass http_parser_settings:\n    def __init__(self, *args, **kwargs):\n        self.on_message_begin = kwargs.get('on_message_begin', None)\n        self.on_url = kwargs.get('on_url', None)\n        self.on_status = kwargs.get('on_status', None)\n        self.on_header_field = kwargs.get('on_header_field', None)\n        self.on_header_value = kwargs.get('on_header_value', None)\n        self.on_headers_complete = kwargs.get('on_headers_complete', None)\n        self.on_body = kwargs.get('on_body', None)\n        self.on_message_complete = kwargs.get('on_message_complete', None)\n\nclass http_parser_url:\n    def __init__(self, *args, **kwargs):\n        self.field_set = kwargs.get('field_set', 0)\n        self.port = kwargs.get('port', 0)\n        self.field_data = kwargs.get('field_data', [])\n\ndef http_method_str(m: int) -> str:\n    \"\"\"\n    Returns the string representation of an HTTP method enum.\n    \"\"\"\n    # Map http_method enum values to their string representations\n    method_map = {\n        http_method.HTTP_DELETE: \"DELETE\",\n        http_method.HTTP_GET: \"GET\",\n        http_method.HTTP_HEAD: \"HEAD\",\n        http_method.HTTP_POST: \"POST\",\n        http_method.HTTP_PUT: \"PUT\",\n        http_method.HTTP_CONNECT: \"CONNECT\",\n        http_method.HTTP_OPTIONS: \"OPTIONS\",\n        http_method.HTTP_TRACE: \"TRACE\",\n    }\n    \n    # If m is passed as an enum or integer\n    try:\n        enum_val = http_method(m)\n    except ValueError:\n        return \"<unknown>\"\n    \n    return method_map.get(enum_val, \"<unknown>\")",
+      "reference_code": "from enum import IntEnum\n\nclass http_method(IntEnum):\n    HTTP_DELETE = 0\n    HTTP_GET = 1\n    HTTP_HEAD = 2\n    HTTP_POST = 3\n    HTTP_PUT = 4\n    HTTP_CONNECT = 5\n    HTTP_OPTIONS = 6\n    HTTP_TRACE = 7\n    HTTP_COPY = 8\n    HTTP_LOCK = 9\n    HTTP_MKCOL = 10\n    HTTP_MOVE = 11\n    HTTP_PROPFIND = 12\n    HTTP_PROPPATCH = 13\n    HTTP_SEARCH = 14\n    HTTP_UNLOCK = 15\n    HTTP_BIND = 16\n    HTTP_REBIND = 17\n    HTTP_UNBIND = 18\n    HTTP_ACL = 19\n    HTTP_REPORT = 20\n    HTTP_MKACTIVITY = 21\n    HTTP_CHECKOUT = 22\n    HTTP_MERGE = 23\n    HTTP_MSEARCH = 24\n    HTTP_NOTIFY = 25\n    HTTP_SUBSCRIBE = 26\n    HTTP_UNSUBSCRIBE = 27\n    HTTP_PATCH = 28\n    HTTP_PURGE = 29\n    HTTP_MKCALENDAR = 30\n    HTTP_LINK = 31\n    HTTP_UNLINK = 32\n\n# Corresponding method strings array mimicking `method_strings` in http-parser\nmethod_strings = [\n    \"DELETE\",\n    \"GET\",\n    \"HEAD\",\n    \"POST\",\n    \"PUT\",\n    \"CONNECT\",\n    \"OPTIONS\",\n    \"TRACE\",\n    \"COPY\",\n    \"LOCK\",\n    \"MKCOL\",\n    \"MOVE\",\n    \"PROPFIND\",\n    \"PROPPATCH\",\n    \"SEARCH\",\n    \"UNLOCK\",\n    \"BIND\",\n    \"REBIND\",\n    \"UNBIND\",\n    \"ACL\",\n    \"REPORT\",\n    \"MKACTIVITY\",\n    \"CHECKOUT\",\n    \"MERGE\",\n    \"MSEARCH\",\n    \"NOTIFY\",\n    \"SUBSCRIBE\",\n    \"UNSUBSCRIBE\",\n    \"PATCH\",\n    \"PURGE\",\n    \"MKCALENDAR\",\n    \"LINK\",\n    \"UNLINK\",\n]\n\ndef http_method_str(m: int) -> str:\n    \"\"\"\n    Equivalent of ELEM_AT(method_strings, m, \"<unknown>\")\n    \"\"\"\n    if 0 <= m < len(method_strings):\n        return method_strings[m]\n    return \"<unknown>\"",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n# Enum values for http_method from http-parser specification\nHTTP_DELETE = 0\nHTTP_GET = 1\nHTTP_HEAD = 2\nHTTP_POST = 3\nHTTP_PUT = 4\nHTTP_CONNECT = 5\nHTTP_OPTIONS = 6\nHTTP_TRACE = 7\n\n\ndef test_semantic_http_method_get():\n    \"\"\"Verify string representation of HTTP_GET.\"\"\"\n    result = http_method_str(HTTP_GET)\n    assert result == \"GET\"\n\n\ndef test_semantic_http_method_post():\n    \"\"\"Verify string representation of HTTP_POST.\"\"\"\n    result = http_method_str(HTTP_POST)\n    assert result == \"POST\"\n\n\ndef test_semantic_http_method_delete():\n    \"\"\"Verify string representation of HTTP_DELETE.\"\"\"\n    result = http_method_str(HTTP_DELETE)\n    assert result == \"DELETE\"\n\n\ndef test_semantic_http_method_head():\n    \"\"\"Verify string representation of HTTP_HEAD.\"\"\"\n    result = http_method_str(HTTP_HEAD)\n    assert result == \"HEAD\"\n\n\ndef test_semantic_http_method_put():\n    \"\"\"Verify string representation of HTTP_PUT.\"\"\"\n    result = http_method_str(HTTP_PUT)\n    assert result == \"PUT\"\n\n\ndef test_semantic_http_method_connect():\n    \"\"\"Verify string representation of HTTP_CONNECT.\"\"\"\n    result = http_method_str(HTTP_CONNECT)\n    assert result == \"CONNECT\"\n\n\ndef test_semantic_http_method_options():\n    \"\"\"Verify string representation of HTTP_OPTIONS.\"\"\"\n    result = http_method_str(HTTP_OPTIONS)\n    assert result == \"OPTIONS\"\n\n\ndef test_semantic_http_method_trace():\n    \"\"\"Verify string representation of HTTP_TRACE.\"\"\"\n    result = http_method_str(HTTP_TRACE)\n    assert result == \"TRACE\"\n\n\ndef test_semantic_edge_invalid_method():\n    \"\"\"Verify behavior with invalid or out-of-range method enum values.\"\"\"\n    # Out of range positive integer\n    result_high = http_method_str(999)\n    assert result_high is None or result_high == \"<unknown>\" or isinstance(result_high, str)\n\n    # Negative integer edge case\n    result_neg = http_method_str(-1)\n    assert result_neg is None or result_neg == \"<unknown>\" or isinstance(result_neg, str)\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.integers(min_value=-1000, max_value=1000))\ndef test_auto_property_http_method_str(method_val):\n    \"\"\"Property-based test for http_method_str across a wide range of integer inputs.\"\"\"\n    result = http_method_str(method_val)\n    # The function should either return a valid string representation or handle gracefully (e.g. None or fallback string)\n    assert result is None or isinstance(result, str)",
+      "execution": {
+        "total_tests": 10,
+        "passed": 10,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 9,
+          "failed": 0,
+          "total": 9
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 10 items\n\n::test_semantic_http_method_get PASSED                                   [ 10%]\n::test_semantic_http_method_post PASSED                                  [ 20%]\n::test_semantic_http_method_delete PASSED                                [ 30%]\n::test_semantic_http_method_head PASSED                                  [ 40%]\n::test_semantic_http_method_put PASSED                                   [ 50%]\n::test_semantic_http_method_connect PASSED                               [ 60%]\n::test_semantic_http_method_options PASSED                               [ 70%]\n::test_semantic_http_method_trace PASSED                                 [ 80%]\n::test_semantic_edge_invalid_method PASSED                               [ 90%]\n::test_auto_property_http_method_str PASSED                              [100%]\n\n============================= 10 passed in 2.65s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 10,
+          "reference_total": 10,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 10
+        }
+      }
+    }
+  },
+  "http_parser_pause": {
+    "doc_hash": "707788e4d223",
+    "db_id": "http-parser_http_parser_c_http_parser_pause",
+    "codewiki_doc": "Pauses or unpauses the parser.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "http_parser_pause",
+      "top_similarity": 0.604
+    },
+    "codebert": {
+      "precision": 0.8529,
+      "recall": 0.7824,
+      "f1": 0.8161
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-3: The generated documentation is extremely brief and borders on being tautological since it only rephrases the function name without explaining the operational constraints, error states, or the pause mechanism details. However, it is technically accurate and free of hallucinations, aligning well with the ground truth. Therefore, starting from a baseline of 4.0 and penalizing slightly for the minor omission of detail results in a score of 4."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "mean": 5.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately captures the primary functional intent of pausing or un-pausing the parser based on a nonzero value without introducing any defects or unnecessary boilerplate."
+      },
+      "combined_score": 4.5
+    },
+    "roundtrip": {
+      "function_name": "http_parser_pause",
+      "library": "http-parser",
+      "signature": "void http_parser_pause(http_parser * parser, int paused)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "class http_parser:\n    def __init__(self, *args, **kwargs):\n        self.type = kwargs.get('type', 0)\n        self.flags = kwargs.get('flags', 0)\n        self.state = kwargs.get('state', 0)\n        self.header_state = kwargs.get('header_state', 0)\n        self.index = kwargs.get('index', 0)\n        self.uses_transfer_encoding = kwargs.get('uses_transfer_encoding', 0)\n        self.allow_chunked_length = kwargs.get('allow_chunked_length', 0)\n        self.lenient_http_headers = kwargs.get('lenient_http_headers', 0)\n        self.paused = kwargs.get('paused', 0)\n\n\ndef http_parser_pause(parser, paused):\n    \"\"\"\n    Pauses or unpauses the parser.\n    \"\"\"\n    if isinstance(parser, http_parser):\n        parser.paused = paused\n    elif hasattr(parser, '__dict__'):\n        parser.paused = paused",
+      "reference_code": "# Error codes corresponding to enum http_errno\nHPE_OK = 0\nHPE_CB_message_begin = 1\nHPE_CB_url = 2\nHPE_CB_header_field = 3\nHPE_CB_header_value = 4\nHPE_CB_headers_complete = 5\nHPE_CB_body = 6\nHPE_CB_message_complete = 7\nHPE_PAUSED = 40  # Typically defined as a special errno in http_parser\n\n\ndef HTTP_PARSER_ERRNO(parser):\n    return parser.http_errno\n\n\ndef SET_ERRNO(parser, err):\n    parser.http_errno = err\n\n\ndef http_parser_pause(parser, paused: int) -> None:\n    \"\"\"Pause or unpause the HTTP parser.\n\n    Users should only be pausing/unpausing a parser that is not in an error\n    state.\n    \"\"\"\n    errno = HTTP_PARSER_ERRNO(parser)\n    if errno == HPE_OK or errno == HPE_PAUSED:\n        # parser.nread is referenced by the C SET_ERRNO macro contextually\n        _nread = parser.nread\n        new_errno = HPE_PAUSED if paused else HPE_OK\n        SET_ERRNO(parser, new_errno)\n    else:\n        raise AssertionError(\"Attempting to pause parser in error state\")",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_pause_basic():\n    \"\"\"Test pausing the http parser with paused = 1.\"\"\"\n    parser = http_parser()\n    parser.type = 0  # HTTP_REQUEST\n    parser.state = 0\n    \n    # Call the pause function with paused = 1\n    http_parser_pause(parser, 1)\n\n\ndef test_semantic_unpause_basic():\n    \"\"\"Test unpausing the http parser with paused = 0.\"\"\"\n    parser = http_parser()\n    parser.type = 0  # HTTP_REQUEST\n    parser.state = 0\n    \n    # First pause it\n    http_parser_pause(parser, 1)\n    \n    # Then unpause it with paused = 0\n    http_parser_pause(parser, 0)\n\n\ndef test_semantic_pause_negative_value():\n    \"\"\"Test passing a negative integer for the paused parameter.\"\"\"\n    parser = http_parser()\n    parser.type = 0\n    \n    # Negative values should be treated as non-zero (paused) or handled gracefully without throwing\n    http_parser_pause(parser, -1)\n\n\ndef test_semantic_pause_large_value():\n    \"\"\"Test passing a large integer value for the paused parameter.\"\"\"\n    parser = http_parser()\n    parser.type = 0\n    \n    # Large non-zero integer\n    http_parser_pause(parser, 999999)\n\n\ndef test_semantic_multiple_toggle_pauses():\n    \"\"\"Test rapidly alternating between pause and unpause states.\"\"\"\n    parser = http_parser()\n    parser.type = 1  # HTTP_RESPONSE\n    \n    http_parser_pause(parser, 1)\n    http_parser_pause(parser, 0)\n    http_parser_pause(parser, 1)\n    http_parser_pause(parser, 0)\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    parser_type=st.integers(min_value=0, max_value=2),\n    parser_flags=st.integers(min_value=0, max_value=255),\n    paused_state=st.integers(min_value=-100, max_value=100)\n)\ndef test_auto_property_http_parser_pause(parser_type, parser_flags, paused_state):\n    \"\"\"Property-based test for http_parser_pause with randomized parser properties and pause flags.\"\"\"\n    parser = http_parser()\n    parser.type = parser_type\n    parser.flags = parser_flags\n    parser.state = 0\n    \n    # Execute the target function under test\n    http_parser_pause(parser, paused_state)",
+      "execution": {
+        "total_tests": 6,
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 5,
+          "failed": 0,
+          "total": 5
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 6 items\n\n::test_semantic_pause_basic PASSED                                       [ 16%]\n::test_semantic_unpause_basic PASSED                                     [ 33%]\n::test_semantic_pause_negative_value PASSED                              [ 50%]\n::test_semantic_pause_large_value PASSED                                 [ 66%]\n::test_semantic_multiple_toggle_pauses PASSED                            [ 83%]\n::test_auto_property_http_parser_pause PASSED                            [100%]\n\n============================== 6 passed in 2.66s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 6,
+          "reference_total": 6,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 6
+        }
+      }
+    }
+  },
+  "http_parser_set_max_header_size": {
+    "doc_hash": "6412fe433842",
+    "db_id": "http-parser_http_parser_c_http_parser_set_max_header_size",
+    "codewiki_doc": "Allows changing the maximum allowed header size at runtime.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "http_parser_set_max_header_size",
+      "top_similarity": 0.5558
+    },
+    "codebert": {
+      "precision": 0.8895,
+      "recall": 0.8848,
+      "f1": 0.8871
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          4.0
+        ],
+        "mean": 4.8,
+        "std": 0.4,
+        "sample_reasoning": "None. The generated documentation correctly captures the functionality of setting the maximum header size at runtime as intended by the ground truth and source code, without adding hallucinations or omissions of critical contracts."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          2.0,
+          3.0,
+          4.0,
+          2.0,
+          2.0
+        ],
+        "mean": 2.6,
+        "std": 0.8,
+        "sample_reasoning": "ALIGN-2: Intent Distortion. The generated documentation incorrectly states that the function changes the maximum header size 'at runtime', whereas the ground truth explicitly states it changes the size 'provided at compile time'."
+      },
+      "combined_score": 3.7
+    },
+    "roundtrip": {
+      "function_name": "http_parser_set_max_header_size",
+      "library": "http-parser",
+      "signature": "void http_parser_set_max_header_size(uint32_t size)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Module top-level definitions and constants\n\n# Maximum header size storage (simulating global or runtime configuration state for http-parser)\n_MAX_HEADER_SIZE = 80 * 1024  # Default typical max header size in http-parser (HTTP_MAX_HEADER_SIZE)\n\ndef http_parser_set_max_header_size(size: int) -> None:\n    \"\"\"\n    Allows changing the maximum allowed header size at runtime.\n    \"\"\"\n    global _MAX_HEADER_SIZE\n    _MAX_HEADER_SIZE = int(size)",
+      "reference_code": "# Module-level global variable representing max_header_size in http-parser\nmax_header_size: int = 0\n\ndef http_parser_set_max_header_size(size: int) -> None:\n    \"\"\"\n    Sets the maximum header size allowed by the parser.\n    \"\"\"\n    global max_header_size\n    max_header_size = size",
+      "test_suite": "from hypothesis import given, strategies as st, settings\n\ndef test_semantic_default_max_header_size():\n    # Test setting a standard reasonable header size\n    http_parser_set_max_header_size(8192)\n\ndef test_semantic_min_header_size():\n    # Test setting the minimum boundary header size (0)\n    http_parser_set_max_header_size(0)\n\ndef test_semantic_max_uint32_header_size():\n    # Test setting the maximum 32-bit unsigned integer header size\n    http_parser_set_max_header_size(4294967295)\n\ndef test_semantic_typical_custom_header_size():\n    # Test a typical custom max header size configuration\n    http_parser_set_max_header_size(16384)\n\n@settings(max_examples=50, deadline=None)\n@given(size=st.integers(min_value=0, max_value=4294967295))\ndef test_auto_property_header_size_uint32(size):\n    # Verify that any valid uint32_t value can be passed without raising errors\n    http_parser_set_max_header_size(size)",
+      "execution": {
+        "total_tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_default_max_header_size PASSED                           [ 20%]\n::test_semantic_min_header_size PASSED                                   [ 40%]\n::test_semantic_max_uint32_header_size PASSED                            [ 60%]\n::test_semantic_typical_custom_header_size PASSED                        [ 80%]\n::test_auto_property_header_size_uint32 PASSED                           [100%]\n\n============================== 5 passed in 3.29s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 5,
+          "reference_total": 5,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 5
+        }
+      }
+    }
+  },
+  "http_parser_version": {
+    "doc_hash": "da90ae1804c1",
+    "db_id": "http-parser_http_parser_c_http_parser_version",
+    "codewiki_doc": "Returns the library's version number.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "http_parser_version",
+      "top_similarity": 0.3622
+    },
+    "codebert": {
+      "precision": 0.9057,
+      "recall": 0.6647,
+      "f1": 0.7668
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          3.0,
+          4.0
+        ],
+        "mean": 3.8,
+        "std": 0.4,
+        "sample_reasoning": "DEF-3: The generated documentation is extremely brief and borders on tautological ('Returns the library's version number'), failing to explain the bitwise encoding structure of the returned integer as detailed in the ground truth. However, it is technically accurate and contains no hallucinations or severe contract mismatches. Therefore, it incurs 1 minor defect (DEF-3) and scores a solid 4.0."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "mean": 2.2,
+        "std": 0.4,
+        "sample_reasoning": "ALIGN-4: Superficiality. The generated documentation provides a very high-level overview but completely omits the critical bit-shifting logic, version component mapping (major, minor, patch), and the usage example explicitly provided in the Ground Truth."
+      },
+      "combined_score": 3.0
+    },
+    "roundtrip": {
+      "function_name": "http_parser_version",
+      "library": "http-parser",
+      "signature": "unsigned long http_parser_version(void)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Constants and version macros based on http-parser specification\nHTTP_PARSER_VERSION_MAJOR = 2\nHTTP_PARSER_VERSION_MINOR = 9\nHTTP_PARSER_VERSION_PATCH = 4\n\n# Enums\nclass http_status:\n    HTTP_STATUS_CONTINUE = 100\n    HTTP_STATUS_SWITCHING_PROTOCOLS = 101\n    HTTP_STATUS_PROCESSING = 102\n    HTTP_STATUS_OK = 200\n    HTTP_STATUS_CREATED = 201\n    HTTP_STATUS_ACCEPTED = 202\n    HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION = 203\n    HTTP_STATUS_NO_CONTENT = 204\n\nclass http_method:\n    HTTP_DELETE = 0\n    HTTP_GET = 1\n    HTTP_HEAD = 2\n    HTTP_POST = 3\n    HTTP_PUT = 4\n    HTTP_CONNECT = 5\n    HTTP_OPTIONS = 6\n    HTTP_TRACE = 7\n\nclass http_parser_type:\n    HTTP_REQUEST = 0\n    HTTP_RESPONSE = 1\n    HTTP_BOTH = 2\n\nclass flags:\n    F_CHUNKED = 1\n    F_CONNECTION_KEEP_ALIVE = 2\n    F_CONNECTION_CLOSE = 4\n    F_CONNECTION_UPGRADE = 8\n    F_TRAILING = 16\n    F_UPGRADE = 32\n    F_SKIPBODY = 64\n    F_CONTENTLENGTH = 128\n\nclass http_errno:\n    HPE_OK = 0\n    HPE_CB_message_begin = 1\n    HPE_CB_url = 2\n    HPE_CB_header_field = 3\n    HPE_CB_header_value = 4\n    HPE_CB_headers_complete = 5\n    HPE_CB_body = 6\n    HPE_CB_message_complete = 7\n\nclass http_parser:\n    def __init__(self, *args, **kwargs):\n        self.type = kwargs.get('type', 0)\n        self.flags = kwargs.get('flags', 0)\n        self.state = kwargs.get('state', 0)\n        self.header_state = kwargs.get('header_state', 0)\n        self.index = kwargs.get('index', 0)\n        self.uses_transfer_encoding = kwargs.get('uses_transfer_encoding', 0)\n        self.allow_chunked_length = kwargs.get('allow_chunked_length', 0)\n        self.lenient_http_headers = kwargs.get('lenient_http_headers', 0)\n\nclass http_parser_settings:\n    def __init__(self, *args, **kwargs):\n        self.on_message_begin = kwargs.get('on_message_begin', None)\n        self.on_url = kwargs.get('on_url', None)\n        self.on_status = kwargs.get('on_status', None)\n        self.on_header_field = kwargs.get('on_header_field', None)\n        self.on_header_value = kwargs.get('on_header_value', None)\n        self.on_headers_complete = kwargs.get('on_headers_complete', None)\n        self.on_body = kwargs.get('on_body', None)\n        self.on_message_complete = kwargs.get('on_message_complete', None)\n\nclass http_parser_url:\n    def __init__(self, *args, **kwargs):\n        self.field_set = kwargs.get('field_set', 0)\n        self.port = kwargs.get('port', 0)\n        self.field_data = kwargs.get('field_data', [{'off': 0, 'len': 0} for _ in range(7)])\n\n\ndef http_parser_version() -> int:\n    \"\"\"Returns the library's version number.\n\n    C/C++ Signature: unsigned long http_parser_version(void)\n    \"\"\"\n    return (HTTP_PARSER_VERSION_MAJOR << 16) | (HTTP_PARSER_VERSION_MINOR << 8) | HTTP_PARSER_VERSION_PATCH",
+      "reference_code": "# Module-level version constants matching the C library specification\nHTTP_PARSER_VERSION_MAJOR = 2\nHTTP_PARSER_VERSION_MINOR = 9\nHTTP_PARSER_VERSION_PATCH = 4\n\n\ndef http_parser_version() -> int:\n    \"\"\"Returns the library version as a packed integer.\n\n    Equivalent to:\n    HTTP_PARSER_VERSION_MAJOR * 0x10000 |\n    HTTP_PARSER_VERSION_MINOR * 0x00100 |\n    HTTP_PARSER_VERSION_PATCH * 0x00001\n    \"\"\"\n    return (\n        (HTTP_PARSER_VERSION_MAJOR * 0x10000)\n        | (HTTP_PARSER_VERSION_MINOR * 0x00100)\n        | (HTTP_PARSER_VERSION_PATCH * 0x00001)\n    )",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_version_return_type():\n    \"\"\"Verify that http_parser_version returns an integer-like (unsigned long) version value.\"\"\"\n    version = http_parser_version()\n    assert isinstance(version, (int, float))\n    assert version >= 0\n\n\ndef test_semantic_version_non_zero():\n    \"\"\"Verify that http_parser_version returns a non-zero version number for a valid build.\"\"\"\n    version = http_parser_version()\n    assert version != 0\n\n\ndef test_semantic_version_macro_alignment():\n    \"\"\"Verify that the version returned matches the encoded major/minor/patch layout if applicable,\n    or at least represents a valid packed version integer.\n    Typically, http_parser_version returns (major << 16) | (minor << 8) | patch.\n    \"\"\"\n    version = http_parser_version()\n    # Unpack version bytes according to standard http-parser version encoding\n    major = (version >> 16) & 255\n    minor = (version >> 8) & 255\n    patch = version & 255\n\n    # At least major version should be a sensible number (e.g., 2 or 1)\n    assert major >= 0\n    assert minor >= 0\n    assert patch >= 0\n\n\ndef test_semantic_version_idempotency():\n    \"\"\"Verify that calling http_parser_version multiple times yields consistent results.\"\"\"\n    v1 = http_parser_version()\n    v2 = http_parser_version()\n    assert v1 == v2\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.integers(min_value=0, max_value=100))\ndef test_auto_property_version_stability(dummy_trigger):\n    \"\"\"Property-based test ensuring http_parser_version behavior is stable across multiple invocations.\"\"\"\n    v = http_parser_version()\n    assert isinstance(v, int)\n    assert v > 0",
+      "execution": {
+        "total_tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_version_return_type PASSED                               [ 20%]\n::test_semantic_version_non_zero PASSED                                  [ 40%]\n::test_semantic_version_macro_alignment PASSED                           [ 60%]\n::test_semantic_version_idempotency PASSED                               [ 80%]\n::test_auto_property_version_stability PASSED                            [100%]\n\n============================== 5 passed in 2.63s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 5,
+          "reference_total": 5,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 5
+        }
+      }
+    }
+  },
+  "http_should_keep_alive": {
+    "doc_hash": "9946dcd04ca1",
+    "db_id": "http-parser_http_parser_c_http_should_keep_alive",
+    "codewiki_doc": "Determines if the connection should be kept alive after the current message.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "http_should_keep_alive",
+      "top_similarity": 0.3646
+    },
+    "codebert": {
+      "precision": 0.7592,
+      "recall": 0.7002,
+      "f1": 0.7285
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          3.0,
+          4.0,
+          4.0
+        ],
+        "mean": 3.8,
+        "std": 0.4,
+        "sample_reasoning": "DEF-3: The generated documentation is brief and slightly tautological, simply rephrasing the function name without explaining the operational logic (HTTP/1.1 vs HTTP/1.0 rules and EOF checks). However, it is technically faithful, accurate, and contains no hallucinations or dangerous misinformation. Therefore, it fits the description for a minor defect (DEF-3) leading to a score of 4."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1: The generated documentation misses the critical warning regarding when the function should be called (`on_headers_complete` or `on_message_complete`) and what specific actions to take based on the return value (sending 'Connection: close' or closing the connection). It provides only a superficial description without capturing the operational rationale and requirements."
+      },
+      "combined_score": 3.4
+    },
+    "roundtrip": {
+      "function_name": "http_should_keep_alive",
+      "library": "http-parser",
+      "signature": "int http_should_keep_alive(const http_parser * parser)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "# Constants and Enums\nHTTP_REQUEST = 0\nHTTP_RESPONSE = 1\nHTTP_BOTH = 2\n\nF_CHUNKED = 1\nF_CONNECTION_KEEP_ALIVE = 2\nF_CONNECTION_CLOSE = 4\nF_CONNECTION_UPGRADE = 8\nF_TRAILING = 16\nF_UPGRADE = 32\nF_SKIPBODY = 64\nF_CONTENTLENGTH = 128\n\nclass http_parser:\n    def __init__(self, *args, **kwargs):\n        # Allow robust initialization from dict, object, or positional arguments\n        if args and isinstance(args[0], dict):\n            for k, v in args[0].items():\n                setattr(self, k, v)\n        for k, v in kwargs.items():\n            setattr(self, k, v)\n        \n        # Default struct fields if not provided\n        if not hasattr(self, 'type'):\n            self.type = HTTP_REQUEST\n        if not hasattr(self, 'flags'):\n            self.flags = 0\n        if not hasattr(self, 'state'):\n            self.state = 0\n        if not hasattr(self, 'header_state'):\n            self.header_state = 0\n        if not hasattr(self, 'index'):\n            self.index = 0\n        if not hasattr(self, 'uses_transfer_encoding'):\n            self.uses_transfer_encoding = 0\n        if not hasattr(self, 'allow_chunked_length'):\n            self.allow_chunked_length = 0\n        if not hasattr(self, 'lenient_http_headers'):\n            self.lenient_http_headers = 0\n\n    def get(self, key, default=None):\n        return getattr(self, key, default)\n\n\ndef http_should_keep_alive(parser: http_parser) -> int:\n    \"\"\"\n    Determines if the connection should be kept alive after the current message.\n    \"\"\"\n    if parser is None:\n        return 0\n\n    flags = getattr(parser, 'flags', 0)\n    \n    # If F_CONNECTION_CLOSE is set, do not keep alive\n    if flags & F_CONNECTION_CLOSE:\n        return 0\n\n    # If F_CONNECTION_KEEP_ALIVE is set, keep alive\n    if flags & F_CONNECTION_KEEP_ALIVE:\n        return 1\n\n    # HTTP/1.1 or HTTP/1.0 persistent connection rules can be evaluated via flags or parser state if implemented,\n    # but strictly based on the technical specification flags:\n    return 0",
+      "reference_code": "# Constants and Flags from http-parser\nF_CHUNKED = 1\nF_CONNECTION_KEEP_ALIVE = 2\nF_CONNECTION_CLOSE = 4\nF_CONNECTION_UPGRADE = 8\nF_TRAILING = 16\nF_UPGRADE = 32\nF_SKIPBODY = 64\nF_CONTENTLENGTH = 128\n\n\ndef http_message_needs_eof(parser) -> int:\n    \"\"\"\n    Mock/Helper replicating http_message_needs_eof behavior from http-parser.\n    In the actual C library, this determines if the message requires an EOF\n    to signal the end of the body (e.g., HTTP/1.0 without Content-Length, chunked, etc.).\n    \"\"\"\n    # If the parser has an explicit method or type attribute checking EOF needs:\n    # Here we look for standard attributes on the parser object.\n    if getattr(parser, \"type\", 0) == 1:  # HTTP_RESPONSE\n        # Responses need EOF if status code doesn't have body or similar,\n        # but let's check basic standard logic or attributes if present.\n        if parser.http_major == 1 and parser.http_minor == 0:\n            return 1\n        # No Content-Length and not chunked might require EOF for responses\n        if not (parser.flags & F_CONTENTLENGTH) and not (parser.flags & F_CHUNKED):\n            # Check for specific status codes that never have a body (e.g., 204, 304, 1xx)\n            status = getattr(parser, \"status_code\", 200)\n            if status == 204 or status == 304 or (100 <= status < 200):\n                return 0\n            return 1\n        return 0\n    else:  # HTTP_REQUEST\n        if parser.flags & F_CHUNKED:\n            return 0\n        if parser.flags & F_CONTENTLENGTH:\n            return 0\n        return 0\n\n\ndef http_should_keep_alive(parser) -> int:\n    \"\"\"\n    Determine if the HTTP connection should be kept alive based on the parser state.\n    Transpiled directly from the C implementation.\n    \"\"\"\n    if parser.http_major > 0 and parser.http_minor > 0:\n        # HTTP/1.1\n        if parser.flags & F_CONNECTION_CLOSE:\n            return 0\n    else:\n        # HTTP/1.0 or earlier\n        if not (parser.flags & F_CONNECTION_KEEP_ALIVE):\n            return 0\n\n    return 0 if http_message_needs_eof(parser) else 1",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\n# Helper class to mock http_parser for testing http_should_keep_alive\nclass HttpParser:\n    def __init__(self, http_major=1, http_minor=1, flags=0, content_length=0):\n        self.http_major = http_major\n        self.http_minor = http_minor\n        self.flags = flags\n        self.content_length = content_length\n        self.type = 0  # HTTP_REQUEST or HTTP_RESPONSE\n        self.state = 0\n        self.header_state = 0\n        self.index = 0\n        self.uses_transfer_encoding = 0\n        self.allow_chunked_length = 0\n        self.lenient_http_headers = 0\n\n\ndef test_semantic_keep_alive_explicit_flag():\n    # F_CONNECTION_KEEP_ALIVE flag is set\n    parser = HttpParser(http_major=1, http_minor=1, flags=2)  # F_CONNECTION_KEEP_ALIVE = 2\n    result = http_should_keep_alive(parser)\n    assert result == 1\n\n\ndef test_semantic_connection_close_flag():\n    # F_CONNECTION_CLOSE flag is set, should override keep-alive\n    parser = HttpParser(http_major=1, http_minor=1, flags=4)  # F_CONNECTION_CLOSE = 4\n    result = http_should_keep_alive(parser)\n    assert result == 0\n\n\ndef test_semantic_http_1_0_default():\n    # HTTP/1.0 defaults to close unless keep-alive header/flag is set\n    parser = HttpParser(http_major=1, http_minor=0, flags=0)\n    result = http_should_keep_alive(parser)\n    assert result == 0\n\n\ndef test_semantic_http_1_1_default():\n    # HTTP/1.1 defaults to keep-alive unless close flag is set\n    parser = HttpParser(http_major=1, http_minor=1, flags=0)\n    result = http_should_keep_alive(parser)\n    assert result == 1\n\n\ndef test_semantic_upgrade_flag():\n    # Upgrade flag usually keeps connection alive\n    parser = HttpParser(http_major=1, http_minor=1, flags=8)  # F_CONNECTION_UPGRADE = 8\n    result = http_should_keep_alive(parser)\n    assert result == 1\n\n\ndef test_semantic_edge_null_parser():\n    # Edge case: passing None as parser if handled gracefully or testing contract\n    # Depending on implementation, it may return 0 or raise. Rule says no pytest.raises unless documented.\n    # If the implementation handles None by returning 0 (or raising AttributeError if pure python), we test return value if safe.\n    try:\n        res = http_should_keep_alive(None)\n        assert res == 0\n    except (AttributeError, TypeError):\n        # If it raises an unhandled AttributeError/TypeError on None due to lacking C null checks in pure Python mock, \n        # we ensure it's expected behavior for invalid type.\n        pass\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    http_major=st.integers(min_value=0, max_value=2),\n    http_minor=st.integers(min_value=0, max_value=9),\n    flags=st.integers(min_value=0, max_value=255)\n)\ndef test_auto_property_http_should_keep_alive(http_major, http_minor, flags):\n    parser = HttpParser(http_major=http_major, http_minor=http_minor, flags=flags)\n    result = http_should_keep_alive(parser)\n    # The return value must be an integer (0 or 1 typically)\n    assert isinstance(result, int)\n    assert result in (0, 1)",
+      "execution": {
+        "total_tests": 7,
+        "passed": 5,
+        "failed": 2,
+        "errors": 0,
+        "pass_rate": 71.4,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 2,
+          "total": 6
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 7 items\n\n::test_semantic_keep_alive_explicit_flag PASSED                          [ 14%]\n::test_semantic_connection_close_flag PASSED                             [ 28%]\n::test_semantic_http_1_0_default PASSED                                  [ 42%]\n::test_semantic_http_1_1_default FAILED                                  [ 57%]\n::test_semantic_upgrade_flag FAILED                                      [ 71%]\n::test_semantic_edge_null_parser PASSED                                  [ 85%]\n::test_auto_property_http_should_keep_alive PASSED                       [100%]\n\n================================== FAILURES ===================================\n_______________________ test_semantic_http_1_1_default ________________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpn8y80clw.py:318: in test_semantic_http_1_1_default\n    assert result == 1\nE   assert 0 == 1\n_________________________ test_semantic_upgrade_flag __________________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpn8y80clw.py:325: in test_semantic_upgrade_flag\n    assert result == 1\nE   assert 0 == 1\n=========================== short test summary info ===========================\nFAILED ::test_semantic_http_1_1_default - assert 0 == 1\nFAILED ::test_semantic_upgrade_flag - assert 0 == 1\n========================= 2 failed, 5 passed in 2.93s =========================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 7,
+          "reference_total": 7,
+          "differential_agreement_rate": 71.4,
+          "both_passed_count": 5
+        }
+      }
+    }
+  },
+  "http_status_str": {
+    "doc_hash": "f4db971c7b47",
+    "db_id": "http-parser_http_parser_c_http_status_str",
+    "codewiki_doc": "Returns the string representation of an HTTP status code enum.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "http_status_str",
+      "top_similarity": 0.7687
+    },
+    "codebert": {
+      "precision": 0.8892,
+      "recall": 0.9027,
+      "f1": 0.8959
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-3: The generated documentation slightly rephrases the function name and enum type without adding deep operational logic details, resembling a minor tautological description. However, the documentation is technically accurate, concise, and aligns with the ground truth. Therefore, starting from a baseline of 4.0 and considering the single minor defect, the score remains at 4."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "mean": 5.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately captures the primary functional intent of returning the string representation of the HTTP status enum, matching the concise nature of the Ground Truth without introducing any distortion or defects."
+      },
+      "combined_score": 4.5
+    },
+    "roundtrip": {
+      "function_name": "http_status_str",
+      "library": "http-parser",
+      "signature": "const char * http_status_str(enum http_status s)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "from enum import IntEnum\n\n# Enums based on the HTTP-parser documentation\nclass http_status(IntEnum):\n    HTTP_STATUS_CONTINUE = 100\n    HTTP_STATUS_SWITCHING_PROTOCOLS = 101\n    HTTP_STATUS_PROCESSING = 102\n    HTTP_STATUS_OK = 200\n    HTTP_STATUS_CREATED = 201\n    HTTP_STATUS_ACCEPTED = 202\n    HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION = 203\n    HTTP_STATUS_NO_CONTENT = 204\n\nclass http_method(IntEnum):\n    HTTP_DELETE = 0\n    HTTP_GET = 1\n    HTTP_HEAD = 2\n    HTTP_POST = 3\n    HTTP_PUT = 4\n    HTTP_CONNECT = 5\n    HTTP_OPTIONS = 6\n    HTTP_TRACE = 7\n\nclass http_parser_type(IntEnum):\n    HTTP_REQUEST = 0\n    HTTP_RESPONSE = 1\n    HTTP_BOTH = 2\n\nclass flags(IntEnum):\n    F_CHUNKED = 1\n    F_CONNECTION_KEEP_ALIVE = 2\n    F_CONNECTION_CLOSE = 4\n    F_CONNECTION_UPGRADE = 8\n    F_TRAILING = 16\n    F_UPGRADE = 32\n    F_SKIPBODY = 64\n    F_CONTENTLENGTH = 128\n\nclass http_errno(IntEnum):\n    HPE_OK = 0\n    HPE_CB_message_begin = 1\n    HPE_CB_url = 2\n    HPE_CB_header_field = 3\n    HPE_CB_header_value = 4\n    HPE_CB_headers_complete = 5\n    HPE_CB_body = 6\n    HPE_CB_message_complete = 7\n\n# Mapping of known HTTP status codes to their string representations\n_HTTP_STATUS_STRINGS = {\n    http_status.HTTP_STATUS_CONTINUE: \"Continue\",\n    http_status.HTTP_STATUS_SWITCHING_PROTOCOLS: \"Switching Protocols\",\n    http_status.HTTP_STATUS_PROCESSING: \"Processing\",\n    http_status.HTTP_STATUS_OK: \"OK\",\n    http_status.HTTP_STATUS_CREATED: \"Created\",\n    http_status.HTTP_STATUS_ACCEPTED: \"Accepted\",\n    http_status.HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION: \"Non-Authoritative Information\",\n    http_status.HTTP_STATUS_NO_CONTENT: \"No Content\",\n}\n\ndef http_status_str(s):\n    \"\"\"\n    Returns the string representation of an HTTP status code enum.\n    \"\"\"\n    # Convert s to integer/enum if passed as such\n    try:\n        val = int(s)\n    except (TypeError, ValueError):\n        val = s\n\n    if val in _HTTP_STATUS_STRINGS:\n        return _HTTP_STATUS_STRINGS[val]\n    \n    # Fallback for any other valid status code representation or return None / empty string as appropriate\n    return None",
+      "reference_code": "from enum import IntEnum\n\nclass http_status(IntEnum):\n    HTTP_STATUS_CONTINUE = 100\n    HTTP_STATUS_SWITCHING_PROTOCOLS = 101\n    HTTP_STATUS_PROCESSING = 102\n    HTTP_STATUS_EARLY_HINTS = 103\n    HTTP_STATUS_OK = 200\n    HTTP_STATUS_CREATED = 201\n    HTTP_STATUS_ACCEPTED = 202\n    HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION = 203\n    HTTP_STATUS_NO_CONTENT = 204\n    HTTP_STATUS_RESET_CONTENT = 205\n    HTTP_STATUS_PARTIAL_CONTENT = 206\n    HTTP_STATUS_MULTI_STATUS = 207\n    HTTP_STATUS_ALREADY_REPORTED = 208\n    HTTP_STATUS_IM_USED = 226\n    HTTP_STATUS_MULTIPLE_CHOICES = 300\n    HTTP_STATUS_MOVED_PERMANENTLY = 301\n    HTTP_STATUS_FOUND = 302\n    HTTP_STATUS_SEE_OTHER = 303\n    HTTP_STATUS_NOT_MODIFIED = 304\n    HTTP_STATUS_USE_PROXY = 305\n    HTTP_STATUS_SWITCH_PROXY = 306\n    HTTP_STATUS_TEMPORARY_REDIRECT = 307\n    HTTP_STATUS_PERMANENT_REDIRECT = 308\n    HTTP_STATUS_BAD_REQUEST = 400\n    HTTP_STATUS_UNAUTHORIZED = 401\n    HTTP_STATUS_PAYMENT_REQUIRED = 402\n    HTTP_STATUS_FORBIDDEN = 403\n    HTTP_STATUS_NOT_FOUND = 404\n    HTTP_STATUS_METHOD_NOT_ALLOWED = 405\n    HTTP_STATUS_NOT_ACCEPTABLE = 406\n    HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED = 407\n    HTTP_STATUS_REQUEST_TIMEOUT = 408\n    HTTP_STATUS_CONFLICT = 409\n    HTTP_STATUS_GONE = 410\n    HTTP_STATUS_LENGTH_REQUIRED = 411\n    HTTP_STATUS_PRECONDITION_FAILED = 412\n    HTTP_STATUS_PAYLOAD_TOO_LARGE = 413\n    HTTP_STATUS_URI_TOO_LONG = 414\n    HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE = 415\n    HTTP_STATUS_RANGE_NOT_SATISFIABLE = 416\n    HTTP_STATUS_EXPECTATION_FAILED = 417\n    HTTP_STATUS_MISDIRECTED_REQUEST = 421\n    HTTP_STATUS_UNPROCESSABLE_ENTITY = 422\n    HTTP_STATUS_LOCKED = 423\n    HTTP_STATUS_FAILED_DEPENDENCY = 424\n    HTTP_STATUS_TOO_EARLY = 425\n    HTTP_STATUS_UPGRADE_REQUIRED = 426\n    HTTP_STATUS_PRECONDITION_REQUIRED = 428\n    HTTP_STATUS_TOO_MANY_REQUESTS = 429\n    HTTP_STATUS_REQUEST_HEADER_FIELDS_TOO_LARGE = 431\n    HTTP_STATUS_UNAVAILABLE_FOR_LEGAL_REASONS = 451\n    HTTP_STATUS_INTERNAL_SERVER_ERROR = 500\n    HTTP_STATUS_NOT_IMPLEMENTED = 501\n    HTTP_STATUS_BAD_GATEWAY = 502\n    HTTP_STATUS_SERVICE_UNAVAILABLE = 503\n    HTTP_STATUS_GATEWAY_TIMEOUT = 504\n    HTTP_STATUS_HTTP_VERSION_NOT_SUPPORTED = 505\n    HTTP_STATUS_VARIANT_ALSO_NEGOTIATES = 506\n    HTTP_STATUS_INSUFFICIENT_STORAGE = 507\n    HTTP_STATUS_LOOP_DETECTED = 508\n    HTTP_STATUS_NOT_EXTENDED = 510\n    HTTP_STATUS_NETWORK_AUTHENTICATION_REQUIRED = 511\n\n_HTTP_STATUS_STRINGS = {\n    http_status.HTTP_STATUS_CONTINUE: \"Continue\",\n    http_status.HTTP_STATUS_SWITCHING_PROTOCOLS: \"Switching Protocols\",\n    http_status.HTTP_STATUS_PROCESSING: \"Processing\",\n    http_status.HTTP_STATUS_EARLY_HINTS: \"Early Hints\",\n    http_status.HTTP_STATUS_OK: \"OK\",\n    http_status.HTTP_STATUS_CREATED: \"Created\",\n    http_status.HTTP_STATUS_ACCEPTED: \"Accepted\",\n    http_status.HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION: \"Non-Authoritative Information\",\n    http_status.HTTP_STATUS_NO_CONTENT: \"No Content\",\n    http_status.HTTP_STATUS_RESET_CONTENT: \"Reset Content\",\n    http_status.HTTP_STATUS_PARTIAL_CONTENT: \"Partial Content\",\n    http_status.HTTP_STATUS_MULTI_STATUS: \"Multi-Status\",\n    http_status.HTTP_STATUS_ALREADY_REPORTED: \"Already Reported\",\n    http_status.HTTP_STATUS_IM_USED: \"IM Used\",\n    http_status.HTTP_STATUS_MULTIPLE_CHOICES: \"Multiple Choices\",\n    http_status.HTTP_STATUS_MOVED_PERMANENTLY: \"Moved Permanently\",\n    http_status.HTTP_STATUS_FOUND: \"Found\",\n    http_status.HTTP_STATUS_SEE_OTHER: \"See Other\",\n    http_status.HTTP_STATUS_NOT_MODIFIED: \"Not Modified\",\n    http_status.HTTP_STATUS_USE_PROXY: \"Use Proxy\",\n    http_status.HTTP_STATUS_SWITCH_PROXY: \"Switch Proxy\",\n    http_status.HTTP_STATUS_TEMPORARY_REDIRECT: \"Temporary Redirect\",\n    http_status.HTTP_STATUS_PERMANENT_REDIRECT: \"Permanent Redirect\",\n    http_status.HTTP_STATUS_BAD_REQUEST: \"Bad Request\",\n    http_status.HTTP_STATUS_UNAUTHORIZED: \"Unauthorized\",\n    http_status.HTTP_STATUS_PAYMENT_REQUIRED: \"Payment Required\",\n    http_status.HTTP_STATUS_FORBIDDEN: \"Forbidden\",\n    http_status.HTTP_STATUS_NOT_FOUND: \"Not Found\",\n    http_status.HTTP_STATUS_METHOD_NOT_ALLOWED: \"Method Not Allowed\",\n    http_status.HTTP_STATUS_NOT_ACCEPTABLE: \"Not Acceptable\",\n    http_status.HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED: \"Proxy Authentication Required\",\n    http_status.HTTP_STATUS_REQUEST_TIMEOUT: \"Request Timeout\",\n    http_status.HTTP_STATUS_CONFLICT: \"Conflict\",\n    http_status.HTTP_STATUS_GONE: \"Gone\",\n    http_status.HTTP_STATUS_LENGTH_REQUIRED: \"Length Required\",\n    http_status.HTTP_STATUS_PRECONDITION_FAILED: \"Precondition Failed\",\n    http_status.HTTP_STATUS_PAYLOAD_TOO_LARGE: \"Payload Too Large\",\n    http_status.HTTP_STATUS_URI_TOO_LONG: \"URI Too Long\",\n    http_status.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE: \"Unsupported Media Type\",\n    http_status.HTTP_STATUS_RANGE_NOT_SATISFIABLE: \"Range Not Satisfiable\",\n    http_status.HTTP_STATUS_EXPECTATION_FAILED: \"Expectation Failed\",\n    http_status.HTTP_STATUS_MISDIRECTED_REQUEST: \"Misdirected Request\",\n    http_status.HTTP_STATUS_UNPROCESSABLE_ENTITY: \"Unprocessable Entity\",\n    http_status.HTTP_STATUS_LOCKED: \"Locked\",\n    http_status.HTTP_STATUS_FAILED_DEPENDENCY: \"Failed Dependency\",\n    http_status.HTTP_STATUS_TOO_EARLY: \"Too Early\",\n    http_status.HTTP_STATUS_UPGRADE_REQUIRED: \"Upgrade Required\",\n    http_status.HTTP_STATUS_PRECONDITION_REQUIRED: \"Precondition Required\",\n    http_status.HTTP_STATUS_TOO_MANY_REQUESTS: \"Too Many Requests\",\n    http_status.HTTP_STATUS_REQUEST_HEADER_FIELDS_TOO_LARGE: \"Request Header Fields Too Large\",\n    http_status.HTTP_STATUS_UNAVAILABLE_FOR_LEGAL_REASONS: \"Unavailable For Legal Reasons\",\n    http_status.HTTP_STATUS_INTERNAL_SERVER_ERROR: \"Internal Server Error\",\n    http_status.HTTP_STATUS_NOT_IMPLEMENTED: \"Not Implemented\",\n    http_status.HTTP_STATUS_BAD_GATEWAY: \"Bad Gateway\",\n    http_status.HTTP_STATUS_SERVICE_UNAVAILABLE: \"Service Unavailable\",\n    http_status.HTTP_STATUS_GATEWAY_TIMEOUT: \"Gateway Timeout\",\n    http_status.HTTP_STATUS_HTTP_VERSION_NOT_SUPPORTED: \"HTTP Version Not Supported\",\n    http_status.HTTP_STATUS_VARIANT_ALSO_NEGOTIATES: \"Variant Also Negotiates\",\n    http_status.HTTP_STATUS_INSUFFICIENT_STORAGE: \"Insufficient Storage\",\n    http_status.HTTP_STATUS_LOOP_DETECTED: \"Loop Detected\",\n    http_status.HTTP_STATUS_NOT_EXTENDED: \"Not Extended\",\n    http_status.HTTP_STATUS_NETWORK_AUTHENTICATION_REQUIRED: \"Network Authentication Required\",\n}\n\ndef http_status_str(s: int) -> str:\n    \"\"\"\n    Translates an http_status enum value or integer into its corresponding string.\n    Matches the C implementation behavior using HTTP_STATUS_MAP macro expansion.\n    \"\"\"\n    return _HTTP_STATUS_STRINGS.get(s, \"<unknown>\")",
+      "test_suite": "from hypothesis import given, strategies as st, settings\n\ndef test_semantic_status_continue():\n    # HTTP_STATUS_CONTINUE = 100\n    res = http_status_str(100)\n    assert res is not None\n    assert isinstance(res, str)\n    assert \"Continue\" in res\n\n\ndef test_semantic_status_ok():\n    # HTTP_STATUS_OK = 200\n    res = http_status_str(200)\n    assert res is not None\n    assert isinstance(res, str)\n    assert \"OK\" in res\n\n\ndef test_semantic_status_not_found():\n    # HTTP_STATUS_NOT_FOUND = 404\n    res = http_status_str(404)\n    assert res is not None\n    assert isinstance(res, str)\n    assert \"Not Found\" in res\n\n\ndef test_semantic_status_internal_server_error():\n    # HTTP_STATUS_INTERNAL_SERVER_ERROR = 500\n    res = http_status_str(500)\n    assert res is not None\n    assert isinstance(res, str)\n    assert \"Internal Server Error\" in res\n\n\ndef test_semantic_invalid_status_code():\n    # Test boundary or invalid status codes (e.g. 999) which should typically return NULL/None or a default string.\n    res = http_status_str(999)\n    # The specification says it returns const char *. For unknown statuses, implementations typically return None/NULL or a fallback.\n    # We verify it handles it gracefully without throwing an exception.\n    assert res is None or isinstance(res, str)\n\n\n@settings(max_examples=50, deadline=None)\n@given(st.integers(min_value=-1000, max_value=2000))\ndef test_auto_property_status_codes(code):\n    # Property-based testing over a wide range of integers representing potential status codes\n    res = http_status_str(code)\n    # The function must either return a valid string representation or None/NULL for invalid codes.\n    assert res is None or isinstance(res, str)",
+      "execution": {
+        "total_tests": 6,
+        "passed": 4,
+        "failed": 2,
+        "errors": 0,
+        "pass_rate": 66.7,
+        "semantic_tests": {
+          "passed": 3,
+          "failed": 2,
+          "total": 5
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 6 items\n\n::test_semantic_status_continue PASSED                                   [ 16%]\n::test_semantic_status_ok PASSED                                         [ 33%]\n::test_semantic_status_not_found FAILED                                  [ 50%]\n::test_semantic_status_internal_server_error FAILED                      [ 66%]\n::test_semantic_invalid_status_code PASSED                               [ 83%]\n::test_auto_property_status_codes PASSED                                 [100%]\n\n================================== FAILURES ===================================\n_______________________ test_semantic_status_not_found ________________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmp500fsypb.py:304: in test_semantic_status_not_found\n    assert res is not None\nE   assert None is not None\n_________________ test_semantic_status_internal_server_error __________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmp500fsypb.py:312: in test_semantic_status_internal_server_error\n    assert res is not None\nE   assert None is not None\n=========================== short test summary info ===========================\nFAILED ::test_semantic_status_not_found - assert None is not None\nFAILED ::test_semantic_status_internal_server_error - assert None is not None\n========================= 2 failed, 4 passed in 2.93s =========================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 6,
+          "reference_total": 6,
+          "differential_agreement_rate": 66.7,
+          "both_passed_count": 4
+        }
+      }
+    }
+  }
+}

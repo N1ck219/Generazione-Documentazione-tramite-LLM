@@ -3899,5 +3899,337 @@
         }
       }
     }
+  },
+  "XMLElement::BoolAttribute": {
+    "doc_hash": "6f0ae13a22af",
+    "db_id": "tinyxml-2_tinyxml2_cpp_XMLElement_BoolAttribute",
+    "codewiki_doc": "Retrieve the value of an attribute by name, with various type conversions.",
+    "retrieval": {
+      "rank": 44,
+      "reciprocal_rank": 0.0227,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "XMLElement::IntAttribute",
+      "top_similarity": 0.3879
+    },
+    "codebert": {
+      "precision": 0.8083,
+      "recall": 0.7078,
+      "f1": 0.7547
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          3.0
+        ],
+        "mean": 3.2,
+        "std": 0.4,
+        "sample_reasoning": "Default fallback."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "mean": 2.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1 and ALIGN-4: The generated documentation is extremely superficial, merely stating that it retrieves an attribute with 'various type conversions' without mentioning the specific function behavior for booleans or the default value fallback behavior when attributes are missing or erroneous. It completely fails to capture the operational rationale provided in the ground truth."
+      },
+      "combined_score": 2.6
+    },
+    "roundtrip": {
+      "function_name": "XMLElement::BoolAttribute",
+      "library": "TinyXML-2",
+      "signature": "bool XMLElement::BoolAttribute(const char * name, bool defaultValue)",
+      "function_type": "Stateful / Object-Graph",
+      "synthesized_code": "",
+      "reference_code": "class XMLError:\n    XML_SUCCESS = 0\n    XML_NO_ATTRIBUTE = 1\n    XML_WRONG_ATTRIBUTE_TYPE = 2\n    XML_ERROR_FILE_NOT_FOUND = 3\n    XML_ERROR_FILE_COULD_NOT_BE_OPENED = 4\n    XML_ERROR_FILE_READ_ERROR = 5\n    XML_ERROR_PARSING_ELEMENT = 6\n    XML_ERROR_PARSING_ATTRIBUTE = 7\n\n\nclass XMLElement:\n    def __init__(self, *args, **kwargs):\n        # Initialize attributes storage for the mock element\n        self._attributes = {}\n\n    def QueryBoolAttribute(self, name: str, out_value: list) -> int:\n        \"\"\"\n        Mock implementation of TinyXML-2 QueryBoolAttribute.\n        It looks up the attribute by name and attempts to parse it as a boolean.\n        \"\"\"\n        if name not in self._attributes:\n            return XMLError.XML_NO_ATTRIBUTE\n\n        val = self._attributes[name]\n        \n        if isinstance(val, bool):\n            out_value[0] = val\n            return XMLError.XML_SUCCESS\n        elif isinstance(val, str):\n            lower_val = val.strip().lower()\n            if lower_val in ('true', 'yes', '1', 'on'):\n                out_value[0] = True\n                return XMLError.XML_SUCCESS\n            elif lower_val in ('false', 'no', '0', 'off'):\n                out_value[0] = False\n                return XMLError.XML_SUCCESS\n            else:\n                return XMLError.XML_WRONG_ATTRIBUTE_TYPE\n        elif isinstance(val, (int, float)):\n            out_value[0] = bool(val)\n            return XMLError.XML_SUCCESS\n        else:\n            return XMLError.XML_WRONG_ATTRIBUTE_TYPE\n\n    def BoolAttribute(self, name: str, defaultValue: bool) -> bool:\n        \"\"\"\n        Translates the C++ XMLElement::BoolAttribute method:\n        bool XMLElement::BoolAttribute(const char * name, bool defaultValue) const\n        {\n            bool b = defaultValue;\n            QueryBoolAttribute(name, &b);\n            return b;\n        }\n        \"\"\"\n        b = defaultValue\n        # Use a list [b] to simulate C++ pointer/reference passing behavior (&b)\n        out_list = [b]\n        self.QueryBoolAttribute(name, out_list)\n        return out_list[0]",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_valid_boolean_true_lowercase():\n    xml_doc = XMLDocument()\n    element = xml_doc.NewElement(\"test\")\n    element.SetAttribute(\"flag\", \"true\")\n    \n    result = element.BoolAttribute(\"flag\", False)\n    assert result is True\n\n\ndef test_semantic_valid_boolean_false_lowercase():\n    xml_doc = XMLDocument()\n    element = xml_doc.NewElement(\"test\")\n    element.SetAttribute(\"flag\", \"false\")\n    \n    result = element.BoolAttribute(\"flag\", True)\n    assert result is False\n\n\ndef test_semantic_valid_boolean_numeric_one():\n    xml_doc = XMLDocument()\n    element = xml_doc.NewElement(\"test\")\n    element.SetAttribute(\"flag\", \"1\")\n    \n    result = element.BoolAttribute(\"flag\", False)\n    assert result is True\n\n\ndef test_semantic_valid_boolean_numeric_zero():\n    xml_doc = XMLDocument()\n    element = xml_doc.NewElement(\"test\")\n    element.SetAttribute(\"flag\", \"0\")\n    \n    result = element.BoolAttribute(\"flag\", True)\n    assert result is False\n\n\ndef test_semantic_missing_attribute_returns_default():\n    xml_doc = XMLDocument()\n    element = xml_doc.NewElement(\"test\")\n    \n    # If attribute is missing, it should return the provided default value\n    result_true = element.BoolAttribute(\"nonexistent\", True)\n    assert result_true is True\n\n    result_false = element.BoolAttribute(\"nonexistent\", False)\n    assert result_false is False\n\n\ndef test_semantic_invalid_attribute_value_returns_default():\n    xml_doc = XMLDocument()\n    element = xml_doc.NewElement(\"test\")\n    element.SetAttribute(\"flag\", \"not-a-bool\")\n    \n    # TinyXML-2 typically returns the default value if parsing fails or type mismatch occurs\n    result = element.BoolAttribute(\"flag\", True)\n    assert result is True\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    attr_name=st.text(min_size=1, max_size=20, alphabet=st.characters(blacklist_categories=(\"Cs\",))),\n    default_val=st.booleans()\n)\ndef test_auto_property_missing_attribute(attr_name, default_val):\n    xml_doc = XMLDocument()\n    element = xml_doc.NewElement(\"element\")\n    \n    result = element.BoolAttribute(attr_name, default_val)\n    assert result == default_val\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    default_val=st.booleans()\n)\ndef test_auto_property_valid_boolean_strings(default_val):\n    xml_doc = XMLDocument()\n    element = xml_doc.NewElement(\"element\")\n    \n    element.SetAttribute(\"val\", \"true\")\n    assert element.BoolAttribute(\"val\", default_val) is True\n    \n    element.SetAttribute(\"val\", \"false\")\n    assert element.BoolAttribute(\"val\", default_val) is False",
+      "execution": {
+        "total_tests": 8,
+        "passed": 0,
+        "failed": 8,
+        "errors": 0,
+        "pass_rate": 0.0,
+        "semantic_tests": {
+          "passed": 0,
+          "failed": 6,
+          "total": 6
+        },
+        "auto_property_tests": {
+          "passed": 0,
+          "failed": 2,
+          "total": 2
+        },
+        "is_success": false,
+        "test_output": "py:377: in test_auto_property_valid_boolean_strings\n    assert element.BoolAttribute(\"val\", default_val) is True\nE   AssertionError: assert <tmpshaarriq.TolerantBaseMock object at 0x000002517D7BCDA0> is True\nE    +  where <tmpshaarriq.TolerantBaseMock object at 0x000002517D7BCDA0> = <function TolerantBaseMock.__getattr__.<locals>._dynamic_fallback at 0x000002517D6FE200>('val', False)\nE    +    where <function TolerantBaseMock.__getattr__.<locals>._dynamic_fallback at 0x000002517D6FE200> = <tmpshaarriq.XMLElement object at 0x000002517D7BCD70>.BoolAttribute\nE   Failing test case: test_auto_property_valid_boolean_strings(\nE       default_val=False,  # or any other generated value\nE   )\n=========================== short test summary info ===========================\nFAILED ::test_semantic_valid_boolean_true_lowercase - assert <tmpshaarriq.Tol...\nFAILED ::test_semantic_valid_boolean_false_lowercase - assert <tmpshaarriq.To...\nFAILED ::test_semantic_valid_boolean_numeric_one - assert <tmpshaarriq.Tolera...\nFAILED ::test_semantic_valid_boolean_numeric_zero - assert <tmpshaarriq.Toler...\nFAILED ::test_semantic_missing_attribute_returns_default - assert <tmpshaarri...\nFAILED ::test_semantic_invalid_attribute_value_returns_default - assert <tmps...\nFAILED ::test_auto_property_missing_attribute - assert <tmpshaarriq.TolerantB...\nFAILED ::test_auto_property_valid_boolean_strings - AssertionError: assert <t...\n============================== 8 failed in 5.55s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 25.0,
+          "reference_passed": 2,
+          "reference_total": 8,
+          "differential_agreement_rate": 0.0,
+          "both_passed_count": 0
+        }
+      }
+    }
+  },
+  "XMLElement::DoubleAttribute": {
+    "doc_hash": "6f0ae13a22af",
+    "db_id": "tinyxml-2_tinyxml2_cpp_XMLElement_DoubleAttribute",
+    "codewiki_doc": "Retrieve the value of an attribute by name, with various type conversions.",
+    "retrieval": {
+      "rank": 16,
+      "reciprocal_rank": 0.0625,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "XMLElement::IntAttribute",
+      "top_similarity": 0.3879
+    },
+    "codebert": {
+      "precision": 0.8081,
+      "recall": 0.7089,
+      "f1": 0.7553
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-3: The generated documentation is extremely vague and generic, stating it retrieves an attribute value 'with various type conversions' which is tautological and inaccurate since this specific method strictly handles double conversion and delegates to QueryDoubleAttribute. Score is adjusted down to reflect this deficiency."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "mean": 2.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1 and ALIGN-4: The generated documentation is extremely superficial, merely stating that it retrieves an attribute with type conversions, while completely missing the critical details that it returns a double, provides a default value upon absence or error, and lacks explicit error checking (unlike QueryDoubleAttribute)."
+      },
+      "combined_score": 2.5
+    },
+    "roundtrip": {
+      "function_name": "XMLElement::DoubleAttribute",
+      "library": "TinyXML-2",
+      "signature": "double XMLElement::DoubleAttribute(const char * name, double defaultValue)",
+      "function_type": "Stateful / Object-Graph",
+      "synthesized_code": "class XMLError:\n    XML_SUCCESS = 0\n    XML_NO_ATTRIBUTE = 1\n    XML_WRONG_ATTRIBUTE_TYPE = 2\n    XML_ERROR_FILE_NOT_FOUND = 3\n    XML_ERROR_FILE_COULD_NOT_BE_OPENED = 4\n    XML_ERROR_FILE_READ_ERROR = 5\n    XML_ERROR_PARSING_ELEMENT = 6\n    XML_ERROR_PARSING_ATTRIBUTE = 7\n\nclass XMLUtil:\n    @staticmethod\n    def ToDouble(str_val: str):\n        if str_val is None:\n            return False, 0.0\n        try:\n            val = float(str_val)\n            return True, val\n        except (ValueError, TypeError):\n            return False, 0.0\n\nclass XMLElement:\n    def __init__(self, *args, **kwargs):\n        self._document = kwargs.get('doc', None)\n        self._parent = kwargs.get('parent', None)\n        self._attributes = {}\n        \n        # If positional arguments or other initializations are passed\n        if args and isinstance(args[0], dict):\n            self._attributes = args[0]\n            \n        for k, v in kwargs.items():\n            if k not in ('doc', 'parent'):\n                self._attributes[k] = str(v)\n\n    def SetAttribute(self, name: str, value):\n        self._attributes[name] = str(value)\n\n    def Attribute(self, name: str):\n        return self._attributes.get(name, None)\n\n    def DoubleAttribute(self, name: str, defaultValue: float) -> float:\n        \"\"\"\n        Retrieve the value of an attribute by name, with various type conversions.\n        \"\"\"\n        val_str = self.Attribute(name)\n        if val_str is None:\n            return defaultValue\n        \n        success, parsed_val = XMLUtil.ToDouble(val_str)\n        if not success:\n            return defaultValue\n            \n        return parsed_val",
+      "reference_code": "class XMLError:\n    XML_SUCCESS = 0\n    XML_NO_ATTRIBUTE = 1\n    XML_WRONG_ATTRIBUTE_TYPE = 2\n    XML_ERROR_FILE_NOT_FOUND = 3\n    XML_ERROR_FILE_COULD_NOT_BE_OPENED = 4\n    XML_ERROR_FILE_READ_ERROR = 5\n    XML_ERROR_PARSING_ELEMENT = 6\n    XML_ERROR_PARSING_ATTRIBUTE = 7\n\n\nclass XMLElement:\n    def __init__(self, attributes=None):\n        \"\"\"\n        Constructor for XMLElement mock.\n        attributes: dict mapping attribute names to string values.\n        \"\"\"\n        self._attributes = attributes if attributes is not None else {}\n\n    def QueryDoubleAttribute(self, name: str, out_val: list) -> int:\n        \"\"\"\n        Mock implementation of QueryDoubleAttribute, behaving consistently \n        with TinyXML-2's behavior.\n        \"\"\"\n        if name not in self._attributes:\n            return XMLError.XML_NO_ATTRIBUTE\n        \n        try:\n            val = float(self._attributes[name])\n            out_val[0] = val\n            return XMLError.XML_SUCCESS\n        except (ValueError, TypeError):\n            return XMLError.XML_WRONG_ATTRIBUTE_TYPE\n\n    def DoubleAttribute(self, name: str, defaultValue: float) -> float:\n        \"\"\"\n        Translates the C++ XMLElement::DoubleAttribute method:\n        double d = defaultValue;\n        QueryDoubleAttribute(name, &d);\n        return d;\n        \"\"\"\n        d = defaultValue\n        # Use a list of 1 element to simulate pass-by-reference pointer behavior in Python\n        out_list = [d]\n        self.QueryDoubleAttribute(name, out_list)\n        return out_list[0]",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\ndef test_semantic_double_attribute_success():\n    xml_doc = XMLDocument()\n    root = xml_doc.NewElement(\"root\")\n    root.SetAttribute(\"test_attr\", 123.456)\n    \n    val = root.DoubleAttribute(\"test_attr\", 0.0)\n    assert val == 123.456\n\ndef test_semantic_double_attribute_default_on_missing():\n    xml_doc = XMLDocument()\n    root = xml_doc.NewElement(\"root\")\n    \n    val = root.DoubleAttribute(\"non_existent\", 99.99)\n    assert val == 99.99\n\ndef test_semantic_double_attribute_invalid_string():\n    xml_doc = XMLDocument()\n    root = xml_doc.NewElement(\"root\")\n    root.SetAttribute(\"test_attr\", \"not_a_double\")\n    \n    val = root.DoubleAttribute(\"test_attr\", 42.0)\n    assert val == 42.0\n\ndef test_semantic_double_attribute_negative_and_zero():\n    xml_doc = XMLDocument()\n    root = xml_doc.NewElement(\"root\")\n    root.SetAttribute(\"neg_attr\", -0.001)\n    root.SetAttribute(\"zero_attr\", 0.0)\n    \n    assert root.DoubleAttribute(\"neg_attr\", 1.0) == -0.001\n    assert root.DoubleAttribute(\"zero_attr\", 1.0) == 0.0\n\n@settings(max_examples=50, deadline=None)\n@given(\n    attr_name=st.text(min_size=1, max_size=10, alphabet=st.characters(whitelist_categories=('Lu', 'Ll'))),\n    attr_val=st.floats(allow_nan=False, allow_infinity=False),\n    default_val=st.floats(allow_nan=False, allow_infinity=False)\n)\ndef test_auto_property_double_attribute_retrieval(attr_name, attr_val, default_val):\n    xml_doc = XMLDocument()\n    root = xml_doc.NewElement(\"root\")\n    root.SetAttribute(attr_name, attr_val)\n    \n    result = root.DoubleAttribute(attr_name, default_val)\n    assert isinstance(result, float)\n    assert result == attr_val\n\n@settings(max_examples=50, deadline=None)\n@given(\n    missing_name=st.text(min_size=1, max_size=10, alphabet=st.characters(whitelist_categories=('Lu', 'Ll'))),\n    default_val=st.floats(allow_nan=False, allow_infinity=False)\n)\ndef test_auto_property_double_attribute_fallback(missing_name, default_val):\n    xml_doc = XMLDocument()\n    root = xml_doc.NewElement(\"root\")\n    \n    result = root.DoubleAttribute(missing_name, default_val)\n    assert result == default_val",
+      "execution": {
+        "total_tests": 6,
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 2,
+          "failed": 0,
+          "total": 2
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 6 items\n\n::test_semantic_double_attribute_success PASSED                          [ 16%]\n::test_semantic_double_attribute_default_on_missing PASSED               [ 33%]\n::test_semantic_double_attribute_invalid_string PASSED                   [ 50%]\n::test_semantic_double_attribute_negative_and_zero PASSED                [ 66%]\n::test_auto_property_double_attribute_retrieval PASSED                   [ 83%]\n::test_auto_property_double_attribute_fallback PASSED                    [100%]\n\n============================== 6 passed in 2.16s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 0.0,
+          "reference_passed": 0,
+          "reference_total": 6,
+          "differential_agreement_rate": 0.0,
+          "both_passed_count": 0
+        }
+      }
+    }
+  },
+  "XMLElement::FloatAttribute": {
+    "doc_hash": "6f0ae13a22af",
+    "db_id": "tinyxml-2_tinyxml2_cpp_XMLElement_FloatAttribute",
+    "codewiki_doc": "Retrieve the value of an attribute by name, with various type conversions.",
+    "retrieval": {
+      "rank": 9,
+      "reciprocal_rank": 0.1111,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "XMLElement::IntAttribute",
+      "top_similarity": 0.3879
+    },
+    "codebert": {
+      "precision": 0.8084,
+      "recall": 0.7095,
+      "f1": 0.7557
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0
+        ],
+        "mean": 3.2,
+        "std": 0.4,
+        "sample_reasoning": "DEF-3: The generated documentation is extremely vague and generic, stating only that it retrieves an attribute value 'with various type conversions' without explaining that it specifically returns a float or falls back to a default value upon error or absence. This constitutes a tautological/superficial description that misses the core operational logic of delegation to QueryFloatAttribute and the default value fallback. Score adjusted to 3 due to this omission and vagueness."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "mean": 2.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1 and ALIGN-4: The generated documentation is extremely superficial, merely stating that it retrieves an attribute with type conversions while completely omitting the critical behavior regarding default value return conditions (attribute not present or error) and the lack of explicit error checking (as opposed to QueryFloatAttribute)."
+      },
+      "combined_score": 2.6
+    },
+    "roundtrip": {
+      "function_name": "XMLElement::FloatAttribute",
+      "library": "TinyXML-2",
+      "signature": "float XMLElement::FloatAttribute(const char * name, float defaultValue)",
+      "function_type": "Stateful / Object-Graph",
+      "synthesized_code": "class XML_SUCCESS:\n    pass\n\nclass XMLUtil:\n    @staticmethod\n    def ToFloat(p: str, value: list) -> bool:\n        if p is None:\n            return False\n        try:\n            value[0] = float(p)\n            return True\n        except (ValueError, TypeError):\n            return False\n\nclass XMLElement:\n    def __init__(self, *args, **kwargs):\n        self._document = kwargs.get('doc', None)\n        self._parent = kwargs.get('parent', None)\n        self._value = kwargs.get('value', None)\n        self._parseLineNum = kwargs.get('parseLineNum', 0)\n        self._firstChild = kwargs.get('firstChild', None)\n        self._lastChild = kwargs.get('lastChild', None)\n        self._prev = kwargs.get('prev', None)\n        self._next = kwargs.get('next', None)\n        \n        # Internal attributes store to support attribute retrieval methods\n        self._attributes = {}\n        if 'attributes' in kwargs and isinstance(kwargs['attributes'], dict):\n            self._attributes.update(kwargs['attributes'])\n\n    def Attribute(self, name: str) -> str:\n        \"\"\"Retrieve the string value of an attribute by name, or None if not found.\"\"\"\n        return self._attributes.get(name, None)\n\n    def SetAttribute(self, name: str, value) -> None:\n        \"\"\"Set an attribute by name.\"\"\"\n        self._attributes[name] = str(value)\n\n    def FloatAttribute(self, name: str, defaultValue: float) -> float:\n        \"\"\"Retrieve the value of an attribute by name, with various type conversions.\"\"\"\n        attr_str = self.Attribute(name)\n        if attr_str is None:\n            return defaultValue\n        \n        out_val = [0.0]\n        if XMLUtil.ToFloat(attr_str, out_val):\n            return out_val[0]\n        return defaultValue",
+      "reference_code": "class XMLError:\n    XML_SUCCESS = 0\n    XML_NO_ATTRIBUTE = 1\n    XML_WRONG_ATTRIBUTE_TYPE = 2\n    XML_ERROR_FILE_NOT_FOUND = 3\n    XML_ERROR_FILE_COULD_NOT_BE_OPENED = 4\n    XML_ERROR_FILE_READ_ERROR = 5\n    XML_ERROR_PARSING_ELEMENT = 6\n    XML_ERROR_PARSING_ATTRIBUTE = 7\n\nclass XMLElement:\n    def __init__(self, *args, **kwargs):\n        # Minimal initialization for mock support\n        self._attributes = {}\n\n    def QueryFloatAttribute(self, name: str, out_value: list) -> int:\n        \"\"\"\n        Mock implementation of QueryFloatAttribute to mimic TinyXML-2 behavior.\n        out_value is passed as a list of 1 element (acting as a pointer reference).\n        \"\"\"\n        if name not in self._attributes:\n            return XMLError.XML_NO_ATTRIBUTE\n        \n        try:\n            out_value[0] = float(self._attributes[name])\n            return XMLError.XML_SUCCESS\n        except (ValueError, TypeError):\n            return XMLError.XML_WRONG_ATTRIBUTE_TYPE\n\n    def FloatAttribute(self, name: str, defaultValue: float = 0.0) -> float:\n        \"\"\"\n        Transpiled C++ method:\n        float XMLElement::FloatAttribute(const char* name, float defaultValue) const\n        {\n            float f = defaultValue;\n            QueryFloatAttribute(name, &f);\n            return f;\n        }\n        \"\"\"\n        f = defaultValue\n        # Using a list reference [f] to emulate passing a pointer (&f) in C++\n        ref = [f]\n        self.QueryFloatAttribute(name, ref)\n        return ref[0]",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_float_attribute_valid_existing():\n    # Happy path: retrieve an existing attribute successfully parsed as a float\n    doc = XMLDocument()\n    element = doc.NewElement(\"test\")\n    element.SetAttribute(\"floatAttr\", \"3.14159\")\n    \n    val = element.FloatAttribute(\"floatAttr\", 0.0)\n    assert isinstance(val, float)\n    assert abs(val - 3.14159) < 1e-5\n\n\ndef test_semantic_float_attribute_missing_returns_default():\n    # Edge case: attribute does not exist, should return the default value provided\n    doc = XMLDocument()\n    element = doc.NewElement(\"test\")\n    \n    default_val = 42.5\n    val = element.FloatAttribute(\"nonExistent\", default_val)\n    assert val == default_val\n\n\ndef test_semantic_float_attribute_negative_and_zero():\n    # Edge case: zero and negative float values stored as attributes\n    doc = XMLDocument()\n    element = doc.NewElement(\"test\")\n    element.SetAttribute(\"zeroAttr\", \"0.0\")\n    element.SetAttribute(\"negAttr\", \"-123.456\")\n    \n    assert element.FloatAttribute(\"zeroAttr\", 1.0) == 0.0\n    assert abs(element.FloatAttribute(\"negAttr\", 0.0) - (-123.456)) < 1e-5\n\n\ndef test_semantic_float_attribute_integer_string():\n    # Semantic check: standard integer string representation converted to float\n    doc = XMLDocument()\n    element = doc.NewElement(\"test\")\n    element.SetAttribute(\"intAttr\", \"100\")\n    \n    val = element.FloatAttribute(\"intAttr\", 0.0)\n    assert val == 100.0\n\n\ndef test_semantic_float_attribute_invalid_string_conversion():\n    # Edge case: non-numeric string attribute should handle failure gracefully (returning default or 0.0)\n    doc = XMLDocument()\n    element = doc.NewElement(\"test\")\n    element.SetAttribute(\"badAttr\", \"not-a-float\")\n    \n    val = element.FloatAttribute(\"badAttr\", 99.9)\n    # TinyXML-2 behavior for failed conversion generally yields default value or 0\n    assert isinstance(val, float)\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    attr_name=st.text(min_size=1, max_size=10),\n    float_val=st.floats(allow_nan=False, allow_infinity=False, min_value=-10000.0, max_value=10000.0),\n    default_val=st.floats(allow_nan=False, allow_infinity=False)\n)\ndef test_auto_property_float_attribute_roundtrip(attr_name, float_val, default_val):\n    # Property test: Setting a float attribute and retrieving it should match within precision\n    doc = XMLDocument()\n    element = doc.NewElement(\"elem\")\n    element.SetAttribute(attr_name, str(float_val))\n    \n    result = element.FloatAttribute(attr_name, default_val)\n    # Allow reasonable precision tolerance due to string conversion round-trip\n    assert abs(result - float_val) < 1e-2 or result == float_val\n\n\n@settings(max_examples=30, deadline=None)\n@given(\n    missing_name=st.text(min_size=1, max_size=10),\n    default_val=st.floats(allow_nan=False, allow_infinity=False)\n)\ndef test_auto_property_float_attribute_missing_default(missing_name, default_val):\n    # Property test: Querying any missing attribute must always return the provided default value\n    doc = XMLDocument()\n    element = doc.NewElement(\"elem\")\n    \n    result = element.FloatAttribute(missing_name, default_val)\n    assert result == default_val",
+      "execution": {
+        "total_tests": 7,
+        "passed": 7,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 5,
+          "failed": 0,
+          "total": 5
+        },
+        "auto_property_tests": {
+          "passed": 2,
+          "failed": 0,
+          "total": 2
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 7 items\n\n::test_semantic_float_attribute_valid_existing PASSED                    [ 14%]\n::test_semantic_float_attribute_missing_returns_default PASSED           [ 28%]\n::test_semantic_float_attribute_negative_and_zero PASSED                 [ 42%]\n::test_semantic_float_attribute_integer_string PASSED                    [ 57%]\n::test_semantic_float_attribute_invalid_string_conversion PASSED         [ 71%]\n::test_auto_property_float_attribute_roundtrip PASSED                    [ 85%]\n::test_auto_property_float_attribute_missing_default PASSED              [100%]\n\n============================== 7 passed in 2.27s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 28.6,
+          "reference_passed": 2,
+          "reference_total": 7,
+          "differential_agreement_rate": 28.6,
+          "both_passed_count": 2
+        }
+      }
+    }
+  },
+  "XMLElement::UnsignedAttribute": {
+    "doc_hash": "6f0ae13a22af",
+    "db_id": "tinyxml-2_tinyxml2_cpp_XMLElement_UnsignedAttribute",
+    "codewiki_doc": "Retrieve the value of an attribute by name, with various type conversions.",
+    "retrieval": {
+      "rank": 6,
+      "reciprocal_rank": 0.1667,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "XMLElement::IntAttribute",
+      "top_similarity": 0.3879
+    },
+    "codebert": {
+      "precision": 0.8083,
+      "recall": 0.7083,
+      "f1": 0.755
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          3.0
+        ],
+        "mean": 3.2,
+        "std": 0.4,
+        "sample_reasoning": "DEF-3: The generated documentation is extremely brief and slightly tautological ('Retrieve the value of an attribute by name, with various type conversions') while failing to specify the unsigned return type or default value behavior described in the ground truth. However, it contains no severe technical inaccuracies or hallucinations, making it adequate but lacking detail."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "mean": 2.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1 and ALIGN-4: The generated documentation is extremely superficial, merely stating that it retrieves an attribute by name with type conversions, while completely missing the unsigned integer return type, the fallback behavior for missing attributes or errors, and the omission of error checking compared to the query variant."
+      },
+      "combined_score": 2.6
+    },
+    "roundtrip": {
+      "function_name": "XMLElement::UnsignedAttribute",
+      "library": "TinyXML-2",
+      "signature": "unsigned int XMLElement::UnsignedAttribute(const char * name, unsigned int defaultValue)",
+      "function_type": "Stateful / Object-Graph",
+      "synthesized_code": "class XMLError:\n    XML_SUCCESS = 0\n    XML_NO_ATTRIBUTE = 1\n    XML_WRONG_ATTRIBUTE_TYPE = 2\n    XML_ERROR_FILE_NOT_FOUND = 3\n    XML_ERROR_FILE_COULD_NOT_BE_OPENED = 4\n    XML_ERROR_FILE_READ_ERROR = 5\n    XML_ERROR_PARSING_ELEMENT = 6\n    XML_ERROR_PARSING_ATTRIBUTE = 7\n\nclass XMLUtil:\n    @staticmethod\n    def ToUnsigned(str_val):\n        \"\"\"Helper to convert string to unsigned int, mimicking TinyXML-2 utility behavior.\"\"\"\n        if str_val is None:\n            return False, 0\n        try:\n            # Handle potential negative or positive integers\n            val = int(str_val)\n            if val < 0:\n                return False, 0\n            # Fits standard 32-bit unsigned int bounds\n            if val > 0xFFFFFFFF:\n                return False, 0\n            return True, val\n        except ValueError:\n            return False, 0\n\nclass XMLElement:\n    def __init__(self, *args, **kwargs):\n        \"\"\"Flexible constructor accepting any arguments to support different test setups.\"\"\"\n        self._document = kwargs.get('doc', None)\n        self._parent = kwargs.get('parent', None)\n        self._value = kwargs.get('value', None)\n        self._parseLineNum = kwargs.get('parseLineNum', 0)\n        self._firstChild = kwargs.get('firstChild', None)\n        self._lastChild = kwargs.get('lastChild', None)\n        self._prev = kwargs.get('prev', None)\n        self._next = kwargs.get('next', None)\n        \n        # Internal attribute storage\n        self._attributes = {}\n        if 'attributes' in kwargs and isinstance(kwargs['attributes'], dict):\n            self._attributes.update(kwargs['attributes'])\n\n    def SetAttribute(self, name: str, val):\n        \"\"\"Sets an attribute value.\"\"\"\n        self._attributes[str(name)] = val\n\n    def Attribute(self, name: str):\n        \"\"\"Retrieves raw attribute value as string, or None if not found.\"\"\"\n        if name in self._attributes:\n            return str(self._attributes[name])\n        return None\n\n    def UnsignedAttribute(self, name: str, defaultValue: int) -> int:\n        \"\"\"\n        Retrieve the value of an attribute by name, with various type conversions.\n        \"\"\"\n        attr_str = self.Attribute(name)\n        if attr_str is None:\n            return defaultValue\n        \n        success, val = XMLUtil.ToUnsigned(attr_str)\n        if success:\n            return val\n        return defaultValue",
+      "reference_code": "class XMLError:\n    XML_SUCCESS = 0\n    XML_NO_ATTRIBUTE = 1\n    XML_WRONG_ATTRIBUTE_TYPE = 2\n    XML_ERROR_FILE_NOT_FOUND = 3\n    XML_ERROR_FILE_COULD_NOT_BE_OPENED = 4\n    XML_ERROR_FILE_READ_ERROR = 5\n    XML_ERROR_PARSING_ELEMENT = 6\n    XML_ERROR_PARSING_ATTRIBUTE = 7\n\n\nclass XMLElement:\n    def __init__(self, attributes=None):\n        \"\"\"\n        Constructor for XMLElement mock/implementation.\n        :param attributes: Dictionary representing XML attributes.\n        \"\"\"\n        self._attributes = attributes if attributes is not None else {}\n\n    def QueryUnsignedAttribute(self, name: str, out_value: list) -> int:\n        \"\"\"\n        Query an unsigned integer attribute, mirroring TinyXML-2's QueryUnsignedAttribute.\n        out_value is expected to be a mutable container (like a list of 1 element) \n        to simulate pass-by-pointer/reference.\n        \"\"\"\n        if name not in self._attributes:\n            return XMLError.XML_NO_ATTRIBUTE\n        \n        val = self._attributes[name]\n        try:\n            # Handle string or numeric conversion\n            parsed = int(val)\n            if parsed < 0:\n                return XMLError.XML_WRONG_ATTRIBUTE_TYPE\n            out_value[0] = parsed & 0xFFFFFFFF  # Ensure 32-bit unsigned representation\n            return XMLError.XML_SUCCESS\n        except (ValueError, TypeError):\n            return XMLError.XML_WRONG_ATTRIBUTE_TYPE\n\n    def UnsignedAttribute(self, name: str, defaultValue: int) -> int:\n        \"\"\"\n        Translates the C++ XMLElement::UnsignedAttribute method.\n        \"\"\"\n        i = [defaultValue]\n        self.QueryUnsignedAttribute(name, i)\n        return i[0]",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\ndef test_semantic_valid_unsigned_attribute():\n    doc = XMLDocument()\n    element = doc.NewElement(\"TestElement\")\n    element.SetAttribute(\"count\", 42)\n    \n    result = element.UnsignedAttribute(\"count\", 0)\n    assert result == 42\n\ndef test_semantic_missing_attribute_returns_default():\n    doc = XMLDocument()\n    element = doc.NewElement(\"TestElement\")\n    \n    result = element.UnsignedAttribute(\"nonexistent\", 100)\n    assert result == 100\n\ndef test_semantic_zero_value_attribute():\n    doc = XMLDocument()\n    element = doc.NewElement(\"TestElement\")\n    element.SetAttribute(\"index\", 0)\n    \n    result = element.UnsignedAttribute(\"index\", 99)\n    assert result == 0\n\ndef test_semantic_negative_parsed_as_unsigned():\n    doc = XMLDocument()\n    element = doc.NewElement(\"TestElement\")\n    element.SetAttribute(\"val\", \"-5\")\n    \n    result = element.UnsignedAttribute(\"val\", 10)\n    # Typically negative string parses wrap around or fall back to default/0 depending on implementation,\n    # but the method should return an unsigned int without raising an exception.\n    assert isinstance(result, int)\n\ndef test_semantic_malformed_string_attribute():\n    doc = XMLDocument()\n    element = doc.NewElement(\"TestElement\")\n    element.SetAttribute(\"val\", \"not-a-number\")\n    \n    result = element.UnsignedAttribute(\"val\", 77)\n    # Should safely return the default value or 0 when conversion fails, without raising.\n    assert result == 77 or result == 0\n\n@settings(max_examples=50, deadline=None)\n@given(\n    default_val=st.integers(min_value=0, max_value=4294967295),\n    attr_val=st.integers(min_value=0, max_value=4294967295)\n)\ndef test_auto_property_unsigned_attribute_roundtrip(default_val, attr_val):\n    doc = XMLDocument()\n    element = doc.NewElement(\"Node\")\n    element.SetAttribute(\"num\", attr_val)\n    \n    result = element.UnsignedAttribute(\"num\", default_val)\n    assert result == attr_val\n\n@settings(max_examples=50, deadline=None)\n@given(\n    default_val=st.integers(min_value=0, max_value=4294967295)\n)\ndef test_auto_property_unsigned_attribute_default_fallback(default_val):\n    doc = XMLDocument()\n    element = doc.NewElement(\"Node\")\n    \n    result = element.UnsignedAttribute(\"missing\", default_val)\n    assert result == default_val",
+      "execution": {
+        "total_tests": 7,
+        "passed": 7,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 5,
+          "failed": 0,
+          "total": 5
+        },
+        "auto_property_tests": {
+          "passed": 2,
+          "failed": 0,
+          "total": 2
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 7 items\n\n::test_semantic_valid_unsigned_attribute PASSED                          [ 14%]\n::test_semantic_missing_attribute_returns_default PASSED                 [ 28%]\n::test_semantic_zero_value_attribute PASSED                              [ 42%]\n::test_semantic_negative_parsed_as_unsigned PASSED                       [ 57%]\n::test_semantic_malformed_string_attribute PASSED                        [ 71%]\n::test_auto_property_unsigned_attribute_roundtrip PASSED                 [ 85%]\n::test_auto_property_unsigned_attribute_default_fallback PASSED          [100%]\n\n============================== 7 passed in 2.12s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 0.0,
+          "reference_passed": 0,
+          "reference_total": 7,
+          "differential_agreement_rate": 0.0,
+          "both_passed_count": 0
+        }
+      }
+    }
   }
 }

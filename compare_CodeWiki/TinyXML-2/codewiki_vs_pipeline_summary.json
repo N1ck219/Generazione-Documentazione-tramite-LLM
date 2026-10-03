@@ -1,96 +1,92 @@
 {
   "library": "TinyXML-2",
-  "n_common": 47,
+  "n_common": 51,
   "n_codewiki_documented": 51,
   "pipeline_runs": [
-    "results\\benchmark_tinyxml-2\\run_20261001_180647_multiagent\\eval_report_multiagent.json"
+    "results\\benchmark_tinyxml-2\\run_20261001_180647_multiagent\\eval_report_multiagent.json",
+    "results\\benchmark_tinyxml-2\\run_20261003_132708_multiagent\\eval_report_multiagent.json"
   ],
-  "missing_in_pipeline": [
-    "XMLElement::BoolAttribute",
-    "XMLElement::DoubleAttribute",
-    "XMLElement::FloatAttribute",
-    "XMLElement::UnsignedAttribute"
-  ],
+  "missing_in_pipeline": [],
   "metrics": [
     {
       "metric": "sbert_similarity",
       "label": "SBERT",
       "group": "nlp",
-      "n": 47,
-      "codewiki_mean": 0.5506,
-      "pipeline_mean": 0.5847,
-      "delta": 0.0341,
-      "p_value": 0.12440802178115007
+      "n": 51,
+      "codewiki_mean": 0.5502,
+      "pipeline_mean": 0.5969,
+      "delta": 0.0467,
+      "p_value": 0.0438737090806109
     },
     {
       "metric": "bertscore_f1",
       "label": "BERTScore F1",
       "group": "nlp",
-      "n": 47,
-      "codewiki_mean": 0.5813,
-      "pipeline_mean": 0.5813,
-      "delta": 0.0,
-      "p_value": 0.4091365007832668
+      "n": 51,
+      "codewiki_mean": 0.5783,
+      "pipeline_mean": 0.5843,
+      "delta": 0.006,
+      "p_value": 0.19582244723441722
     },
     {
       "metric": "bleurt_estimate",
       "label": "BLEURT (stima)",
       "group": "nlp",
-      "n": 47,
-      "codewiki_mean": 0.4795,
-      "pipeline_mean": 0.5177,
-      "delta": 0.0382,
-      "p_value": 0.12705697769484914
+      "n": 51,
+      "codewiki_mean": 0.4727,
+      "pipeline_mean": 0.5272,
+      "delta": 0.0545,
+      "p_value": 0.04009302215777456
     },
     {
       "metric": "meteor_score",
       "label": "METEOR",
       "group": "nlp",
-      "n": 47,
-      "codewiki_mean": 0.3905,
-      "pipeline_mean": 0.3693,
-      "delta": -0.0212,
-      "p_value": 0.8135301153625676
+      "n": 51,
+      "codewiki_mean": 0.3859,
+      "pipeline_mean": 0.3785,
+      "delta": -0.0074,
+      "p_value": 0.4589943061989632
     },
     {
       "metric": "tfidf_cosine",
       "label": "TF-IDF cosine",
       "group": "nlp",
-      "n": 47,
-      "codewiki_mean": 0.2983,
-      "pipeline_mean": 0.4424,
-      "delta": 0.144,
-      "p_value": 0.001066717478624045
+      "n": 51,
+      "codewiki_mean": 0.3034,
+      "pipeline_mean": 0.4507,
+      "delta": 0.1473,
+      "p_value": 0.0003925785809483409
     },
     {
       "metric": "rouge_l",
       "label": "ROUGE-L",
       "group": "nlp",
-      "n": 47,
-      "codewiki_mean": 0.2304,
-      "pipeline_mean": 0.1539,
-      "delta": -0.0766,
-      "p_value": 0.14733917672949182
+      "n": 51,
+      "codewiki_mean": 0.2216,
+      "pipeline_mean": 0.1601,
+      "delta": -0.0615,
+      "p_value": 0.34089367823802774
     },
     {
       "metric": "concept_checklist_score",
       "label": "Concept checklist",
       "group": "nlp",
-      "n": 47,
-      "codewiki_mean": 0.7447,
-      "pipeline_mean": 0.9326,
-      "delta": 0.1879,
-      "p_value": 0.0029807046202068393
+      "n": 51,
+      "codewiki_mean": 0.6863,
+      "pipeline_mean": 0.8987,
+      "delta": 0.2124,
+      "p_value": 0.0010594330731371205
     },
     {
       "metric": "actionability_score",
       "label": "Actionability",
       "group": "nlp",
-      "n": 47,
-      "codewiki_mean": 0.5181,
-      "pipeline_mean": 0.8362,
-      "delta": 0.3181,
-      "p_value": 7.959328677460248e-07
+      "n": 51,
+      "codewiki_mean": 0.4971,
+      "pipeline_mean": 0.8402,
+      "delta": 0.3431,
+      "p_value": 1.4948473589865416e-07
     },
     {
       "metric": "error_doc_rate",
@@ -116,125 +112,125 @@
       "metric": "length_ratio",
       "label": "Length ratio",
       "group": "nlp",
-      "n": 47,
-      "codewiki_mean": 1.1654,
-      "pipeline_mean": 10.1805,
-      "delta": 9.0151,
+      "n": 51,
+      "codewiki_mean": 1.0964,
+      "pipeline_mean": 9.5408,
+      "delta": 8.4444,
       "p_value": null
     },
     {
       "metric": "codebert_f1",
       "label": "CodeBERTScore F1",
       "group": "advanced",
-      "n": 47,
-      "codewiki_mean": 0.7745,
-      "pipeline_mean": 0.769,
-      "delta": -0.0054,
-      "p_value": 0.7710425998350314
+      "n": 51,
+      "codewiki_mean": 0.7729,
+      "pipeline_mean": 0.7689,
+      "delta": -0.004,
+      "p_value": 0.9141579435662581
     },
     {
       "metric": "retrieval_rr",
       "label": "Retrieval MRR",
       "group": "advanced",
-      "n": 47,
-      "codewiki_mean": 0.4429,
-      "pipeline_mean": 0.6496,
-      "delta": 0.2066,
-      "p_value": 0.0009834242265228436
+      "n": 51,
+      "codewiki_mean": 0.4153,
+      "pipeline_mean": 0.6574,
+      "delta": 0.2421,
+      "p_value": 0.00018635756592551305
     },
     {
       "metric": "hit_at_1",
       "label": "Retrieval Hit@1",
       "group": "advanced",
-      "n": 47,
-      "codewiki_mean": 0.2979,
-      "pipeline_mean": 0.4894,
-      "delta": 0.1915,
-      "p_value": 0.02013675155034634
+      "n": 51,
+      "codewiki_mean": 0.2745,
+      "pipeline_mean": 0.4902,
+      "delta": 0.2157,
+      "p_value": 0.007632881787792299
     },
     {
       "metric": "hit_at_5",
       "label": "Retrieval Hit@5",
       "group": "advanced",
-      "n": 47,
-      "codewiki_mean": 0.5745,
-      "pipeline_mean": 0.8936,
-      "delta": 0.3191,
-      "p_value": 0.0002747267638079423
+      "n": 51,
+      "codewiki_mean": 0.5294,
+      "pipeline_mean": 0.902,
+      "delta": 0.3725,
+      "p_value": 3.381272563301567e-05
     },
     {
       "metric": "judge_a",
       "label": "Judge A - Faithfulness",
       "group": "advanced",
-      "n": 47,
-      "codewiki_mean": 3.3128,
-      "pipeline_mean": 4.2511,
-      "delta": 0.9383,
-      "p_value": 5.55948780205249e-07
+      "n": 50,
+      "codewiki_mean": 3.302,
+      "pipeline_mean": 4.252,
+      "delta": 0.95,
+      "p_value": 1.739532126501332e-07
     },
     {
       "metric": "judge_b",
       "label": "Judge B - Alignment",
       "group": "advanced",
-      "n": 47,
-      "codewiki_mean": 2.4681,
-      "pipeline_mean": 4.6553,
-      "delta": 2.1872,
-      "p_value": 1.6077073996162656e-08
+      "n": 50,
+      "codewiki_mean": 2.44,
+      "pipeline_mean": 4.676,
+      "delta": 2.236,
+      "p_value": 4.488262927559186e-09
     },
     {
       "metric": "judge_combined",
       "label": "Judge combinato",
       "group": "advanced",
-      "n": 47,
-      "codewiki_mean": 2.8904,
-      "pipeline_mean": 4.4532,
-      "delta": 1.5628,
-      "p_value": 1.4578195290227309e-08
+      "n": 50,
+      "codewiki_mean": 2.871,
+      "pipeline_mean": 4.464,
+      "delta": 1.593,
+      "p_value": 4.21536342808605e-09
     },
     {
       "metric": "roundtrip_pass_rate",
       "label": "Round-trip pass rate (%)",
       "group": "advanced",
-      "n": 47,
-      "codewiki_mean": 64.1298,
-      "pipeline_mean": 60.1851,
-      "delta": -3.9447,
+      "n": 51,
+      "codewiki_mean": 64.9824,
+      "pipeline_mean": 61.3471,
+      "delta": -3.6353,
       "p_value": 0.5704869370886854
     },
     {
       "metric": "roundtrip_dual_agreement",
       "label": "Dual agreement (%)",
       "group": "advanced",
-      "n": 47,
-      "codewiki_mean": 40.7809,
-      "pipeline_mean": 39.3191,
-      "delta": -1.4617,
+      "n": 51,
+      "codewiki_mean": 38.1431,
+      "pipeline_mean": 36.7961,
+      "delta": -1.3471,
       "p_value": 0.8903452962420233
     }
   ],
   "extra": {
-    "n_functions": 47,
-    "n_valid_both": 47,
+    "n_functions": 51,
+    "n_valid_both": 51,
     "no_tests": {
       "pipeline": 0,
       "codewiki": 0
     },
     "reference_suite_fails": {
-      "pipeline": 21,
-      "codewiki": 23
+      "pipeline": 24,
+      "codewiki": 25
     },
     "pass_rate": {
-      "pipeline": 60.18510638297872,
-      "codewiki": 64.12978723404257,
+      "pipeline": 61.34705882352941,
+      "codewiki": 64.98235294117647,
       "p_value": 0.5704869370886854,
-      "n": 47
+      "n": 51
     },
     "dual": {
-      "pipeline": 39.319148936170215,
-      "codewiki": 40.780851063829786,
+      "pipeline": 36.79607843137255,
+      "codewiki": 38.143137254901966,
       "p_value": 0.8903452962420233,
-      "n": 47
+      "n": 51
     },
     "error_categories": {
       "Missing Symbol / Environment": {
@@ -242,15 +238,15 @@
         "codewiki": 61
       },
       "Behavioral / Contract Failure": {
-        "pipeline": 24,
-        "codewiki": 22
+        "pipeline": 29,
+        "codewiki": 30
       },
       "Interface / Signature Mismatch": {
         "pipeline": 11,
         "codewiki": 0
       },
       "Other Execution Error": {
-        "pipeline": 9,
+        "pipeline": 10,
         "codewiki": 2
       }
     },
@@ -493,6 +489,31 @@
           "no_tests": false
         }
       },
+      "XMLElement::BoolAttribute": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "sintesi vuota",
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 8,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 25.0,
+          "flags": [
+            "sintesi vuota"
+          ],
+          "no_tests": false
+        }
+      },
       "XMLElement::DeleteAttribute": {
         "pipeline": {
           "pass_rate": 33.3,
@@ -507,6 +528,30 @@
           "pass_rate": 75.0,
           "total_tests": 4,
           "passed": 3,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::DoubleAttribute": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
           "dual": 0.0,
           "ref_pass": 0.0,
           "flags": [
@@ -558,6 +603,26 @@
           "flags": [
             "test falliscono sul reference"
           ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::FloatAttribute": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 28.6,
+          "ref_pass": 28.6,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 28.6,
+          "ref_pass": 28.6,
+          "flags": [],
           "no_tests": false
         }
       },
@@ -811,6 +876,30 @@
           "pass_rate": 0.0,
           "total_tests": 1,
           "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "XMLElement::UnsignedAttribute": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 9,
+          "passed": 9,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
           "dual": 0.0,
           "ref_pass": 0.0,
           "flags": [
@@ -1288,64 +1377,64 @@
       {
         "metric": "sbert_similarity",
         "label": "SBERT",
-        "n": 47,
-        "pipeline_wins": 31,
+        "n": 51,
+        "pipeline_wins": 35,
         "ties": 1,
         "codewiki_wins": 15
       },
       {
         "metric": "bertscore_f1",
         "label": "BERTScore F1",
-        "n": 47,
-        "pipeline_wins": 25,
+        "n": 51,
+        "pipeline_wins": 29,
         "ties": 6,
         "codewiki_wins": 16
       },
       {
         "metric": "bleurt_estimate",
         "label": "BLEURT (stima)",
-        "n": 47,
-        "pipeline_wins": 30,
+        "n": 51,
+        "pipeline_wins": 34,
         "ties": 2,
         "codewiki_wins": 15
       },
       {
         "metric": "meteor_score",
         "label": "METEOR",
-        "n": 47,
-        "pipeline_wins": 27,
+        "n": 51,
+        "pipeline_wins": 31,
         "ties": 2,
         "codewiki_wins": 18
       },
       {
         "metric": "tfidf_cosine",
         "label": "TF-IDF cosine",
-        "n": 47,
-        "pipeline_wins": 31,
+        "n": 51,
+        "pipeline_wins": 35,
         "ties": 4,
         "codewiki_wins": 12
       },
       {
         "metric": "rouge_l",
         "label": "ROUGE-L",
-        "n": 47,
-        "pipeline_wins": 19,
+        "n": 51,
+        "pipeline_wins": 23,
         "ties": 5,
         "codewiki_wins": 23
       },
       {
         "metric": "concept_checklist_score",
         "label": "Concept checklist",
-        "n": 47,
-        "pipeline_wins": 10,
-        "ties": 37,
+        "n": 51,
+        "pipeline_wins": 12,
+        "ties": 39,
         "codewiki_wins": 0
       },
       {
         "metric": "actionability_score",
         "label": "Actionability",
-        "n": 47,
-        "pipeline_wins": 31,
+        "n": 51,
+        "pipeline_wins": 35,
         "ties": 16,
         "codewiki_wins": 0
       },
@@ -1368,49 +1457,49 @@
       {
         "metric": "codebert_f1",
         "label": "CodeBERTScore F1",
-        "n": 47,
-        "pipeline_wins": 22,
-        "ties": 2,
+        "n": 51,
+        "pipeline_wins": 24,
+        "ties": 4,
         "codewiki_wins": 23
       },
       {
         "metric": "retrieval_rr",
         "label": "Retrieval MRR",
-        "n": 47,
-        "pipeline_wins": 26,
+        "n": 51,
+        "pipeline_wins": 30,
         "ties": 16,
         "codewiki_wins": 5
       },
       {
         "metric": "judge_a",
         "label": "Judge A - Faithfulness",
-        "n": 47,
-        "pipeline_wins": 39,
+        "n": 50,
+        "pipeline_wins": 42,
         "ties": 4,
         "codewiki_wins": 4
       },
       {
         "metric": "judge_b",
         "label": "Judge B - Alignment",
-        "n": 47,
-        "pipeline_wins": 41,
+        "n": 50,
+        "pipeline_wins": 44,
         "ties": 3,
         "codewiki_wins": 3
       },
       {
         "metric": "roundtrip_pass_rate",
         "label": "Round-trip pass rate",
-        "n": 47,
+        "n": 51,
         "pipeline_wins": 12,
-        "ties": 22,
+        "ties": 26,
         "codewiki_wins": 13
       },
       {
         "metric": "roundtrip_dual_agreement",
         "label": "Dual agreement",
-        "n": 47,
+        "n": 51,
         "pipeline_wins": 14,
-        "ties": 24,
+        "ties": 28,
         "codewiki_wins": 9
       }
     ]

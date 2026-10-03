@@ -1,21 +1,5 @@
-# Funzioni TinyXML-2 da documentare con la pipeline (batch 2/4, generato da compare_codewiki.py)
-XMLDocument::SetBOM
+# Funzioni TinyXML-2 da documentare con la pipeline (batch 1/1, generato da compare_codewiki.py)
 XMLElement::BoolAttribute
 XMLElement::DoubleAttribute
 XMLElement::FloatAttribute
-XMLElement::Int64Attribute
-XMLElement::QueryAttribute
-XMLElement::QueryBoolText
-XMLElement::QueryDoubleAttribute
-XMLElement::QueryDoubleText
-XMLElement::QueryFloatAttribute
-XMLElement::QueryFloatText
-XMLElement::QueryInt64Text
-XMLElement::QueryIntAttribute
-XMLElement::QueryIntText
-XMLElement::QueryUnsigned64Attribute
-XMLElement::QueryUnsigned64Text
-XMLElement::QueryUnsignedAttribute
-XMLElement::QueryUnsignedText
-XMLElement::Unsigned64Attribute
 XMLElement::UnsignedAttribute

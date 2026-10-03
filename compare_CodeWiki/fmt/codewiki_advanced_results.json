@@ -1,0 +1,85 @@
+{
+  "format": {
+    "doc_hash": "c8e0ce8de996",
+    "db_id": "fmt_format_h_format",
+    "codewiki_doc": "The primary entry points for formatting.",
+    "retrieval": {
+      "rank": 5,
+      "reciprocal_rank": 0.2,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 1.0,
+      "top_match": "format_int::c_str",
+      "top_similarity": 0.4056
+    },
+    "codebert": {
+      "precision": 0.7214,
+      "recall": 0.647,
+      "f1": 0.6822
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-3: The generated documentation is extremely brief, essentially providing a tautological or overly vague statement ('The primary entry points for formatting') that fails to explain the operational logic, parameters, or return value properly compared to the ground truth. Score is adjusted to 3 because it is still somewhat relevant but largely inadequate and uninformative."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "mean": 1.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-4: The generated documentation is extremely superficial, providing only a vague high-level phrase that completely omits the function's purpose, signature context, and usage example. It fails to convey how the formatting operates and lacks any operational rationale."
+      },
+      "combined_score": 2.0
+    },
+    "roundtrip": {
+      "function_name": "format",
+      "library": "General",
+      "signature": "std::string format(int fmt, int && args)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "def format(fmt: int, args: int) -> str:\n    \"\"\"\n    The primary entry points for formatting.\n    C/C++ Signature: std::string format(int fmt, int && args)\n    \"\"\"\n    # Pure Python implementation based strictly on the provided documentation\n    return f\"format:{fmt},args:{args}\"",
+      "reference_code": "def vformat(fmt_str, args):\n    \"\"\"Mock/helper for the underlying vformat function.\"\"\"\n    # Assuming standard formatting logic based on the C++ fmt library behavior\n    return fmt_str.format(*args)\n\n\nclass vargs:\n    \"\"\"Mock container for the C++ vargs structure.\"\"\"\n    def __init__(self, args):\n        self.args = args\n\n    def __iter__(self):\n        return iter(self.args)\n\n\nclass format_string:\n    \"\"\"Mock container for the C++ format_string type.\"\"\"\n    def __init__(self, fmt):\n        # fmt can be a string or an object with a .str attribute\n        if hasattr(fmt, 'str'):\n            self.str = fmt.str\n        else:\n            self.str = str(fmt)\n\n\ndef format(fmt, *args) -> str:\n    \"\"\"\n    Translates the C++ format function:\n    std::string format(format_string<T...> fmt, T&&... args)\n    \"\"\"\n    fmt_obj = format_string(fmt)\n    # vargs<T...>{{args...}} packs the arguments\n    packed_args = vargs(args)\n    return vformat(fmt_obj.str, packed_args.args)",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_format_standard_positive():\n    # Test standard formatting with a positive integer format and value\n    result = format(1, 100)\n    assert isinstance(result, str)\n\n\ndef test_semantic_format_zero_values():\n    # Test formatting with zero format and zero argument\n    result = format(0, 0)\n    assert isinstance(result, str)\n\n\ndef test_semantic_format_negative_values():\n    # Test formatting with negative format and negative argument\n    result = format(-1, -50)\n    assert isinstance(result, str)\n\n\ndef test_semantic_format_large_integers():\n    # Test formatting with boundary/large integer values\n    result = format(999999, 2147483647)\n    assert isinstance(result, str)\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    fmt=st.integers(min_value=-1000, max_value=1000),\n    arg=st.integers(min_value=-1000, max_value=1000)\n)\ndef test_auto_property_format_integers(fmt, arg):\n    # Property-based test using hypothesis across various integer ranges\n    result = format(fmt, arg)\n    assert isinstance(result, str)",
+      "execution": {
+        "total_tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_format_standard_positive PASSED                          [ 20%]\n::test_semantic_format_zero_values PASSED                                [ 40%]\n::test_semantic_format_negative_values PASSED                            [ 60%]\n::test_semantic_format_large_integers PASSED                             [ 80%]\n::test_auto_property_format_integers PASSED                              [100%]\n\n============================== 5 passed in 2.41s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 5,
+          "reference_total": 5,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 5
+        }
+      }
+    }
+  }
+}

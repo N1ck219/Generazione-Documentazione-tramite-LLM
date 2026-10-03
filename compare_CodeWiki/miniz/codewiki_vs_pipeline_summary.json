@@ -1,221 +1,672 @@
 {
   "library": "miniz",
-  "n_common": 7,
+  "n_common": 14,
   "n_codewiki_documented": 14,
   "pipeline_runs": [
     "results\\benchmark_all\\run_20260917_161553_multiagent\\eval_report_multiagent.json",
     "results\\benchmark_all\\run_20260917_175114_multiagent\\eval_report_multiagent.json",
-    "results\\benchmark_all\\run_20260921_155351_multiagent\\eval_report_multiagent.json"
+    "results\\benchmark_all\\run_20260921_155351_multiagent\\eval_report_multiagent.json",
+    "results\\benchmark_miniz\\run_20261003_110923_multiagent\\eval_report_multiagent.json"
   ],
-  "missing_in_pipeline": [
-    "mz_compressBound",
-    "mz_deflateEnd",
-    "mz_deflateInit",
-    "mz_inflateEnd",
-    "mz_inflateInit",
-    "mz_inflateInit2",
-    "mz_uncompress"
-  ],
+  "missing_in_pipeline": [],
   "metrics": [
     {
       "metric": "sbert_similarity",
       "label": "SBERT",
       "group": "nlp",
-      "n": 7,
-      "codewiki_mean": 0.3525,
-      "pipeline_mean": 0.4321,
-      "delta": 0.0795,
-      "p_value": 0.296875
+      "n": 14,
+      "codewiki_mean": 0.3961,
+      "pipeline_mean": 0.4421,
+      "delta": 0.046,
+      "p_value": 0.42626953125
     },
     {
       "metric": "bertscore_f1",
       "label": "BERTScore F1",
       "group": "nlp",
-      "n": 0,
-      "codewiki_mean": null,
-      "pipeline_mean": null,
-      "delta": null,
-      "p_value": null
+      "n": 14,
+      "codewiki_mean": 0.4825,
+      "pipeline_mean": 0.5176,
+      "delta": 0.0351,
+      "p_value": 0.067626953125
     },
     {
       "metric": "bleurt_estimate",
       "label": "BLEURT (stima)",
       "group": "nlp",
-      "n": 7,
-      "codewiki_mean": 0.3215,
-      "pipeline_mean": 0.4075,
-      "delta": 0.086,
-      "p_value": 0.15625
+      "n": 14,
+      "codewiki_mean": 0.3535,
+      "pipeline_mean": 0.4093,
+      "delta": 0.0557,
+      "p_value": 0.13525390625
     },
     {
       "metric": "meteor_score",
       "label": "METEOR",
       "group": "nlp",
-      "n": 7,
-      "codewiki_mean": 0.238,
-      "pipeline_mean": 0.2694,
-      "delta": 0.0314,
-      "p_value": 0.296875
+      "n": 14,
+      "codewiki_mean": 0.2414,
+      "pipeline_mean": 0.2648,
+      "delta": 0.0235,
+      "p_value": 0.3575439453125
     },
     {
       "metric": "tfidf_cosine",
       "label": "TF-IDF cosine",
       "group": "nlp",
-      "n": 7,
-      "codewiki_mean": 0.1516,
-      "pipeline_mean": 0.204,
-      "delta": 0.0524,
-      "p_value": 0.21875
+      "n": 14,
+      "codewiki_mean": 0.1208,
+      "pipeline_mean": 0.1811,
+      "delta": 0.0603,
+      "p_value": 0.06403014843302322
     },
     {
       "metric": "rouge_l",
       "label": "ROUGE-L",
       "group": "nlp",
-      "n": 7,
-      "codewiki_mean": 0.1235,
-      "pipeline_mean": 0.1067,
-      "delta": -0.0168,
-      "p_value": 0.8125
+      "n": 14,
+      "codewiki_mean": 0.0867,
+      "pipeline_mean": 0.0876,
+      "delta": 0.0009,
+      "p_value": 0.9374729223624751
     },
     {
       "metric": "concept_checklist_score",
       "label": "Concept checklist",
       "group": "nlp",
-      "n": 7,
+      "n": 14,
       "codewiki_mean": 0.7143,
-      "pipeline_mean": 0.7143,
-      "delta": 0.0,
-      "p_value": null
+      "pipeline_mean": 0.7857,
+      "delta": 0.0714,
+      "p_value": 0.31731050786291415
     },
     {
       "metric": "actionability_score",
       "label": "Actionability",
       "group": "nlp",
-      "n": 7,
+      "n": 14,
       "codewiki_mean": 0.25,
-      "pipeline_mean": 0.8929,
-      "delta": 0.6429,
-      "p_value": 0.015625
+      "pipeline_mean": 0.9143,
+      "delta": 0.6643,
+      "p_value": 0.0006817102933708383
     },
     {
       "metric": "error_doc_rate",
       "label": "Error doc. rate",
       "group": "nlp",
-      "n": 5,
-      "codewiki_mean": 0.2,
-      "pipeline_mean": 0.8,
-      "delta": 0.6,
-      "p_value": null
+      "n": 8,
+      "codewiki_mean": 0.125,
+      "pipeline_mean": 0.875,
+      "delta": 0.75,
+      "p_value": 0.0703125
     },
     {
       "metric": "edge_case_coverage",
       "label": "Edge case coverage",
       "group": "nlp",
-      "n": 5,
+      "n": 9,
       "codewiki_mean": 0.0,
-      "pipeline_mean": 0.4,
-      "delta": 0.4,
-      "p_value": null
+      "pipeline_mean": 0.6667,
+      "delta": 0.6667,
+      "p_value": 0.03125
     },
     {
       "metric": "length_ratio",
       "label": "Length ratio",
       "group": "nlp",
-      "n": 7,
-      "codewiki_mean": 1.2987,
-      "pipeline_mean": 3.1181,
-      "delta": 1.8194,
+      "n": 14,
+      "codewiki_mean": 4.6758,
+      "pipeline_mean": 6.9786,
+      "delta": 2.3028,
       "p_value": null
     },
     {
       "metric": "codebert_f1",
       "label": "CodeBERTScore F1",
       "group": "advanced",
-      "n": 0,
-      "codewiki_mean": null,
-      "pipeline_mean": null,
-      "delta": null,
-      "p_value": null
+      "n": 14,
+      "codewiki_mean": 0.7101,
+      "pipeline_mean": 0.6004,
+      "delta": -0.1096,
+      "p_value": 0.463134765625
     },
     {
       "metric": "retrieval_rr",
       "label": "Retrieval MRR",
       "group": "advanced",
-      "n": 0,
-      "codewiki_mean": null,
-      "pipeline_mean": null,
-      "delta": null,
-      "p_value": null
+      "n": 14,
+      "codewiki_mean": 0.3734,
+      "pipeline_mean": 0.542,
+      "delta": 0.1686,
+      "p_value": 0.1306650895957666
     },
     {
       "metric": "hit_at_1",
       "label": "Retrieval Hit@1",
       "group": "advanced",
-      "n": 0,
-      "codewiki_mean": null,
-      "pipeline_mean": null,
-      "delta": null,
-      "p_value": null
+      "n": 14,
+      "codewiki_mean": 0.2143,
+      "pipeline_mean": 0.3571,
+      "delta": 0.1429,
+      "p_value": 0.31731050786291415
     },
     {
       "metric": "hit_at_5",
       "label": "Retrieval Hit@5",
       "group": "advanced",
-      "n": 0,
-      "codewiki_mean": null,
-      "pipeline_mean": null,
-      "delta": null,
-      "p_value": null
+      "n": 14,
+      "codewiki_mean": 0.5714,
+      "pipeline_mean": 0.9286,
+      "delta": 0.3571,
+      "p_value": 0.025347318677468252
     },
     {
       "metric": "judge_a",
       "label": "Judge A - Faithfulness",
       "group": "advanced",
-      "n": 0,
-      "codewiki_mean": null,
-      "pipeline_mean": null,
-      "delta": null,
-      "p_value": null
+      "n": 14,
+      "codewiki_mean": 3.5429,
+      "pipeline_mean": 4.5,
+      "delta": 0.9571,
+      "p_value": 0.0014443560411159027
     },
     {
       "metric": "judge_b",
       "label": "Judge B - Alignment",
       "group": "advanced",
-      "n": 0,
-      "codewiki_mean": null,
-      "pipeline_mean": null,
-      "delta": null,
-      "p_value": null
+      "n": 14,
+      "codewiki_mean": 3.2571,
+      "pipeline_mean": 4.4857,
+      "delta": 1.2286,
+      "p_value": 0.001835566626139794
     },
     {
       "metric": "judge_combined",
       "label": "Judge combinato",
       "group": "advanced",
-      "n": 0,
-      "codewiki_mean": null,
-      "pipeline_mean": null,
-      "delta": null,
-      "p_value": null
+      "n": 14,
+      "codewiki_mean": 3.4,
+      "pipeline_mean": 4.4929,
+      "delta": 1.0929,
+      "p_value": 0.0009758787856927137
     },
     {
       "metric": "roundtrip_pass_rate",
       "label": "Round-trip pass rate (%)",
       "group": "advanced",
-      "n": 0,
-      "codewiki_mean": null,
-      "pipeline_mean": null,
-      "delta": null,
-      "p_value": null
+      "n": 14,
+      "codewiki_mean": 81.7143,
+      "pipeline_mean": 76.4,
+      "delta": -5.3143,
+      "p_value": 0.9527235817670947
     },
     {
       "metric": "roundtrip_dual_agreement",
       "label": "Dual agreement (%)",
       "group": "advanced",
-      "n": 0,
-      "codewiki_mean": null,
-      "pipeline_mean": null,
-      "delta": null,
-      "p_value": null
+      "n": 14,
+      "codewiki_mean": 54.1357,
+      "pipeline_mean": 51.5571,
+      "delta": -2.5786,
+      "p_value": 0.6784023758521882
     }
-  ]
+  ],
+  "extra": {
+    "n_functions": 14,
+    "n_valid_both": 14,
+    "no_tests": {
+      "pipeline": 0,
+      "codewiki": 0
+    },
+    "reference_suite_fails": {
+      "pipeline": 3,
+      "codewiki": 1
+    },
+    "pass_rate": {
+      "pipeline": 76.39999999999999,
+      "codewiki": 81.71428571428571,
+      "p_value": 0.9527235817670947,
+      "n": 14
+    },
+    "dual": {
+      "pipeline": 51.55714285714286,
+      "codewiki": 54.135714285714286,
+      "p_value": 0.6784023758521882,
+      "n": 14
+    },
+    "error_categories": {
+      "Missing Symbol / Environment": {
+        "pipeline": 13,
+        "codewiki": 4
+      },
+      "Behavioral / Contract Failure": {
+        "pipeline": 1,
+        "codewiki": 8
+      },
+      "Interface / Signature Mismatch": {
+        "pipeline": 0,
+        "codewiki": 1
+      }
+    },
+    "per_function": {
+      "mz_compress": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 80.0,
+          "total_tests": 5,
+          "passed": 4,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "mz_compressBound": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_deflate": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 1,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 75.0,
+          "total_tests": 4,
+          "passed": 3,
+          "dual": 75.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_deflateBound": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_deflateEnd": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 4,
+          "passed": 4,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_deflateInit": {
+        "pipeline": {
+          "pass_rate": 12.5,
+          "total_tests": 8,
+          "passed": 1,
+          "dual": 12.5,
+          "ref_pass": 87.5,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 14.3,
+          "ref_pass": 14.3,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_deflateInit2": {
+        "pipeline": {
+          "pass_rate": 57.1,
+          "total_tests": 7,
+          "passed": 4,
+          "dual": 14.3,
+          "ref_pass": 14.3,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 85.7,
+          "total_tests": 7,
+          "passed": 6,
+          "dual": 28.6,
+          "ref_pass": 42.9,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_deflateReset": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 66.7,
+          "ref_pass": 66.7,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 80.0,
+          "ref_pass": 80.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_inflate": {
+        "pipeline": {
+          "pass_rate": 75.0,
+          "total_tests": 4,
+          "passed": 3,
+          "dual": 75.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 60.0,
+          "total_tests": 5,
+          "passed": 3,
+          "dual": 20.0,
+          "ref_pass": 20.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_inflateEnd": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 80.0,
+          "total_tests": 5,
+          "passed": 4,
+          "dual": 80.0,
+          "ref_pass": 80.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_inflateInit": {
+        "pipeline": {
+          "pass_rate": 25.0,
+          "total_tests": 4,
+          "passed": 1,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 20.0,
+          "total_tests": 5,
+          "passed": 1,
+          "dual": 0.0,
+          "ref_pass": 60.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_inflateInit2": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 20.0,
+          "ref_pass": 20.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 60.0,
+          "total_tests": 5,
+          "passed": 3,
+          "dual": 60.0,
+          "ref_pass": 60.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_inflateReset": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 33.3,
+          "ref_pass": 33.3,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 33.3,
+          "ref_pass": 33.3,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "mz_uncompress": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 83.3,
+          "total_tests": 6,
+          "passed": 5,
+          "dual": 66.7,
+          "ref_pass": 83.3,
+          "flags": [],
+          "no_tests": false
+        }
+      }
+    },
+    "win_loss": [
+      {
+        "metric": "sbert_similarity",
+        "label": "SBERT",
+        "n": 14,
+        "pipeline_wins": 8,
+        "ties": 1,
+        "codewiki_wins": 5
+      },
+      {
+        "metric": "bertscore_f1",
+        "label": "BERTScore F1",
+        "n": 14,
+        "pipeline_wins": 10,
+        "ties": 1,
+        "codewiki_wins": 3
+      },
+      {
+        "metric": "bleurt_estimate",
+        "label": "BLEURT (stima)",
+        "n": 14,
+        "pipeline_wins": 8,
+        "ties": 1,
+        "codewiki_wins": 5
+      },
+      {
+        "metric": "meteor_score",
+        "label": "METEOR",
+        "n": 14,
+        "pipeline_wins": 7,
+        "ties": 2,
+        "codewiki_wins": 5
+      },
+      {
+        "metric": "tfidf_cosine",
+        "label": "TF-IDF cosine",
+        "n": 14,
+        "pipeline_wins": 9,
+        "ties": 2,
+        "codewiki_wins": 3
+      },
+      {
+        "metric": "rouge_l",
+        "label": "ROUGE-L",
+        "n": 14,
+        "pipeline_wins": 5,
+        "ties": 5,
+        "codewiki_wins": 4
+      },
+      {
+        "metric": "concept_checklist_score",
+        "label": "Concept checklist",
+        "n": 14,
+        "pipeline_wins": 1,
+        "ties": 13,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "actionability_score",
+        "label": "Actionability",
+        "n": 14,
+        "pipeline_wins": 14,
+        "ties": 0,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "error_doc_rate",
+        "label": "Error doc. rate",
+        "n": 8,
+        "pipeline_wins": 7,
+        "ties": 0,
+        "codewiki_wins": 1
+      },
+      {
+        "metric": "edge_case_coverage",
+        "label": "Edge case coverage",
+        "n": 9,
+        "pipeline_wins": 6,
+        "ties": 3,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "codebert_f1",
+        "label": "CodeBERTScore F1",
+        "n": 14,
+        "pipeline_wins": 7,
+        "ties": 1,
+        "codewiki_wins": 6
+      },
+      {
+        "metric": "retrieval_rr",
+        "label": "Retrieval MRR",
+        "n": 14,
+        "pipeline_wins": 8,
+        "ties": 3,
+        "codewiki_wins": 3
+      },
+      {
+        "metric": "judge_a",
+        "label": "Judge A - Faithfulness",
+        "n": 14,
+        "pipeline_wins": 13,
+        "ties": 1,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "judge_b",
+        "label": "Judge B - Alignment",
+        "n": 14,
+        "pipeline_wins": 12,
+        "ties": 1,
+        "codewiki_wins": 1
+      },
+      {
+        "metric": "roundtrip_pass_rate",
+        "label": "Round-trip pass rate",
+        "n": 14,
+        "pipeline_wins": 6,
+        "ties": 5,
+        "codewiki_wins": 3
+      },
+      {
+        "metric": "roundtrip_dual_agreement",
+        "label": "Dual agreement",
+        "n": 14,
+        "pipeline_wins": 3,
+        "ties": 5,
+        "codewiki_wins": 6
+      }
+    ]
+  }
 }

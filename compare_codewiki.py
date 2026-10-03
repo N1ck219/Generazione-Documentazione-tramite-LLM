@@ -68,7 +68,7 @@ from utils.codewiki_config import (
 
 ALL_STEPS = ["parse", "metrics", "pipeline", "advanced", "compare"]
 API_STEPS = {"pipeline", "advanced"}
-DEFAULT_BATCH_SIZE = 25
+DEFAULT_BATCH_SIZE = 12
 
 
 # ── Utilita' ──────────────────────────────────────────────────────────────────
@@ -173,26 +173,49 @@ def _has_judge_fallback(obj) -> bool:
     return False
 
 
+JUDGE_KEYS = ("judge_score_a", "judge_std_a", "judge_score_b", "judge_std_b", "judge_combined")
+MAX_DEGRADED_FRACTION = 0.6
+
+
 def quarantine_if_degraded(library: str, before: set) -> Optional[str]:
     """
-    Se il run appena creato contiene punteggi di ripiego del judge (tipicamente quota giornaliera
-    esaurita a meta' batch), rinomina il report in .invalid cosi' non entra nel confronto e le sue
-    funzioni verranno rigenerate al prossimo lancio. Restituisce il percorso del run scartato.
+    Controlla il run appena creato in cerca di punteggi di ripiego del judge (chiamate fallite,
+    di solito per quota API esaurita: "Default fallback." / "Evaluation error", punteggio 3.0).
+      - pochi record toccati (<= 60%): si tolgono solo i punteggi del judge di quei record
+        (restano documentazione, metriche NLP e round-trip) e si segnala "judge_invalid";
+      - molti record toccati: il report intero e' inaffidabile, viene rinominato .invalid e le sue
+        funzioni verranno rigenerate al prossimo lancio.
+    Restituisce il percorso del run scartato, altrimenti None.
     """
     base = os.path.join(ROOT_DIR, "results", f"benchmark_{library.lower()}")
     if not os.path.isdir(base):
         return None
     for d in sorted(set(os.listdir(base)) - before):
         report = os.path.join(base, d, "eval_report_multiagent.json")
-        if d.startswith("run_") and os.path.exists(report):
-            with open(report, encoding="utf-8") as f:
-                data = json.load(f)
-            if _has_judge_fallback(data):
-                os.replace(report, report + ".invalid")
-                latest = os.path.join(base, "latest", "eval_report_multiagent.json")
-                if os.path.exists(latest):
-                    os.replace(latest, latest + ".invalid")
-                return os.path.join(base, d)
+        if not (d.startswith("run_") and os.path.exists(report)):
+            continue
+        with open(report, encoding="utf-8") as f:
+            data = json.load(f)
+        affected = [r for r in data if _has_judge_fallback(r)]
+        if not affected:
+            continue
+        latest = os.path.join(base, "latest", "eval_report_multiagent.json")
+        if len(affected) / max(len(data), 1) > MAX_DEGRADED_FRACTION:
+            os.replace(report, report + ".invalid")
+            if os.path.exists(latest):
+                os.replace(latest, latest + ".invalid")
+            return os.path.join(base, d)
+        for r in affected:
+            for k in JUDGE_KEYS:
+                r.get("metrics", {}).pop(k, None)
+            r["judge_invalid"] = True
+        for path in (report, latest):
+            if os.path.exists(path):
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+        print(f"[WARN] {library}: judge con chiamate fallite su {len(affected)}/{len(data)} funzioni "
+              f"({', '.join(r['function_name'] for r in affected)}): punteggi del judge esclusi, "
+              "resto del run mantenuto.")
     return None
 
 
@@ -458,6 +481,15 @@ def main():
                 break
 
     path = write_global_summary(available, status)
+
+    # Risultati complessivi tra librerie (grafici + OVERALL_REPORT.md), solo da file gia' prodotti
+    if "compare" in steps:
+        try:
+            from utils.plot_codewiki_overall import generate_overall
+            for p in generate_overall():
+                print(f"  -> {os.path.relpath(p, ROOT_DIR)}")
+        except Exception as e:  # il riepilogo complessivo non deve far fallire l'esecuzione
+            print(f"[WARN] risultati complessivi non generati: {e}")
 
     banner(f"COMPLETATO in {(time.time() - t_all) / 60:.1f} min")
     for lib in libraries:

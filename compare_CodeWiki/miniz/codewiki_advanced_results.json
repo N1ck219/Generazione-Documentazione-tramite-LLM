@@ -1,0 +1,1164 @@
+{
+  "mz_compress": {
+    "doc_hash": "d8e29cff33b9",
+    "db_id": "miniz_miniz_c_mz_compress",
+    "codewiki_doc": "Convenience wrappers for one-shot buffer compression.",
+    "retrieval": {
+      "rank": 9,
+      "reciprocal_rank": 0.1111,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "mz_deflate",
+      "top_similarity": 0.4145
+    },
+    "codebert": {
+      "precision": 0.7004,
+      "recall": 0.6834,
+      "f1": 0.6918
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          4.0,
+          3.0
+        ],
+        "mean": 3.2,
+        "std": 0.4,
+        "sample_reasoning": "DEF-1: Omits specific return error codes and failure modes detailed in the ground truth. DEF-3: The generated documentation is extremely brief and borders on being tautological/uninformative regarding the function's internal delegation and exact contract. Starting from the baseline of 4.0, the presence of these minor defects reduces the score to a 3."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1: The generated documentation fails to mention the specific return values (MZ_OK or error codes from mz_deflate) stated in the ground truth. It correctly identifies the core action as a one-shot buffer compression wrapper, but misses the explicit success/failure return guarantees."
+      },
+      "combined_score": 3.1
+    },
+    "roundtrip": {
+      "function_name": "mz_compress",
+      "library": "miniz",
+      "signature": "int mz_compress(unsigned char * pDest, mz_ulong * pDest_len, const unsigned char * pSource, mz_ulong source_len)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "import zlib\n\n# Error codes and constants from miniz context\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\ndef mz_compress(pDest, pDest_len, pSource, source_len):\n    \"\"\"\n    Convenience wrappers for one-shot buffer compression.\n    C/C++ Signature: int mz_compress(unsigned char * pDest, mz_ulong * pDest_len, const unsigned char * pSource, mz_ulong source_len)\n    \"\"\"\n    # Extract source data up to source_len\n    if isinstance(pSource, (bytes, bytearray)):\n        src_bytes = bytes(pSource[:source_len])\n    else:\n        src_bytes = bytes(pSource)[:source_len]\n\n    try:\n        # Perform compression (zlib.compress generates a zlib header/trailer as typically expected by miniz compress)\n        compressed = zlib.compress(src_bytes)\n    except Exception:\n        return MZ_MEM_ERROR\n\n    dest_len_val = pDest_len[0] if isinstance(pDest_len, list) else len(compressed)\n\n    if len(compressed) > dest_len_val:\n        return MZ_BUF_ERROR\n\n    # Copy data into destination buffer\n    if isinstance(pDest, (bytearray, list)):\n        for i in range(len(compressed)):\n            pDest[i] = compressed[i]\n    else:\n        # Fallback if pDest is somehow immutable or doesn't support assignment\n        return MZ_BUF_ERROR\n\n    # Update destination length pointer/container\n    if isinstance(pDest_len, list):\n        pDest_len[0] = len(compressed)\n\n    return MZ_OK",
+      "reference_code": "# Constants and Enums from miniz header\nMZ_DEFAULT_COMPRESSION = -1\n\ndef mz_compress2(pDest, pDest_len, pSource, source_len, level):\n    \"\"\"\n    Mock/Placeholder for mz_compress2 if not already present,\n    or expected to be called by mz_compress.\n    In a complete pure-Python miniz implementation, this would handle\n    the zlib/deflate compression.\n    \"\"\"\n    raise NotImplementedError(\"mz_compress2 is required for mz_compress implementation.\")\n\ndef mz_compress(pDest, pDest_len, pSource, source_len):\n    \"\"\"\n    Transpiled mz_compress function.\n    \n    C/C++ Signature:\n    int mz_compress(unsigned char * pDest, mz_ulong * pDest_len, const unsigned char * pSource, mz_ulong source_len)\n    \"\"\"\n    return mz_compress2(pDest, pDest_len, pSource, source_len, MZ_DEFAULT_COMPRESSION)",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\ndef test_semantic_basic_compression():\n    source_data = b\"Hello, miniz compression world! \" * 10\n    source_len = len(source_data)\n    \n    # Destination buffer must be large enough. mz_compress usually requires \n    # source_len + 0.1% + 12 or similar, let's allocate safely.\n    dest_len_val = source_len + 128\n    dest_buf = bytearray(dest_len_val)\n    dest_len_ptr = [dest_len_val]\n    \n    res = mz_compress(dest_buf, dest_len_ptr, source_data, source_len)\n    assert res == MZ_OK\n    assert dest_len_ptr[0] > 0\n    assert dest_len_ptr[0] <= dest_len_val\n\ndef test_semantic_empty_source():\n    source_data = b\"\"\n    source_len = 0\n    \n    dest_len_val = 128\n    dest_buf = bytearray(dest_len_val)\n    dest_len_ptr = [dest_len_val]\n    \n    res = mz_compress(dest_buf, dest_len_ptr, source_data, source_len)\n    # Depending on miniz behavior, empty buffer compression should either succeed or return MZ_BUF_ERROR / MZ_DATA_ERROR\n    assert res in (MZ_OK, MZ_BUF_ERROR, MZ_DATA_ERROR)\n\ndef test_semantic_buffer_too_small():\n    source_data = b\"A\" * 1000\n    source_len = len(source_data)\n    \n    # Intentionally too small destination buffer\n    dest_len_val = 5\n    dest_buf = bytearray(dest_len_val)\n    dest_len_ptr = [dest_len_val]\n    \n    res = mz_compress(dest_buf, dest_len_ptr, source_data, source_len)\n    # Should report an error due to insufficient destination buffer space (e.g., MZ_BUF_ERROR)\n    assert res != MZ_OK\n\ndef test_semantic_null_dest_or_source():\n    source_data = b\"test data\"\n    source_len = len(source_data)\n    dest_len_ptr = [128]\n    dest_buf = bytearray(128)\n    \n    # Testing robustness against None parameters if supported by wrapper\n    res_null_src = mz_compress(dest_buf, dest_len_ptr, None, 0)\n    assert res_null_src != MZ_OK\n\n@settings(max_examples=50, deadline=None)\n@given(st.binary(min_size=1, max_size=512))\ndef test_auto_property_compression_roundtrip(data):\n    source_len = len(data)\n    # Allocate a conservative destination buffer size\n    dest_len_val = source_len + 512\n    dest_buf = bytearray(dest_len_val)\n    dest_len_ptr = [dest_len_val]\n    \n    res = mz_compress(dest_buf, dest_len_ptr, data, source_len)\n    if res == MZ_OK:\n        assert dest_len_ptr[0] > 0\n        assert dest_len_ptr[0] <= dest_len_val",
+      "execution": {
+        "total_tests": 5,
+        "passed": 4,
+        "failed": 1,
+        "errors": 0,
+        "pass_rate": 80.0,
+        "semantic_tests": {
+          "passed": 3,
+          "failed": 1,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "orm win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_basic_compression PASSED                                 [ 20%]\n::test_semantic_empty_source PASSED                                      [ 40%]\n::test_semantic_buffer_too_small PASSED                                  [ 60%]\n::test_semantic_null_dest_or_source FAILED                               [ 80%]\n::test_auto_property_compression_roundtrip PASSED                        [100%]\n\n================================== FAILURES ===================================\n______________________ test_semantic_null_dest_or_source ______________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpirh7fkl5.py:306: in test_semantic_null_dest_or_source\n    res_null_src = mz_compress(dest_buf, dest_len_ptr, None, 0)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpirh7fkl5.py:228: in mz_compress\n    src_bytes = bytes(pSource)[:source_len]\n                ^^^^^^^^^^^^^^\nE   TypeError: cannot convert 'NoneType' object to bytes\n=========================== short test summary info ===========================\nFAILED ::test_semantic_null_dest_or_source - TypeError: cannot convert 'NoneT...\n========================= 1 failed, 4 passed in 2.60s =========================\n",
+        "differential": {
+          "reference_pass_rate": 0.0,
+          "reference_passed": 0,
+          "reference_total": 5,
+          "differential_agreement_rate": 0.0,
+          "both_passed_count": 0
+        }
+      }
+    }
+  },
+  "mz_compressBound": {
+    "doc_hash": "5f5f73d67ebc",
+    "db_id": "miniz_miniz_c_mz_compressBound",
+    "codewiki_doc": "Wrapper around `mz_deflateBound` for buffer sizing.",
+    "retrieval": {
+      "rank": 8,
+      "reciprocal_rank": 0.125,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "mz_deflateBound",
+      "top_similarity": 0.7416
+    },
+    "codebert": {
+      "precision": 0.7619,
+      "recall": 0.7199,
+      "f1": 0.7403
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-3: The generated documentation is extremely brief (\"Wrapper around mz_deflateBound for buffer sizing\") and borders on tautological by merely stating it wraps another function without explaining the nature of the conservative upper bound mentioned in the ground truth. However, it is technically accurate, has no hallucinations or memory issues, and correctly identifies its usage for buffer sizing. Therefore, starting from a baseline of 4.0 and factoring in the minor tautological/laconic nature (DEF-3), a score of 4 is justified."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "mean": 2.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1 and ALIGN-4: The generated documentation is extremely superficial, merely stating it is a 'wrapper for buffer sizing' and completely missing the author's explicit specification that it returns a '(very) conservative upper bound'. This fails to capture the operational rationale and nuances of the function."
+      },
+      "combined_score": 3.0
+    },
+    "roundtrip": {
+      "function_name": "mz_compressBound",
+      "library": "miniz",
+      "signature": "mz_ulong mz_compressBound(mz_ulong source_len)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Self-contained Python implementation based strictly on the miniz technical documentation.\n\n# Module-level constants and error codes derived from miniz specification\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nMZ_ADLER32_INIT = 1\nMZ_CRC32_INIT = 0\nMZ_DEFLATED = 8\nMZ_VERSION = \"3.0.0\"\nMZ_VERNUM = 0x3000\nMZ_VER_MAJOR = 3\n\n\nclass mz_stream_s:\n    \"\"\"Mock struct for mz_stream_s with robust constructor support.\"\"\"\n    def __init__(self, *args, **kwargs):\n        self.next_in = kwargs.get('next_in', None)\n        self.avail_in = kwargs.get('avail_in', 0)\n        self.total_in = kwargs.get('total_in', 0)\n        self.next_out = kwargs.get('next_out', None)\n        self.avail_out = kwargs.get('avail_out', 0)\n        self.total_out = kwargs.get('total_out', 0)\n        self.msg = kwargs.get('msg', None)\n        self.state = kwargs.get('state', None)\n\n\ndef mz_compressBound(source_len):\n    \"\"\"\n    Wrapper around mz_deflateBound for buffer sizing.\n    C/C++ Signature: mz_ulong mz_compressBound(mz_ulong source_len)\n    \"\"\"\n    # Standard deflateBound formula implementation:\n    # source_len + ((source_len + 7) >> 3) + ((source_len + 63) >> 6) + 5 + 6\n    # Equivalent approximation used standardly in zlib/miniz:\n    return source_len + ((source_len + 7) >> 3) + ((source_len + 63) >> 6) + 11",
+      "reference_code": "def mz_deflateBound(stream, source_len: int) -> int:\n    \"\"\"\n    Equivalent pure Python implementation of miniz's mz_deflateBound.\n    Calculates the maximum size of compressed data for a given source length.\n    \"\"\"\n    # Standard zlib/deflate bound formula used in miniz:\n    # source_len + ((source_len + 7) >> 3) + ((source_len + 63) >> 6) + 11\n    # or roughly source_len + source_len / 32 + 12\n    return source_len + ((source_len + 7) >> 3) + ((source_len + 63) >> 6) + 11\n\ndef mz_compressBound(source_len: int) -> int:\n    \"\"\"\n    Returns an upper bound on the compressed size after deflation of source_len bytes.\n    \"\"\"\n    return mz_deflateBound(None, source_len)",
+      "test_suite": "from hypothesis import given, strategies as st, settings\n\ndef test_semantic_zero_length():\n    \"\"\"Test compression bound for a zero-length source input.\"\"\"\n    bound = mz_compressBound(0)\n    assert isinstance(bound, int)\n    assert bound >= 0\n\ndef test_semantic_small_length():\n    \"\"\"Test compression bound for a small standard source length (e.g., 100 bytes).\"\"\"\n    bound = mz_compressBound(100)\n    assert isinstance(bound, int)\n    # The compressed bound should be at least the source length for miniz/deflate\n    assert bound >= 100\n\ndef test_semantic_medium_length():\n    \"\"\"Test compression bound for a moderate source length (e.g., 4096 bytes).\"\"\"\n    bound = mz_compressBound(4096)\n    assert isinstance(bound, int)\n    assert bound >= 4096\n\ndef test_semantic_large_length():\n    \"\"\"Test compression bound for a large source length (e.g., 1 MB).\"\"\"\n    source_len = 1024 * 1024\n    bound = mz_compressBound(source_len)\n    assert isinstance(bound, int)\n    assert bound >= source_len\n\ndef test_semantic_monotonicity():\n    \"\"\"Test that compression bound is monotonically non-decreasing with source length.\"\"\"\n    len1 = 500\n    len2 = 1000\n    bound1 = mz_compressBound(len1)\n    bound2 = mz_compressBound(len2)\n    assert bound1 <= bound2\n\n@settings(max_examples=50, deadline=None)\n@given(source_len=st.integers(min_value=0, max_value=2**32 - 1))\ndef test_auto_property_compress_bound(source_len):\n    \"\"\"Property-based test verifying that mz_compressBound always returns an integer >= source_len for valid 32-bit unsigned lengths.\"\"\"\n    bound = mz_compressBound(source_len)\n    assert isinstance(bound, int)\n    assert bound >= source_len",
+      "execution": {
+        "total_tests": 6,
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 5,
+          "failed": 0,
+          "total": 5
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 6 items\n\n::test_semantic_zero_length PASSED                                       [ 16%]\n::test_semantic_small_length PASSED                                      [ 33%]\n::test_semantic_medium_length PASSED                                     [ 50%]\n::test_semantic_large_length PASSED                                      [ 66%]\n::test_semantic_monotonicity PASSED                                      [ 83%]\n::test_auto_property_compress_bound PASSED                               [100%]\n\n============================== 6 passed in 2.29s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 6,
+          "reference_total": 6,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 6
+        }
+      }
+    }
+  },
+  "mz_deflate": {
+    "doc_hash": "5a2aa5dd99d8",
+    "db_id": "miniz_miniz_c_mz_deflate",
+    "codewiki_doc": "Compresses input data from the stream buffer with a specified flush type.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "mz_deflate",
+      "top_similarity": 0.5745
+    },
+    "codebert": {
+      "precision": 0.7222,
+      "recall": 0.6783,
+      "f1": 0.6996
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0
+        ],
+        "mean": 3.2,
+        "std": 0.4,
+        "sample_reasoning": "DEF-1: Omission of error handling and specific return codes (like MZ_STREAM_ERROR, MZ_BUF_ERROR, MZ_STREAM_END) as well as boundary conditions. DEF-3: The description is extremely brief and tautological ('Compresses input data from the stream buffer with a specified flush type'), failing to explain state changes or side effects. Score adjustment results in a 3 due to these missing critical contract details."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "mean": 2.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1: The generated documentation completely misses the specific condition and warning regarding MZ_BUF_ERROR when no forward progress is possible due to empty input or output buffers. It provides only a high-level summary of compression, ignoring the critical operational caveat explicitly stated in the Ground Truth."
+      },
+      "combined_score": 2.6
+    },
+    "roundtrip": {
+      "function_name": "mz_deflate",
+      "library": "miniz",
+      "signature": "int mz_deflate(mz_streamp pStream, int flush)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Module top-level constants and error codes based on miniz specification\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        # Support flexible initialization to prevent TypeError/AttributeError\n        self.next_in = kwargs.get('next_in', args[0] if len(args) > 0 else None)\n        self.avail_in = kwargs.get('avail_in', args[1] if len(args) > 1 else 0)\n        self.total_in = kwargs.get('total_in', args[2] if len(args) > 2 else 0)\n        self.next_out = kwargs.get('next_out', args[3] if len(args) > 3 else None)\n        self.avail_out = kwargs.get('avail_out', args[4] if len(args) > 4 else 0)\n        self.total_out = kwargs.get('total_out', args[5] if len(args) > 5 else 0)\n        self.msg = kwargs.get('msg', args[6] if len(args) > 6 else None)\n        self.state = kwargs.get('state', args[7] if len(args) > 7 else None)\n\ndef mz_deflate(pStream, flush):\n    \"\"\"\n    Compresses input data from the stream buffer with a specified flush type.\n    \"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    # If state is not initialized, we can initialize a simple state container\n    if pStream.state is None:\n        pStream.state = {\"buffer\": bytearray()}\n\n    state = pStream.state\n    if not isinstance(state, dict):\n        # Handle if state is a mock object\n        if not hasattr(state, \"buffer\") or state.buffer is None:\n            state.buffer = bytearray()\n    \n    # Process input available in next_in / avail_in\n    input_data = b\"\"\n    if pStream.next_in is not None and pStream.avail_in > 0:\n        if isinstance(pStream.next_in, (bytes, bytearray)):\n            input_data = bytes(pStream.next_in[:pStream.avail_in])\n        elif isinstance(pStream.next_in, list):\n            input_data = bytes(pStream.next_in[:pStream.avail_in])\n\n        # Consume input\n        pStream.total_in += pStream.avail_in\n        pStream.avail_in = 0\n        if isinstance(state, dict):\n            state[\"buffer\"].extend(input_data)\n        else:\n            state.buffer.extend(input_data)\n\n    # Determine internal data buffer\n    current_buf = state[\"buffer\"] if isinstance(state, dict) else state.buffer\n\n    # Write output to next_out if available\n    bytes_to_write = len(current_buf)\n    if pStream.next_out is not None and pStream.avail_out > 0 and bytes_to_write > 0:\n        n = min(bytes_to_write, pStream.avail_out)\n        out_chunk = current_buf[:n]\n        \n        if isinstance(pStream.next_out, bytearray):\n            pStream.next_out[:n] = out_chunk\n        elif isinstance(pStream.next_out, list):\n            for i in range(n):\n                if i < len(pStream.next_out):\n                    pStream.next_out[i] = out_chunk[i]\n                else:\n                    pStream.next_out.append(out_chunk[i])\n\n        # Trim written bytes from internal buffer\n        if isinstance(state, dict):\n            state[\"buffer\"] = current_buf[n:]\n        else:\n            state.buffer = current_buf[n:]\n\n        pStream.avail_out -= n\n        pStream.total_out += n\n\n    if flush == MZ_FINISH:\n        if len(state[\"buffer\"] if isinstance(state, dict) else state.buffer) == 0 and pStream.avail_in == 0:\n            return MZ_STREAM_END\n\n    return MZ_OK",
+      "reference_code": "# Constants and Error Codes\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nTDEFL_STATUS_DONE = 1  # Assuming this value based on miniz conventions\n\n\ndef mz_deflate(pStream, flush):\n    if (\n        (pStream is None)\n        or (pStream.state is None)\n        or (flush < 0)\n        or (flush > MZ_FINISH)\n        or (pStream.next_out is None)\n    ):\n        return MZ_STREAM_ERROR\n    if pStream.avail_out == 0:\n        return MZ_BUF_ERROR\n\n    if flush == MZ_PARTIAL_FLUSH:\n        flush = MZ_SYNC_FLUSH\n\n    if pStream.state.m_prev_return_status == TDEFL_STATUS_DONE:\n        return MZ_STREAM_END if (flush == MZ_FINISH) else MZ_BUF_ERROR\n\n    orig_total_in = pStream.total_in\n    orig_total_out = pStream.total_out\n\n    mz_status = MZ_OK\n\n    while True:\n        in_bytes = pStream.avail_in\n        out_bytes = pStream.avail_out\n\n        # Call the underlying tdefl_compress method on the compressor state object\n        defl_status = pStream.state.tdefl_compress(\n            pStream.next_in, in_bytes, pStream.next_out, out_bytes, flush\n        )\n\n        # Assuming tdefl_compress returns a tuple: (defl_status, consumed_in, produced_out)\n        defl_status, consumed_in, produced_out = defl_status\n\n        pStream.next_in += consumed_in\n        pStream.avail_in -= consumed_in\n        pStream.total_in += consumed_in\n        pStream.adler = pStream.state.tdefl_get_adler32()\n\n        pStream.next_out += produced_out\n        pStream.avail_out -= produced_out\n        pStream.total_out += produced_out\n\n        if defl_status < 0:\n            mz_status = MZ_STREAM_ERROR\n            break\n        elif defl_status == TDEFL_STATUS_DONE:\n            mz_status = MZ_STREAM_END\n            break\n        elif pStream.avail_out == 0:\n            break\n        elif (pStream.avail_in == 0) and (flush != MZ_FINISH):\n            if (\n                (flush != 0)\n                or (pStream.total_in != orig_total_in)\n                or (pStream.total_out != orig_total_out)\n            ):\n                break\n            return MZ_BUF_ERROR\n\n    return mz_status",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_null_stream():\n    \"\"\"Test mz_deflate with a NULL stream pointer (None).\"\"\"\n    # MZ_STREAM_ERROR is -2\n    result = mz_deflate(None, 0)\n    assert result == -2\n\n\ndef test_semantic_deflate_uninitialized_stream():\n    \"\"\"Test mz_deflate with an uninitialized or empty stream struct.\"\"\"\n    # Create a simple class or dictionary-like mock for mz_stream_s\n    class Stream:\n        def __init__(self):\n            self.next_in = None\n            self.avail_in = 0\n            self.total_in = 0\n            self.next_out = None\n            self.avail_out = 0\n            self.total_out = 0\n            self.msg = None\n            self.state = None\n\n    stream = Stream()\n    result = mz_deflate(stream, 0)\n    # Since state is NULL, it should return an error like MZ_STREAM_ERROR (-2)\n    assert result == -2\n\n\ndef test_semantic_flush_types():\n    \"\"\"Test mz_deflate with various documented flush constants.\"\"\"\n    # Constants from documentation:\n    # MZ_NO_FLUSH = 0, MZ_PARTIAL_FLUSH = 1, MZ_SYNC_FLUSH = 2, \n    # MZ_FULL_FLUSH = 3, MZ_FINISH = 4, MZ_BLOCK = 5\n    flush_types = [0, 1, 2, 3, 4, 5]\n    \n    for flush in flush_types:\n        result = mz_deflate(None, flush)\n        assert result == -2  # Expecting stream error because stream is None\n\n\n@settings(max_examples=50, deadline=None)\n@given(flush=st.integers(min_value=-100, max_value=100))\ndef test_auto_property_deflate_fuzz_flush(flush):\n    \"\"\"Property-based test for mz_deflate with random integer flush values and None stream.\"\"\"\n    result = mz_deflate(None, flush)\n    # Should safely return an integer error code without crashing or raising exceptions\n    assert isinstance(result, int)",
+      "execution": {
+        "total_tests": 4,
+        "passed": 3,
+        "failed": 1,
+        "errors": 0,
+        "pass_rate": 75.0,
+        "semantic_tests": {
+          "passed": 2,
+          "failed": 1,
+          "total": 3
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 4 items\n\n::test_semantic_null_stream PASSED                                       [ 25%]\n::test_semantic_deflate_uninitialized_stream FAILED                      [ 50%]\n::test_semantic_flush_types PASSED                                       [ 75%]\n::test_auto_property_deflate_fuzz_flush PASSED                           [100%]\n\n================================== FAILURES ===================================\n_________________ test_semantic_deflate_uninitialized_stream __________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpgrza20gz.py:344: in test_semantic_deflate_uninitialized_stream\n    assert result == -2\nE   assert 0 == -2\n=========================== short test summary info ===========================\nFAILED ::test_semantic_deflate_uninitialized_stream - assert 0 == -2\n========================= 1 failed, 3 passed in 2.56s =========================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 4,
+          "reference_total": 4,
+          "differential_agreement_rate": 75.0,
+          "both_passed_count": 3
+        }
+      }
+    }
+  },
+  "mz_deflateBound": {
+    "doc_hash": "7ecbe746cc09",
+    "db_id": "miniz_miniz_c_mz_deflateBound",
+    "codewiki_doc": "Estimates the upper bound of compressed data size for a given source length.",
+    "retrieval": {
+      "rank": 3,
+      "reciprocal_rank": 0.3333,
+      "hit_at_1": 0.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "mz_compressBound",
+      "top_similarity": 0.4553
+    },
+    "codebert": {
+      "precision": 0.7697,
+      "recall": 0.6956,
+      "f1": 0.7308
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-3: The generated documentation slightly rephrases the function name without detailing the operational logic or the conservative nature of the bound mentioned in the ground truth. However, it remains technically accurate and does not introduce hallucinations or contract mismatches, warranting a minor deduction from the baseline score."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          4.0,
+          3.0,
+          4.0,
+          3.0
+        ],
+        "mean": 3.4,
+        "std": 0.49,
+        "sample_reasoning": "ALIGN-1: The generated documentation misses the specific explicit warning from the Ground Truth that the conservative bound assumes the flush mode is set strictly to either MZ_NO_FLUSH or MZ_FINISH. However, it successfully captures the core functional intent of estimating the upper bound."
+      },
+      "combined_score": 3.7
+    },
+    "roundtrip": {
+      "function_name": "mz_deflateBound",
+      "library": "miniz",
+      "signature": "mz_ulong mz_deflateBound(mz_streamp pStream, mz_ulong source_len)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Constants and Error Codes\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        self.next_in = kwargs.get('next_in', None)\n        self.avail_in = kwargs.get('avail_in', 0)\n        self.total_in = kwargs.get('total_in', 0)\n        self.next_out = kwargs.get('next_out', None)\n        self.avail_out = kwargs.get('avail_out', 0)\n        self.total_out = kwargs.get('total_out', 0)\n        self.msg = kwargs.get('msg', None)\n        self.state = kwargs.get('state', None)\n\n\ndef mz_deflateBound(pStream, source_len):\n    \"\"\"\n    Estimates the upper bound of compressed data size for a given source length.\n    \"\"\"\n    # Standard conservative deflation bound calculation:\n    # source_len + 5 * (source_len // 16383 + 1) + 6 + header/footer overheads\n    # In miniz/zlib, deflateBound typically gives source_len + ((source_len + 7) >> 3) + ((source_len + 63) >> 6) + 11...\n    # or a safe standard formula: source_len + ((source_len + 999) >> 9) + ((source_len + 99999) >> 16) + 16\n    \n    bound = source_len + ((source_len + 7) >> 3) + ((source_len + 63) >> 6) + 11\n    return bound",
+      "reference_code": "def mz_deflateBound(pStream, source_len: int) -> int:\n    \"\"\"\n    Equivalent of miniz's mz_deflateBound function.\n    Returns an upper bound on the compressed size for the given source length.\n    \"\"\"\n    # pStream is ignored in the C implementation via (void)pStream;\n    val1 = 128 + (source_len * 110) // 100\n    val2 = 128 + source_len + ((source_len // (31 * 1024)) + 1) * 5\n    return max(val1, val2)",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_zero_source_len():\n    \"\"\"Test mz_deflateBound with a zero source length and None stream.\"\"\"\n    bound = mz_deflateBound(None, 0)\n    assert isinstance(bound, int)\n    assert bound >= 0\n\n\ndef test_semantic_small_source_len():\n    \"\"\"Test mz_deflateBound with a small source length.\"\"\"\n    bound = mz_deflateBound(None, 100)\n    assert isinstance(bound, int)\n    # The bound should be at least the source length for deflate\n    assert bound >= 100\n\n\ndef test_semantic_large_source_len():\n    \"\"\"Test mz_deflateBound with a larger source length.\"\"\"\n    source_len = 65536\n    bound = mz_deflateBound(None, source_len)\n    assert isinstance(bound, int)\n    assert bound >= source_len\n\n\ndef test_semantic_with_mock_stream_structure():\n    \"\"\"Test mz_deflateBound when a stream dictionary or object is passed.\"\"\"\n    class MockStream:\n        def __init__(self):\n            self.next_in = None\n            self.avail_in = 0\n            self.total_in = 0\n            self.next_out = None\n            self.avail_out = 0\n            self.total_out = 0\n            self.msg = None\n            self.state = None\n\n    stream = MockStream()\n    bound = mz_deflateBound(stream, 1024)\n    assert isinstance(bound, int)\n    assert bound >= 1024\n\n\n@settings(max_examples=50, deadline=None)\n@given(source_len=st.integers(min_value=0, max_value=2**32 - 1))\ndef test_auto_property_deflate_bound_scaling(source_len):\n    \"\"\"Property-based test ensuring bound increases or scales reasonably with source length.\"\"\"\n    bound = mz_deflateBound(None, source_len)\n    assert isinstance(bound, int)\n    # Deflate bound should always be at least as large as the source length\n    assert bound >= source_len",
+      "execution": {
+        "total_tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_zero_source_len PASSED                                   [ 20%]\n::test_semantic_small_source_len PASSED                                  [ 40%]\n::test_semantic_large_source_len PASSED                                  [ 60%]\n::test_semantic_with_mock_stream_structure PASSED                        [ 80%]\n::test_auto_property_deflate_bound_scaling PASSED                        [100%]\n\n============================== 5 passed in 2.24s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 5,
+          "reference_total": 5,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 5
+        }
+      }
+    }
+  },
+  "mz_deflateEnd": {
+    "doc_hash": "1ae650c8a82c",
+    "db_id": "miniz_miniz_c_mz_deflateEnd",
+    "codewiki_doc": "Frees stream state resources and cleans up memory.",
+    "retrieval": {
+      "rank": 10,
+      "reciprocal_rank": 0.1,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "mz_free",
+      "top_similarity": 0.3299
+    },
+    "codebert": {
+      "precision": 0.7353,
+      "recall": 0.7196,
+      "f1": 0.7274
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.2,
+        "std": 0.4,
+        "sample_reasoning": "DEF-1: Omission of Error Handling, as it fails to document the MZ_STREAM_ERROR return value when the stream is NULL. The documentation is concise and mostly accurate regarding memory cleanup, but lacks details on the null-pointer check and return codes. Therefore, starting from a baseline of 4.0 and deducting for the minor omission results in a score of 4."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1: The generated documentation completely misses the critical return value behavior and error condition (returning MZ_STREAM_ERROR if the stream is bogus) specified in the Ground Truth. It only describes the memory cleanup aspect while omitting the error handling contract."
+      },
+      "combined_score": 3.1
+    },
+    "roundtrip": {
+      "function_name": "mz_deflateEnd",
+      "library": "miniz",
+      "signature": "int mz_deflateEnd(mz_streamp pStream)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Error codes\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        # Allow flexible initialization for mock struct compliance\n        self.next_in = kwargs.get('next_in', None)\n        self.avail_in = kwargs.get('avail_in', 0)\n        self.total_in = kwargs.get('total_in', 0)\n        self.next_out = kwargs.get('next_out', None)\n        self.avail_out = kwargs.get('avail_out', 0)\n        self.total_out = kwargs.get('total_out', 0)\n        self.msg = kwargs.get('msg', None)\n        self.state = kwargs.get('state', None)\n        \n        # Support positional arguments if passed\n        if len(args) > 0 and isinstance(args[0], dict):\n            d = args[0]\n            self.next_in = d.get('next_in', self.next_in)\n            self.avail_in = d.get('avail_in', self.avail_in)\n            self.total_in = d.get('total_in', self.total_in)\n            self.next_out = d.get('next_out', self.next_out)\n            self.avail_out = d.get('avail_out', self.avail_out)\n            self.total_out = d.get('total_out', self.total_out)\n            self.msg = d.get('msg', self.msg)\n            self.state = d.get('state', self.state)\n\n\ndef mz_deflateEnd(pStream):\n    \"\"\"\n    Frees stream state resources and cleans up memory.\n    C Signature: int mz_deflateEnd(mz_streamp pStream)\n    \"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    # If pStream is a list container (output pointer convention), extract the stream object\n    if isinstance(pStream, list):\n        if len(pStream) == 0:\n            return MZ_STREAM_ERROR\n        stream_obj = pStream[0]\n    else:\n        stream_obj = pStream\n\n    if stream_obj is None:\n        return MZ_STREAM_ERROR\n\n    # Free/clean up resources and state\n    if hasattr(stream_obj, 'state'):\n        stream_obj.state = None\n\n    return MZ_OK",
+      "reference_code": "# Constants and Error Codes\nMZ_OK = 0\nMZ_STREAM_ERROR = -2\n\n\ndef mz_deflateEnd(pStream):\n    \"\"\"\n    Equivalent to the miniz C function mz_deflateEnd(mz_streamp pStream).\n    \"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n    \n    if hasattr(pStream, 'state') and pStream.state is not None:\n        if hasattr(pStream, 'zfree') and callable(pStream.zfree):\n            pStream.zfree(pStream.opaque, pStream.state)\n        pStream.state = None\n        \n    return MZ_OK",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_deflate_end_null_stream():\n    \"\"\"Verify that calling mz_deflateEnd with a NULL (None) stream returns an appropriate error or handles it gracefully without crashing.\"\"\"\n    result = mz_deflateEnd(None)\n    # Depending on implementation, NULL stream might return MZ_STREAM_ERROR or 0/success, \n    # but based on miniz contract, error codes like MZ_STREAM_ERROR (-2) are standard for invalid streams.\n    # We assert it returns an integer as specified by the signature `int mz_deflateEnd`.\n    assert isinstance(result, int)\n\n\ndef test_semantic_deflate_end_uninitialized_stream():\n    \"\"\"Verify calling mz_deflateEnd on a basic stream structure with zero/null internal state.\"\"\"\n    # Construct a simple mock stream object representing mz_stream_s\n    class Stream:\n        def __init__(self):\n            self.next_in = None\n            self.avail_in = 0\n            self.total_in = 0\n            self.next_out = None\n            self.avail_out = 0\n            self.total_out = 0\n            self.msg = None\n            self.state = None\n\n    stream = Stream()\n    result = mz_deflateEnd(stream)\n    assert isinstance(result, int)\n\n\ndef test_semantic_deflate_end_return_type():\n    \"\"\"Verify that mz_deflateEnd strictly returns an integer value adhering to the C signature.\"\"\"\n    class Stream:\n        def __init__(self):\n            self.next_in = None\n            self.avail_in = 0\n            self.total_in = 0\n            self.next_out = None\n            self.avail_out = 0\n            self.total_out = 0\n            self.msg = None\n            self.state = None\n\n    stream = Stream()\n    res = mz_deflateEnd(stream)\n    assert isinstance(res, int)\n\n\n@settings(max_examples=30, deadline=None)\n@given(\n    avail_in=st.integers(min_value=0, max_value=65535),\n    avail_out=st.integers(min_value=0, max_value=65535),\n    total_in=st.integers(min_value=0, max_value=1024),\n    total_out=st.integers(min_value=0, max_value=1024)\n)\ndef test_auto_property_deflate_end_varied_stream_fields(avail_in, avail_out, total_in, total_out):\n    \"\"\"Property-based test verifying mz_deflateEnd robustness against various numeric fields in the stream structure.\"\"\"\n    class Stream:\n        def __init__(self):\n            self.next_in = None\n            self.avail_in = avail_in\n            self.total_in = total_in\n            self.next_out = None\n            self.avail_out = avail_out\n            self.total_out = total_out\n            self.msg = None\n            self.state = None\n\n    stream = Stream()\n    result = mz_deflateEnd(stream)\n    assert isinstance(result, int)",
+      "execution": {
+        "total_tests": 4,
+        "passed": 4,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 3,
+          "failed": 0,
+          "total": 3
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 4 items\n\n::test_semantic_deflate_end_null_stream PASSED                           [ 25%]\n::test_semantic_deflate_end_uninitialized_stream PASSED                  [ 50%]\n::test_semantic_deflate_end_return_type PASSED                           [ 75%]\n::test_auto_property_deflate_end_varied_stream_fields PASSED             [100%]\n\n============================== 4 passed in 2.20s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 100.0,
+          "reference_passed": 4,
+          "reference_total": 4,
+          "differential_agreement_rate": 100.0,
+          "both_passed_count": 4
+        }
+      }
+    }
+  },
+  "mz_deflateInit": {
+    "doc_hash": "a262a405d9f9",
+    "db_id": "miniz_miniz_c_mz_deflateInit",
+    "codewiki_doc": "Initializes a compression stream using default parameters.",
+    "retrieval": {
+      "rank": 3,
+      "reciprocal_rank": 0.3333,
+      "hit_at_1": 0.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "deflateInit",
+      "top_similarity": 0.5428
+    },
+    "codebert": {
+      "precision": 0.6737,
+      "recall": 0.6572,
+      "f1": 0.6653
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-1: Omission of error handling (does not mention MZ_MEM_ERROR or underlying allocation failures), DEF-3: Tautological / Empty Description (largely rephrases the function name). The generated documentation is brief and misses crucial error codes from the ground truth, bringing it down to an adequate/flawed level."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          2.0,
+          3.0,
+          3.0,
+          2.0,
+          2.0
+        ],
+        "mean": 2.4,
+        "std": 0.49,
+        "sample_reasoning": "ALIGN-1: The generated documentation fails to mention the critical error return value (MZ_MEM_ERROR on out of memory) specified in the Ground Truth. It only provides a vague high-level description without capturing the specific error condition."
+      },
+      "combined_score": 2.7
+    },
+    "roundtrip": {
+      "function_name": "mz_deflateInit",
+      "library": "miniz",
+      "signature": "int mz_deflateInit(mz_streamp pStream, int level)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Constants and Error Codes\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\n\nclass mz_internal_state:\n    def __init__(self, *args, **kwargs):\n        self.level = kwargs.get(\"level\", MZ_DEFAULT_COMPRESSION)\n        self.strategy = kwargs.get(\"strategy\", MZ_DEFAULT_STRATEGY)\n\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        self.next_in = kwargs.get(\"next_in\", None)\n        self.avail_in = kwargs.get(\"avail_in\", 0)\n        self.total_in = kwargs.get(\"total_in\", 0)\n        self.next_out = kwargs.get(\"next_out\", None)\n        self.avail_out = kwargs.get(\"avail_out\", 0)\n        self.total_out = kwargs.get(\"total_out\", 0)\n        self.msg = kwargs.get(\"msg\", None)\n        self.state = kwargs.get(\"state\", None)\n\n\ndef mz_deflateInit(pStream, level):\n    \"\"\"Initializes a compression stream using default parameters.\"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    # Initialize stream fields or state\n    if isinstance(pStream, mz_stream_s):\n        pStream.state = mz_internal_state(level=level)\n        pStream.total_in = 0\n        pStream.total_out = 0\n        pStream.msg = None\n    elif isinstance(pStream, list) and len(pStream) > 0:\n        stream_obj = pStream[0]\n        if stream_obj is not None:\n            stream_obj.state = mz_internal_state(level=level)\n            stream_obj.total_in = 0\n            stream_obj.total_out = 0\n            stream_obj.msg = None\n\n    return MZ_OK",
+      "reference_code": "# Constants and Enums from miniz definitions\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nMZ_DEFLATED = 8\nMZ_DEFAULT_WINDOW_BITS = 15\n\n\ndef mz_deflateInit2(pStream, level, method, windowBits, memLevel, strategy):\n    \"\"\"Mock/transpiled implementation of mz_deflateInit2 as called by mz_deflateInit.\"\"\"\n    # This represents the underlying C function functionality.\n    # A full miniz implementation would initialize the deflate state here.\n    if pStream is None:\n        return MZ_STREAM_ERROR\n    return MZ_OK\n\n\ndef mz_deflateInit(pStream, level):\n    return mz_deflateInit2(\n        pStream,\n        level,\n        MZ_DEFLATED,\n        MZ_DEFAULT_WINDOW_BITS,\n        9,\n        MZ_DEFAULT_STRATEGY,\n    )",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_deflate_init_default_level():\n    \"\"\"Test successful initialization of deflation stream with default compression level.\"\"\"\n    stream = mz_stream_s()\n    result = mz_deflateInit(stream, MZ_DEFAULT_LEVEL)\n    assert result == MZ_OK\n\n\ndef test_semantic_deflate_init_best_speed():\n    \"\"\"Test successful initialization of deflation stream with best speed compression level.\"\"\"\n    stream = mz_stream_s()\n    result = mz_deflateInit(stream, MZ_BEST_SPEED)\n    assert result == MZ_OK\n\n\ndef test_semantic_deflate_init_best_compression():\n    \"\"\"Test successful initialization of deflation stream with best compression level.\"\"\"\n    stream = mz_stream_s()\n    result = mz_deflateInit(stream, MZ_BEST_COMPRESSION)\n    assert result == MZ_OK\n\n\ndef test_semantic_deflate_init_no_compression():\n    \"\"\"Test successful initialization of deflation stream with no compression.\"\"\"\n    stream = mz_stream_s()\n    result = mz_deflateInit(stream, MZ_NO_COMPRESSION)\n    assert result == MZ_OK\n\n\ndef test_semantic_deflate_init_null_stream():\n    \"\"\"Test behavior when passing a None/null stream pointer.\"\"\"\n    result = mz_deflateInit(None, MZ_DEFAULT_LEVEL)\n    assert result == MZ_STREAM_ERROR\n\n\n@settings(max_examples=50, deadline=None)\n@given(level=st.integers(min_value=-100, max_value=100))\ndef test_auto_property_deflate_init_levels(level):\n    \"\"\"Property-based test for various compression integer levels.\"\"\"\n    stream = mz_stream_s()\n    result = mz_deflateInit(stream, level)\n    # Depending on miniz implementation, invalid levels might return MZ_STREAM_ERROR or MZ_OK\n    assert isinstance(result, int)\n\n\n@settings(max_examples=20, deadline=None)\n@given(use_none=st.booleans(), level=st.integers(min_value=0, max_value=9))\ndef test_auto_property_deflate_init_stream_presence(use_none, level):\n    \"\"\"Property-based test verifying stream parameter safety.\"\"\"\n    stream = None if use_none else mz_stream_s()\n    result = mz_deflateInit(stream, level)\n    if use_none:\n        assert result == MZ_STREAM_ERROR\n    else:\n        assert result == MZ_OK",
+      "execution": {
+        "total_tests": 7,
+        "passed": 7,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 5,
+          "failed": 0,
+          "total": 5
+        },
+        "auto_property_tests": {
+          "passed": 2,
+          "failed": 0,
+          "total": 2
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 7 items\n\n::test_semantic_deflate_init_default_level PASSED                        [ 14%]\n::test_semantic_deflate_init_best_speed PASSED                           [ 28%]\n::test_semantic_deflate_init_best_compression PASSED                     [ 42%]\n::test_semantic_deflate_init_no_compression PASSED                       [ 57%]\n::test_semantic_deflate_init_null_stream PASSED                          [ 71%]\n::test_auto_property_deflate_init_levels PASSED                          [ 85%]\n::test_auto_property_deflate_init_stream_presence PASSED                 [100%]\n\n============================== 7 passed in 2.24s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 14.3,
+          "reference_passed": 1,
+          "reference_total": 7,
+          "differential_agreement_rate": 14.3,
+          "both_passed_count": 1
+        }
+      }
+    }
+  },
+  "mz_deflateInit2": {
+    "doc_hash": "24d59d1d733c",
+    "db_id": "miniz_miniz_c_mz_deflateInit2",
+    "codewiki_doc": "Initializes a compression stream with custom level, method, window bits, memory level, and strategy.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "mz_deflateInit2",
+      "top_similarity": 0.5969
+    },
+    "codebert": {
+      "precision": 0.7097,
+      "recall": 0.6707,
+      "f1": 0.6896
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          4.0
+        ],
+        "mean": 3.2,
+        "std": 0.4,
+        "sample_reasoning": "DEF-1: The documentation omits failure modes such as NULL pointer checks, parameter validation errors (MZ_PARAM_ERROR), and memory allocation failures (MZ_MEM_ERROR). DEF-2: It does not explicitly mention memory ownership or the internal allocation mechanism using zalloc. Despite these omissions, the brief description is technically accurate regarding the function's purpose."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1: The generated documentation fails to mention that the `mem_level` parameter is ignored by miniz.c despite being checked. Consequently, the score reflects a missing critical nuance from the Ground Truth."
+      },
+      "combined_score": 3.1
+    },
+    "roundtrip": {
+      "function_name": "mz_deflateInit2",
+      "library": "miniz",
+      "signature": "int mz_deflateInit2(mz_streamp pStream, int level, int method, int window_bits, int mem_level, int strategy)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Constants and Error Codes\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nclass mz_internal_state:\n    def __init__(self, *args, **kwargs):\n        for k, v in kwargs.items():\n            setattr(self, k, v)\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        self.next_in = kwargs.get('next_in', None)\n        self.avail_in = kwargs.get('avail_in', 0)\n        self.total_in = kwargs.get('total_in', 0)\n        self.next_out = kwargs.get('next_out', None)\n        self.avail_out = kwargs.get('avail_out', 0)\n        self.total_out = kwargs.get('total_out', 0)\n        self.msg = kwargs.get('msg', None)\n        self.state = kwargs.get('state', None)\n        for k, v in kwargs.items():\n            if not hasattr(self, k):\n                setattr(self, k, v)\n\n\ndef mz_deflateInit2(pStream, level, method, window_bits, mem_level, strategy):\n    \"\"\"\n    Initializes a compression stream with custom level, method, window bits, memory level, and strategy.\n    \"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    # Validate parameters roughly according to standard zlib/miniz rules\n    if level != MZ_DEFAULT_COMPRESSION and (level < MZ_NO_COMPRESSION or level > MZ_UBER_COMPRESSION):\n        return MZ_STREAM_ERROR\n    if method != 8:  # Typically MZ_DEFLated / 8 is standard deflate method\n        pass\n\n    # Create internal state representation\n    state = mz_internal_state(\n        level=level,\n        method=method,\n        window_bits=window_bits,\n        mem_level=mem_level,\n        strategy=strategy\n    )\n\n    if isinstance(pStream, mz_stream_s):\n        pStream.state = state\n        pStream.total_in = 0\n        pStream.total_out = 0\n        pStream.msg = None\n    elif isinstance(pStream, list) and len(pStream) > 0:\n        if hasattr(pStream[0], 'state'):\n            pStream[0].state = state\n            pStream[0].total_in = 0\n            pStream[0].total_out = 0\n            pStream[0].msg = None\n\n    return MZ_OK",
+      "reference_code": "# Constants and Error Codes\nMZ_OK = 0\nMZ_STREAM_ERROR = -2\nMZ_PARAM_ERROR = -3\nMZ_MEM_ERROR = -4\n\nMZ_DEFLATED = 8\nMZ_DEFAULT_WINDOW_BITS = 15\nMZ_ADLER32_INIT = 1  # Standard zlib Adler32 initial value\n\nTDEFL_COMPUTE_ADLER32 = 1\nTDEFL_STATUS_OKAY = 0\n\n\nclass TdeflCompressor:\n    def __init__(self):\n        self.comp_flags = 0\n\n\ndef tdefl_create_comp_flags_from_zip_params(level, window_bits, strategy):\n    # Mock behavior corresponding to miniz implementation of compressor flag creation\n    return (level & 0xF) | ((strategy & 0xF) << 4) | ((abs(window_bits) & 0xF) << 8)\n\n\ndef miniz_def_alloc_func(opaque, items, size):\n    # Pure Python allocator mock returning a new TdeflCompressor object\n    return TdeflCompressor()\n\n\ndef miniz_def_free_func(opaque, address):\n    pass\n\n\ndef tdefl_init(pComp, pPut_buf_func, pPut_buf_user, comp_flags):\n    # Mock tdefl_init logic\n    if pComp is None:\n        return -1  # Error status equivalent\n    pComp.comp_flags = comp_flags\n    return TDEFL_STATUS_OKAY\n\n\ndef mz_deflateEnd(pStream):\n    if pStream:\n        pStream.state = None\n    return MZ_OK\n\n\ndef mz_deflateInit2(pStream, level, method, window_bits, mem_level, strategy):\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    if (\n        (method != MZ_DEFLATED)\n        or (mem_level < 1 or mem_level > 9)\n        or (\n            window_bits != MZ_DEFAULT_WINDOW_BITS\n            and -window_bits != MZ_DEFAULT_WINDOW_BITS\n        )\n    ):\n        return MZ_PARAM_ERROR\n\n    comp_flags = TDEFL_COMPUTE_ADLER32 | tdefl_create_comp_flags_from_zip_params(\n        level, window_bits, strategy\n    )\n\n    pStream.data_type = 0\n    pStream.adler = MZ_ADLER32_INIT\n    pStream.msg = None\n    pStream.reserved = 0\n    pStream.total_in = 0\n    pStream.total_out = 0\n\n    if not hasattr(pStream, \"zalloc\") or pStream.zalloc is None:\n        pStream.zalloc = miniz_def_alloc_func\n    if not hasattr(pStream, \"zfree\") or pStream.zfree is None:\n        pStream.zfree = miniz_def_free_func\n\n    opaque = getattr(pStream, \"opaque\", None)\n    pComp = pStream.zalloc(opaque, 1, 1)  # size argument abstracted in Python\n\n    if pComp is None:\n        return MZ_MEM_ERROR\n\n    pStream.state = pComp\n\n    if tdefl_init(pComp, None, None, comp_flags) != TDEFL_STATUS_OKAY:\n        mz_deflateEnd(pStream)\n        return MZ_PARAM_ERROR\n\n    return MZ_OK",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_deflate_init2_success():\n    \"\"\"Test successful initialization with standard compression parameters.\"\"\"\n    # mz_stream_s fields: next_in, avail_in, total_in, next_out, avail_out, total_out, msg, state\n    stream = [None, 0, 0, None, 0, 0, None, None]\n    \n    # level = MZ_DEFAULT_LEVEL (-1), method = MZ_DEFLATED (8), window_bits = 15, mem_level = 8, strategy = MZ_DEFAULT_STRATEGY (0)\n    # Note: MZ_DEFLATED is typically 8 in miniz/zlib.\n    ret = mz_deflateInit2(stream, -1, 8, 15, 8, 0)\n    assert ret == 0  # MZ_OK\n\n\ndef test_semantic_deflate_init2_no_compression():\n    \"\"\"Test initialization with MZ_NO_COMPRESSION level.\"\"\"\n    stream = [None, 0, 0, None, 0, 0, None, None]\n    ret = mz_deflateInit2(stream, 0, 8, 15, 8, 0)\n    assert ret == 0  # MZ_OK\n\n\ndef test_semantic_deflate_init2_best_compression():\n    \"\"\"Test initialization with MZ_BEST_COMPRESSION level and custom strategy.\"\"\"\n    stream = [None, 0, 0, None, 0, 0, None, None]\n    # level = 9, method = 8, window_bits = 15, mem_level = 9, strategy = MZ_HUFFMAN_ONLY (2)\n    ret = mz_deflateInit2(stream, 9, 8, 15, 9, 2)\n    assert ret == 0  # MZ_OK\n\n\ndef test_semantic_deflate_init2_invalid_stream():\n    \"\"\"Test behavior when stream pointer is None or invalid.\"\"\"\n    ret = mz_deflateInit2(None, -1, 8, 15, 8, 0)\n    # According to miniz spec, invalid stream or bad parameters return stream error or stream status\n    assert ret != 0\n\n\ndef test_semantic_deflate_init2_invalid_level():\n    \"\"\"Test behavior with an invalid compression level.\"\"\"\n    stream = [None, 0, 0, None, 0, 0, None, None]\n    # Level 99 is out of bounds\n    ret = mz_deflateInit2(stream, 99, 8, 15, 8, 0)\n    assert ret != 0\n\n\ndef test_semantic_deflate_init2_invalid_window_bits():\n    \"\"\"Test behavior with invalid window bits.\"\"\"\n    stream = [None, 0, 0, None, 0, 0, None, None]\n    # Invalid window bits\n    ret = mz_deflateInit2(stream, -1, 8, 4, 8, 0)\n    assert ret != 0\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    level=st.integers(min_value=-10, max_value=20),\n    method=st.integers(min_value=0, max_value=20),\n    window_bits=st.integers(min_value=0, max_value=30),\n    mem_level=st.integers(min_value=0, max_value=15),\n    strategy=st.integers(min_value=0, max_value=10)\n)\ndef test_auto_property_deflate_init2(level, method, window_bits, mem_level, strategy):\n    \"\"\"Property-based test exploring various integer combinations for deflateInit2.\"\"\"\n    stream = [None, 0, 0, None, 0, 0, None, None]\n    ret = mz_deflateInit2(stream, level, method, window_bits, mem_level, strategy)\n    # The function should return an integer status code regardless of inputs\n    assert isinstance(ret, int)",
+      "execution": {
+        "total_tests": 7,
+        "passed": 6,
+        "failed": 1,
+        "errors": 0,
+        "pass_rate": 85.7,
+        "semantic_tests": {
+          "passed": 5,
+          "failed": 1,
+          "total": 6
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 7 items\n\n::test_semantic_deflate_init2_success PASSED                             [ 14%]\n::test_semantic_deflate_init2_no_compression PASSED                      [ 28%]\n::test_semantic_deflate_init2_best_compression PASSED                    [ 42%]\n::test_semantic_deflate_init2_invalid_stream PASSED                      [ 57%]\n::test_semantic_deflate_init2_invalid_level PASSED                       [ 71%]\n::test_semantic_deflate_init2_invalid_window_bits FAILED                 [ 85%]\n::test_auto_property_deflate_init2 PASSED                                [100%]\n\n================================== FAILURES ===================================\n_______________ test_semantic_deflate_init2_invalid_window_bits _______________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpyi9vd8us.py:344: in test_semantic_deflate_init2_invalid_window_bits\n    assert ret != 0\nE   assert 0 != 0\n=========================== short test summary info ===========================\nFAILED ::test_semantic_deflate_init2_invalid_window_bits - assert 0 != 0\n========================= 1 failed, 6 passed in 2.59s =========================\n",
+        "differential": {
+          "reference_pass_rate": 42.9,
+          "reference_passed": 3,
+          "reference_total": 7,
+          "differential_agreement_rate": 28.6,
+          "both_passed_count": 2
+        }
+      }
+    }
+  },
+  "mz_deflateReset": {
+    "doc_hash": "4c56ebed2670",
+    "db_id": "miniz_miniz_c_mz_deflateReset",
+    "codewiki_doc": "Resets an active stream state for reuse without re-allocation.",
+    "retrieval": {
+      "rank": 8,
+      "reciprocal_rank": 0.125,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "mz_inflate",
+      "top_similarity": 0.3423
+    },
+    "codebert": {
+      "precision": 0.7999,
+      "recall": 0.6977,
+      "f1": 0.7453
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-1: The documentation omits the specific error handling behavior (returning MZ_STREAM_ERROR if the stream, state, zalloc, or zfree pointers are invalid). The generated description is otherwise concise, accurate, and aligns well with the ground truth regarding resetting the compressor without re-allocation. Therefore, it incurs a minor deduction for omitting failure modes."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1: The generated documentation is concise and captures the core functional goal of resetting the stream without reallocation, but it misses the specific helpful equivalence noted in the Ground Truth (that it is functionally the same as calling mz_deflateEnd followed by mz_deflateInit/mz_deflateInit2)."
+      },
+      "combined_score": 4.0
+    },
+    "roundtrip": {
+      "function_name": "mz_deflateReset",
+      "library": "miniz",
+      "signature": "int mz_deflateReset(mz_streamp pStream)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Error codes\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\n# Flush values\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\n# Compression levels\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\n# Strategies\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\n\nclass mz_internal_state:\n    def __init__(self, *args, **kwargs):\n        for k, v in kwargs.items():\n            setattr(self, k, v)\n\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        self.next_in = kwargs.get('next_in', None)\n        self.avail_in = kwargs.get('avail_in', 0)\n        self.total_in = kwargs.get('total_in', 0)\n        self.next_out = kwargs.get('next_out', None)\n        self.avail_out = kwargs.get('avail_out', 0)\n        self.total_out = kwargs.get('total_out', 0)\n        self.msg = kwargs.get('msg', None)\n        self.state = kwargs.get('state', None)\n        for k, v in kwargs.items():\n            if not hasattr(self, k):\n                setattr(self, k, v)\n\n\ndef mz_deflateReset(pStream):\n    \"\"\"\n    Resets an active stream state for reuse without re-allocation.\n    \"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    # If pStream is a dictionary (common alternative mock in Python tests)\n    if isinstance(pStream, dict):\n        if 'state' not in pStream or pStream['state'] is None:\n            return MZ_STREAM_ERROR\n        pStream['total_in'] = 0\n        pStream['total_out'] = 0\n        pStream['msg'] = None\n        return MZ_OK\n\n    # If pStream is an object (mz_stream_s or similar mock)\n    if not hasattr(pStream, 'state') or pStream.state is None:\n        return MZ_STREAM_ERROR\n\n    pStream.total_in = 0\n    pStream.total_out = 0\n    pStream.msg = None\n    \n    return MZ_OK",
+      "reference_code": "MZ_OK = 0\nMZ_STREAM_ERROR = -2\n\ndef mz_deflateReset(pStream):\n    if (not pStream) or (not pStream.get('state')) or (not pStream.get('zalloc')) or (not pStream.get('zfree')):\n        return MZ_STREAM_ERROR\n    \n    pStream['total_in'] = 0\n    pStream['total_out'] = 0\n    \n    state = pStream['state']\n    # Re-initialize the compressor state using its flags (mimicking tdefl_init with NULL allocators)\n    flags = state.m_flags if hasattr(state, 'm_flags') else state.get('m_flags', 0)\n    state.tdefl_init(None, None, flags)\n    \n    return MZ_OK",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_null_stream():\n    \"\"\"Verify behavior when passing None/NULL as the stream pointer.\"\"\"\n    result = mz_deflateReset(None)\n    assert result == MZ_STREAM_ERROR\n\n\ndef test_semantic_uninitialized_stream():\n    \"\"\"Verify behavior when passing an uninitialized or empty stream structure.\"\"\"\n    stream = {}\n    result = mz_deflateReset(stream)\n    assert result in (MZ_STREAM_ERROR, MZ_OK)\n\n\ndef test_semantic_initialized_stream():\n    \"\"\"Verify resetting an active deflate stream state.\"\"\"\n    # Construct a mock/emulated miniz stream structure\n    stream = {\n        \"next_in\": b\"test data\",\n        \"avail_in\": 9,\n        \"total_in\": 0,\n        \"next_out\": bytearray(100),\n        \"avail_out\": 100,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": {\"dummy_internal_state\": 42}\n    }\n    result = mz_deflateReset(stream)\n    assert result == MZ_OK\n\n\ndef test_semantic_stream_zero_fields():\n    \"\"\"Verify stream reset with zeroed numeric fields.\"\"\"\n    stream = {\n        \"next_in\": None,\n        \"avail_in\": 0,\n        \"total_in\": 0,\n        \"next_out\": None,\n        \"avail_out\": 0,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": None\n    }\n    result = mz_deflateReset(stream)\n    assert result in (MZ_OK, MZ_STREAM_ERROR)\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    avail_in=st.integers(min_value=0, max_value=1024),\n    avail_out=st.integers(min_value=0, max_value=1024),\n    total_in=st.integers(min_value=0, max_value=65535),\n    total_out=st.integers(min_value=0, max_value=65535)\n)\ndef test_auto_property_stream_resets(avail_in, avail_out, total_in, total_out):\n    \"\"\"Property-based test for various integer counts within the stream structure.\"\"\"\n    stream = {\n        \"next_in\": b\"A\" * avail_in if avail_in > 0 else None,\n        \"avail_in\": avail_in,\n        \"total_in\": total_in,\n        \"next_out\": bytearray(avail_out) if avail_out > 0 else None,\n        \"avail_out\": avail_out,\n        \"total_out\": total_out,\n        \"msg\": None,\n        \"state\": {\"active\": True}\n    }\n    result = mz_deflateReset(stream)\n    # The return value should be an integer error/status code\n    assert isinstance(result, int)",
+      "execution": {
+        "total_tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_null_stream PASSED                                       [ 20%]\n::test_semantic_uninitialized_stream PASSED                              [ 40%]\n::test_semantic_initialized_stream PASSED                                [ 60%]\n::test_semantic_stream_zero_fields PASSED                                [ 80%]\n::test_auto_property_stream_resets PASSED                                [100%]\n\n============================== 5 passed in 2.23s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 80.0,
+          "reference_passed": 4,
+          "reference_total": 5,
+          "differential_agreement_rate": 80.0,
+          "both_passed_count": 4
+        }
+      }
+    }
+  },
+  "mz_inflate": {
+    "doc_hash": "6ff5b8a6fa02",
+    "db_id": "miniz_miniz_c_mz_inflate",
+    "codewiki_doc": "- Processes input compressed blocks, managing buffer pointers, window wrapping, dictionary buffering, and Adler-32 checksum updates. - Supports `MZ_SYNC_FLUSH` and `MZ_FINISH`. Returns standard zlib status codes: `MZ_OK`, `MZ_STREAM_END`, `MZ_BUF_ERROR`, `MZ_DATA_ERROR`, or `MZ_STREAM_ERROR`.",
+    "retrieval": {
+      "rank": 5,
+      "reciprocal_rank": 0.2,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 1.0,
+      "top_match": "mz_deflate",
+      "top_similarity": 0.5254
+    },
+    "codebert": {
+      "precision": 0.662,
+      "recall": 0.7149,
+      "f1": 0.6874
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-1: Omits explicit documentation of specific error conditions like NULL stream/state handling returning MZ_STREAM_ERROR, though it mentions standard return codes. DEF-3: The description is slightly concise/tautological regarding some operational mechanics, but it accurately captures supported flush modes and return codes. Score adjusted to 4.0 for standard technical accuracy and alignment with the source code without hallucinations."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          2.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 2.8,
+        "std": 0.4,
+        "sample_reasoning": "ALIGN-1: The generated documentation completely misses the specific operational condition and buffer management nuances detailed in the ground truth regarding input data and output buffer room. It focuses instead on general zlib status codes and flush types rather than the author's specific behavioral intent."
+      },
+      "combined_score": 3.4
+    },
+    "roundtrip": {
+      "function_name": "mz_inflate",
+      "library": "miniz",
+      "signature": "int mz_inflate(mz_streamp pStream, int flush)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Module top-level constants and error codes based on miniz specification\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nMZ_ADLER32_INIT = 1\nMZ_CRC32_INIT = 0\nMZ_DEFLATED = 8\nMZ_VERSION = \"2.0.0\"\nMZ_VERNUM = 0x2000\nMZ_VER_MAJOR = 2\n\n\nclass mz_internal_state:\n    def __init__(self, *args, **kwargs):\n        for k, v in kwargs.items():\n            setattr(self, k, v)\n\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        # Support flexible initialization using keyword arguments or positional mocks\n        self.next_in = kwargs.get(\"next_in\", b\"\")\n        self.avail_in = kwargs.get(\"avail_in\", 0)\n        self.total_in = kwargs.get(\"total_in\", 0)\n        self.next_out = kwargs.get(\"next_out\", bytearray())\n        self.avail_out = kwargs.get(\"avail_out\", 0)\n        self.total_out = kwargs.get(\"total_out\", 0)\n        self.msg = kwargs.get(\"msg\", None)\n        self.state = kwargs.get(\"state\", None)\n\n        # Allow passing through extra kwargs if any\n        for k, v in kwargs.items():\n            if not hasattr(self, k):\n                setattr(self, k, v)\n\n\ndef mz_inflate(pStream, flush):\n    \"\"\"Processes input compressed blocks, managing buffer pointers, window wrapping,\n\n    dictionary buffering, and Adler-32 checksum updates. Supports MZ_SYNC_FLUSH\n    and MZ_FINISH. Returns standard zlib status codes: MZ_OK, MZ_STREAM_END,\n    MZ_BUF_ERROR, MZ_DATA_ERROR, or MZ_STREAM_ERROR.\n    \"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    # Validate flush argument support as per documentation\n    if flush != MZ_SYNC_FLUSH and flush != MZ_FINISH and flush != MZ_NO_FLUSH:\n        return MZ_STREAM_ERROR\n\n    # If stream is passed as a dict/list/mock or standard object, normalize access\n    if isinstance(pStream, dict):\n        next_in = pStream.get(\"next_in\", b\"\")\n        avail_in = pStream.get(\"avail_in\", 0)\n        avail_out = pStream.get(\"avail_out\", 0)\n    else:\n        next_in = getattr(pStream, \"next_in\", b\"\")\n        avail_in = getattr(pStream, \"avail_in\", 0)\n        avail_out = getattr(pStream, \"avail_out\", 0)\n\n    # Basic state / buffer validation\n    if avail_in == 0 and avail_out == 0:\n        return MZ_BUF_ERROR\n\n    # Placeholder logic mapping to zlib status codes per spec documentation\n    return MZ_OK",
+      "reference_code": "# Constants and Error Codes\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nTINFL_FLAG_COMPUTE_ADLER32 = 1\nTINFL_FLAG_PARSE_ZLIB_HEADER = 2\nTINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF = 4\nTINFL_FLAG_HAS_MORE_INPUT = 8\n\nTINFL_STATUS_DONE = 1\nTINFL_STATUS_NEEDS_MORE_INPUT = 0\nTINFL_STATUS_HAS_MORE_OUTPUT = 2\nTINFL_STATUS_FAILED = -1\n\nTINFL_LZ_DICT_SIZE = 32768\n\n\ndef MZ_MIN(a, b):\n    return a if a < b else b\n\n\ndef mz_inflate(pStream, flush):\n    if pStream is None or getattr(pStream, 'state', None) is None:\n        return MZ_STREAM_ERROR\n\n    if flush == MZ_PARTIAL_FLUSH:\n        flush = MZ_SYNC_FLUSH\n\n    if flush != 0 and flush != MZ_SYNC_FLUSH and flush != MZ_FINISH:\n        return MZ_STREAM_ERROR\n\n    pState = pStream.state\n    decomp_flags = TINFL_FLAG_COMPUTE_ADLER32\n\n    if pState.m_window_bits > 0:\n        decomp_flags |= TINFL_FLAG_PARSE_ZLIB_HEADER\n\n    orig_avail_in = pStream.avail_in\n    first_call = pState.m_first_call\n    pState.m_first_call = 0\n\n    if pState.m_last_status < 0:\n        return MZ_DATA_ERROR\n\n    if pState.m_has_flushed and flush != MZ_FINISH:\n        return MZ_STREAM_ERROR\n\n    pState.m_has_flushed |= (flush == MZ_FINISH)\n\n    if flush == MZ_FINISH and first_call:\n        decomp_flags |= TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF\n        in_bytes = pStream.avail_in\n        out_bytes = pStream.avail_out\n\n        # tinfl_decompress mock/call integration expectation\n        status, in_bytes, out_bytes = tinfl_decompress(\n            pState.m_decomp,\n            pStream.next_in,\n            in_bytes,\n            pStream.next_out,\n            pStream.next_out,\n            out_bytes,\n            decomp_flags\n        )\n\n        pState.m_last_status = status\n        pStream.next_in += int(in_bytes)\n        pStream.avail_in -= int(in_bytes)\n        pStream.total_in += int(in_bytes)\n        pStream.adler = tinfl_get_adler32(pState.m_decomp)\n\n        pStream.next_out += int(out_bytes)\n        pStream.avail_out -= int(out_bytes)\n        pStream.total_out += int(out_bytes)\n\n        if status < 0:\n            return MZ_DATA_ERROR\n        elif status != TINFL_STATUS_DONE:\n            pState.m_last_status = TINFL_STATUS_FAILED\n            return MZ_BUF_ERROR\n\n        return MZ_STREAM_END\n\n    if flush != MZ_FINISH:\n        decomp_flags |= TINFL_FLAG_HAS_MORE_INPUT\n\n    if pState.m_dict_avail:\n        n = MZ_MIN(pState.m_dict_avail, pStream.avail_out)\n        # Simulate memory copy: pStream.next_out to pState.m_dict + pState.m_dict_ofs\n        dict_slice = pState.m_dict[pState.m_dict_ofs:pState.m_dict_ofs + n]\n        pStream.next_out[:n] = dict_slice\n        pStream.next_out = pStream.next_out[n:]  # Advance buffer view/pointer if bytearray\n        pStream.avail_out -= n\n        pStream.total_out += n\n        pState.m_dict_avail -= n\n        pState.m_dict_ofs = (pState.m_dict_ofs + n) & (TINFL_LZ_DICT_SIZE - 1)\n        return MZ_STREAM_END if (pState.m_last_status == TINFL_STATUS_DONE and not pState.m_dict_avail) else MZ_OK\n\n    while True:\n        in_bytes = pStream.avail_in\n        out_bytes = TINFL_LZ_DICT_SIZE - pState.m_dict_ofs\n\n        dict_start = pState.m_dict_ofs\n        dict_end = dict_start + out_bytes\n\n        status, in_bytes, out_bytes = tinfl_decompress(\n            pState.m_decomp,\n            pStream.next_in,\n            in_bytes,\n            pState.m_dict,\n            dict_start,\n            dict_end,\n            decomp_flags\n        )\n        pState.m_last_status = status\n\n        pStream.next_in += int(in_bytes)\n        pStream.avail_in -= int(in_bytes)\n        pStream.total_in += int(in_bytes)\n        pStream.adler = tinfl_get_adler32(pState.m_decomp)\n\n        pState.m_dict_avail = int(out_bytes)\n\n        n = MZ_MIN(pState.m_dict_avail, pStream.avail_out)\n        dict_slice = pState.m_dict[pState.m_dict_ofs:pState.m_dict_ofs + n]\n        pStream.next_out[:n] = dict_slice\n        pStream.next_out = pStream.next_out[n:]\n        pStream.avail_out -= n\n        pStream.total_out += n\n        pState.m_dict_avail -= n\n        pState.m_dict_ofs = (pState.m_dict_ofs + n) & (TINFL_LZ_DICT_SIZE - 1)\n\n        if status < 0:\n            return MZ_DATA_ERROR\n        elif status == TINFL_STATUS_NEEDS_MORE_INPUT and not orig_avail_in:\n            return MZ_BUF_ERROR\n        elif flush == MZ_FINISH:\n            if status == TINFL_STATUS_DONE:\n                return MZ_BUF_ERROR if pState.m_dict_avail else MZ_STREAM_END\n            elif not pStream.avail_out:\n                return MZ_BUF_ERROR\n        elif status == TINFL_STATUS_DONE or not pStream.avail_in or not pStream.avail_out or pState.m_dict_avail:\n            break\n\n    return MZ_STREAM_END if (status == TINFL_STATUS_DONE and not pState.m_dict_avail) else MZ_OK",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_null_stream():\n    \"\"\"Test that passing a null/None stream pointer returns MZ_STREAM_ERROR.\"\"\"\n    result = mz_inflate(None, 0)\n    assert result == MZ_STREAM_ERROR\n\n\ndef test_semantic_uninitialized_stream():\n    \"\"\"Test that passing an uninitialized or empty stream object returns MZ_STREAM_ERROR.\"\"\"\n    stream = mz_stream_s()\n    result = mz_inflate(stream, MZ_NO_FLUSH)\n    assert result == MZ_STREAM_ERROR\n\n\ndef test_semantic_inflate_invalid_flush():\n    \"\"\"Test that passing an invalid flush parameter returns MZ_STREAM_ERROR.\"\"\"\n    stream = mz_stream_s()\n    # Initialize basic required fields if any or test direct failure on invalid flush\n    result = mz_inflate(stream, 9999)\n    assert result in (MZ_STREAM_ERROR, MZ_DATA_ERROR)\n\n\ndef test_semantic_inflate_empty_input():\n    \"\"\"Test inflating a stream with zero available input and buffer error expectations.\"\"\"\n    stream = mz_stream_s()\n    stream.avail_in = 0\n    stream.next_in = None\n    stream.avail_out = 10\n    # Even if state is missing or empty, verify it returns a valid zlib code, typically MZ_STREAM_ERROR or MZ_BUF_ERROR\n    result = mz_inflate(stream, MZ_FINISH)\n    assert result in (MZ_STREAM_ERROR, MZ_BUF_ERROR)\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    flush_val=st.integers(min_value=-100, max_value=100),\n    avail_in=st.integers(min_value=0, max_value=1024),\n    avail_out=st.integers(min_value=0, max_value=1024)\n)\ndef test_auto_property_mz_inflate_random_args(flush_val, avail_in, avail_out):\n    \"\"\"Property-based test for mz_inflate with randomized stream properties and flush values.\"\"\"\n    stream = mz_stream_s()\n    stream.avail_in = avail_in\n    stream.avail_out = avail_out\n    \n    result = mz_inflate(stream, flush_val)\n    # The return code must be one of the standard zlib/miniz status codes\n    valid_codes = [\n        MZ_OK,\n        MZ_STREAM_END,\n        MZ_NEED_DICT,\n        MZ_ERRNO,\n        MZ_STREAM_ERROR,\n        MZ_DATA_ERROR,\n        MZ_MEM_ERROR,\n        MZ_BUF_ERROR\n    ]\n    assert result in valid_codes",
+      "execution": {
+        "total_tests": 5,
+        "passed": 3,
+        "failed": 2,
+        "errors": 0,
+        "pass_rate": 60.0,
+        "semantic_tests": {
+          "passed": 2,
+          "failed": 2,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_null_stream PASSED                                       [ 20%]\n::test_semantic_uninitialized_stream FAILED                              [ 40%]\n::test_semantic_inflate_invalid_flush PASSED                             [ 60%]\n::test_semantic_inflate_empty_input FAILED                               [ 80%]\n::test_auto_property_mz_inflate_random_args PASSED                       [100%]\n\n================================== FAILURES ===================================\n_____________________ test_semantic_uninitialized_stream ______________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpq108aucw.py:315: in test_semantic_uninitialized_stream\n    assert result == MZ_STREAM_ERROR\nE   assert -5 == -2\n______________________ test_semantic_inflate_empty_input ______________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpq108aucw.py:334: in test_semantic_inflate_empty_input\n    assert result in (MZ_STREAM_ERROR, MZ_BUF_ERROR)\nE   assert 0 in (-2, -5)\n=========================== short test summary info ===========================\nFAILED ::test_semantic_uninitialized_stream - assert -5 == -2\nFAILED ::test_semantic_inflate_empty_input - assert 0 in (-2, -5)\n========================= 2 failed, 3 passed in 2.58s =========================\n",
+        "differential": {
+          "reference_pass_rate": 20.0,
+          "reference_passed": 1,
+          "reference_total": 5,
+          "differential_agreement_rate": 20.0,
+          "both_passed_count": 1
+        }
+      }
+    }
+  },
+  "mz_inflateEnd": {
+    "doc_hash": "ed8dec77e506",
+    "db_id": "miniz_miniz_c_mz_inflateEnd",
+    "codewiki_doc": "- **`mz_inflateInit(mz_streamp pStream)`**: Wraps `mz_inflateInit2` with `MZ_DEFAULT_WINDOW_BITS`. - **`mz_inflateInit2(mz_streamp pStream, int window_bits)`**: Validates window bits, sets up default memory allocators (`miniz_def_alloc_func` / `miniz_def_free_func` from [miniz_utilities.md](miniz_utilities.md)), allocates `inflate_state`, and initializes internal decompressor structures. - **`mz_inflateReset(mz_streamp pStream)`**: Resets stream counters, Adler checksum, and internal decompressor state without re-allocating memory. - **`mz_inflateEnd(mz_streamp pStream)`**: Frees the internal `inflate_state` using the configured free function. Frees the internal `inflate_state` using the configured free function.",
+    "retrieval": {
+      "rank": 2,
+      "reciprocal_rank": 0.5,
+      "hit_at_1": 0.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "mz_inflateInit2",
+      "top_similarity": 0.7427
+    },
+    "codebert": {
+      "precision": 0.6129,
+      "recall": 0.7685,
+      "f1": 0.682
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          3.0,
+          4.0
+        ],
+        "mean": 3.8,
+        "std": 0.4,
+        "sample_reasoning": "DEF-1: The documentation fails to explicitly mention the MZ_STREAM_ERROR return value when the stream pointer is NULL. However, it accurately describes the core operational logic of freeing the internal state using the configured free function. Based on this minor omission, the score is adjusted from the baseline."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "mean": 5.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately captures the functional intent of deinitializing the decompressor and freeing the internal state using the configured free function."
+      },
+      "combined_score": 4.4
+    },
+    "roundtrip": {
+      "function_name": "mz_inflateEnd",
+      "library": "miniz",
+      "signature": "int mz_inflateEnd(mz_streamp pStream)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Error codes and status values\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        # Support flexible initialization matching the struct/class fields\n        self.next_in = kwargs.get('next_in', None)\n        self.avail_in = kwargs.get('avail_in', 0)\n        self.total_in = kwargs.get('total_in', 0)\n        self.next_out = kwargs.get('next_out', None)\n        self.avail_out = kwargs.get('avail_out', 0)\n        self.total_out = kwargs.get('total_out', 0)\n        self.msg = kwargs.get('msg', None)\n        self.state = kwargs.get('state', None)\n        # Optional custom free function support if attached to the stream state/object\n        self.free_func = kwargs.get('free_func', None)\n\ndef mz_inflateEnd(pStream) -> int:\n    \"\"\"\n    Frees the internal inflate_state using the configured free function.\n    \n    C/C++ Signature: int mz_inflateEnd(mz_streamp pStream)\n    \"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    # Check if stream has state to free\n    if hasattr(pStream, 'state') and pStream.state is not None:\n        # If a custom free function is provided on the stream or state, we invoke it,\n        # otherwise we simply clear the state pointer as per standard miniz behavior.\n        if hasattr(pStream, 'free_func') and callable(pStream.free_func):\n            pStream.free_func(pStream.state)\n        elif hasattr(pStream.state, 'free_func') and callable(pStream.state.free_func):\n            pStream.state.free_func(pStream.state)\n        \n        pStream.state = None\n\n    return MZ_OK",
+      "reference_code": "# Constants and Error Codes from miniz\nMZ_OK = 0\nMZ_STREAM_ERROR = -2\n\n\ndef mz_inflateEnd(pStream):\n    \"\"\"Transpiled from miniz mz_inflateEnd.\"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n    \n    if hasattr(pStream, 'state') and pStream.state is not None:\n        if hasattr(pStream, 'zfree') and callable(pStream.zfree):\n            pStream.zfree(pStream.opaque, pStream.state)\n        pStream.state = None\n        \n    return MZ_OK",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_inflate_end_normal():\n    \"\"\"Test successful termination of an initialized inflate stream.\"\"\"\n    stream = {\n        \"next_in\": b\"test\",\n        \"avail_in\": 4,\n        \"total_in\": 0,\n        \"next_out\": bytearray(10),\n        \"avail_out\": 10,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": {\"allocated\": True}\n    }\n    # Initialize first (conceptually) then call end\n    res = mz_inflateInit(stream)\n    assert res == MZ_OK\n    \n    result = mz_inflateEnd(stream)\n    assert result == MZ_OK\n\n\ndef test_semantic_inflate_end_null_stream():\n    \"\"\"Test passing None or null stream pointer to mz_inflateEnd.\"\"\"\n    result = mz_inflateEnd(None)\n    # Depending on implementation robustness, it should handle null safely and return an error code like MZ_STREAM_ERROR\n    assert result == MZ_STREAM_ERROR\n\n\ndef test_semantic_inflate_end_uninitialized_state():\n    \"\"\"Test stream where state pointer is None/NULL.\"\"\"\n    stream = {\n        \"next_in\": None,\n        \"avail_in\": 0,\n        \"total_in\": 0,\n        \"next_out\": None,\n        \"avail_out\": 0,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": None\n    }\n    result = mz_inflateEnd(stream)\n    assert result in (MZ_OK, MZ_STREAM_ERROR)\n\n\ndef test_semantic_inflate_end_multiple_calls():\n    \"\"\"Test calling mz_inflateEnd multiple times on the same stream.\"\"\"\n    stream = {\n        \"next_in\": None,\n        \"avail_in\": 0,\n        \"total_in\": 0,\n        \"next_out\": None,\n        \"avail_out\": 0,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": {\"allocated\": True}\n    }\n    res1 = mz_inflateEnd(stream)\n    assert res1 == MZ_OK\n    \n    # Second call should handle gracefully or return stream error\n    res2 = mz_inflateEnd(stream)\n    assert res2 in (MZ_OK, MZ_STREAM_ERROR)\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    avail_in=st.integers(min_value=0, max_value=1000),\n    avail_out=st.integers(min_value=0, max_value=1000),\n    has_state=st.booleans()\n)\ndef test_auto_property_inflate_end(avail_in, avail_out, has_state):\n    \"\"\"Property-based test for mz_inflateEnd with varied stream properties.\"\"\"\n    stream = {\n        \"next_in\": b\"A\" * avail_in if avail_in > 0 else None,\n        \"avail_in\": avail_in,\n        \"total_in\": 0,\n        \"next_out\": bytearray(avail_out) if avail_out > 0 else None,\n        \"avail_out\": avail_out,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": {\"active\": True} if has_state else None\n    }\n    \n    result = mz_inflateEnd(stream)\n    # The return value must be a valid integer return code defined in miniz\n    assert isinstance(result, int)\n    assert result in (MZ_OK, MZ_STREAM_ERROR, MZ_DATA_ERROR, MZ_MEM_ERROR)",
+      "execution": {
+        "total_tests": 5,
+        "passed": 4,
+        "failed": 1,
+        "errors": 0,
+        "pass_rate": 80.0,
+        "semantic_tests": {
+          "passed": 3,
+          "failed": 1,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_inflate_end_normal FAILED                                [ 20%]\n::test_semantic_inflate_end_null_stream PASSED                           [ 40%]\n::test_semantic_inflate_end_uninitialized_state PASSED                   [ 60%]\n::test_semantic_inflate_end_multiple_calls PASSED                        [ 80%]\n::test_auto_property_inflate_end PASSED                                  [100%]\n\n================================== FAILURES ===================================\n______________________ test_semantic_inflate_end_normal _______________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpcj69bokz.py:272: in test_semantic_inflate_end_normal\n    assert res == MZ_OK\nE   assert <tmpcj69bokz.TolerantBaseMock object at 0x0000017CE92BA120> == 0\n=========================== short test summary info ===========================\nFAILED ::test_semantic_inflate_end_normal - assert <tmpcj69bokz.TolerantBaseM...\n========================= 1 failed, 4 passed in 2.57s =========================\n",
+        "differential": {
+          "reference_pass_rate": 80.0,
+          "reference_passed": 4,
+          "reference_total": 5,
+          "differential_agreement_rate": 80.0,
+          "both_passed_count": 4
+        }
+      }
+    }
+  },
+  "mz_inflateInit": {
+    "doc_hash": "f54c034fe721",
+    "db_id": "miniz_miniz_c_mz_inflateInit",
+    "codewiki_doc": "- **`mz_inflateInit(mz_streamp pStream)`**: Wraps `mz_inflateInit2` with `MZ_DEFAULT_WINDOW_BITS`. - **`mz_inflateInit2(mz_streamp pStream, int window_bits)`**: Validates window bits, sets up default memory allocators (`miniz_def_alloc_func` / `miniz_def_free_func` from [miniz_utilities.md](miniz_utilities.md)), allocates `inflate_state`, and initializes internal decompressor structures. - **`mz_inflateReset(mz_streamp pStream)`**: Resets stream counters, Adler checksum, and internal decompressor state without re-allocating memory. - **`mz_inflateEnd(mz_streamp pStream)`**: Frees the internal `inflate_state` using the configured free function. Wraps `mz_inflateInit2` with `MZ_DEFAULT_WINDOW_BITS`.",
+    "retrieval": {
+      "rank": 5,
+      "reciprocal_rank": 0.2,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 1.0,
+      "top_match": "mz_inflateInit2",
+      "top_similarity": 0.748
+    },
+    "codebert": {
+      "precision": 0.6046,
+      "recall": 0.784,
+      "f1": 0.6827
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          2.0,
+          3.0,
+          4.0,
+          2.0
+        ],
+        "mean": 3.0,
+        "std": 0.894,
+        "sample_reasoning": "DEF-5: The generated documentation mentions implementation details for mz_inflateInit2, mz_inflateReset, and mz_inflateEnd (such as validating window bits, memory allocators, and resetting Adler checksums) that are not present in the provided C source code snippet for mz_inflateInit. Additionally, the description of mz_inflateInit ends with a duplicate tail sentence. However, it correctly captures the core contract of wrapping mz_inflateInit2 with MZ_DEFAULT_WINDOW_BITS, resulting in a minor over-specification defect."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          3.0,
+          4.0
+        ],
+        "mean": 3.8,
+        "std": 0.4,
+        "sample_reasoning": "ALIGN-3: The generated documentation slightly over-bloats the description by detailing implementation specifics of `mz_inflateInit2`, memory allocators, and other functions not strictly part of the simple ground truth. However, it accurately captures the functional intent that `mz_inflateInit` initializes the decompressor (wrapping `mz_inflateInit2`)."
+      },
+      "combined_score": 3.4
+    },
+    "roundtrip": {
+      "function_name": "mz_inflateInit",
+      "library": "miniz",
+      "signature": "int mz_inflateInit(mz_streamp pStream)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Constants and Error Codes\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nMZ_DEFAULT_WINDOW_BITS = 15\n\n\nclass mz_internal_state:\n    def __init__(self, *args, **kwargs):\n        self.window_bits = kwargs.get(\"window_bits\", MZ_DEFAULT_WINDOW_BITS)\n        self.alloc_func = kwargs.get(\"alloc_func\", None)\n        self.free_func = kwargs.get(\"free_func\", None)\n\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        self.next_in = kwargs.get(\"next_in\", None)\n        self.avail_in = kwargs.get(\"avail_in\", 0)\n        self.total_in = kwargs.get(\"total_in\", 0)\n        self.next_out = kwargs.get(\"next_out\", None)\n        self.avail_out = kwargs.get(\"avail_out\", 0)\n        self.total_out = kwargs.get(\"total_out\", 0)\n        self.msg = kwargs.get(\"msg\", None)\n        self.state = kwargs.get(\"state\", None)\n\n\ndef miniz_def_alloc_func(opaque, items, size):\n    # Pure Python memory allocator mock\n    return bytearray(items * size)\n\n\ndef miniz_def_free_func(opaque, address):\n    # Pure Python memory freer mock\n    pass\n\n\ndef mz_inflateInit2(pStream, window_bits):\n    \"\"\"\n    Validates window bits, sets up default memory allocators,\n    allocates inflate_state, and initializes internal decompressor structures.\n    \"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    # Validate window bits (typically 8..15 or + 16/32 flags in zlib/miniz)\n    if window_bits < 8 and window_bits > -8:\n        return MZ_STREAM_ERROR\n\n    # Setup default memory allocators and state\n    state = mz_internal_state(\n        window_bits=window_bits,\n        alloc_func=miniz_def_alloc_func,\n        free_func=miniz_def_free_func\n    )\n\n    if state is None:\n        return MZ_MEM_ERROR\n\n    pStream.state = state\n    pStream.total_in = 0\n    pStream.total_out = 0\n    pStream.msg = None\n\n    return MZ_OK\n\n\ndef mz_inflateInit(pStream):\n    \"\"\"\n    Wraps mz_inflateInit2 with MZ_DEFAULT_WINDOW_BITS.\n    \"\"\"\n    return mz_inflateInit2(pStream, MZ_DEFAULT_WINDOW_BITS)",
+      "reference_code": "# Constants and Enums from miniz header\nMZ_DEFAULT_WINDOW_BITS = 15\n\ndef mz_inflateInit2(pStream, window_bits):\n    \"\"\"\n    Mock/Transpiled implementation of mz_inflateInit2, which mz_inflateInit delegates to.\n    \"\"\"\n    # This is a placeholder for the actual initialization logic.\n    # In a full transpilation, this would initialize the internal decompression state.\n    return 0  # MZ_OK\n\ndef mz_inflateInit(pStream):\n    \"\"\"\n    Initializes the inflation (decompression) stream using the default window bits.\n    \"\"\"\n    return mz_inflateInit2(pStream, MZ_DEFAULT_WINDOW_BITS)",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_inflate_init_valid_stream():\n    \"\"\"Test successful initialization of an mz_stream_s structure using mz_inflateInit.\"\"\"\n    stream = {\n        \"next_in\": None,\n        \"avail_in\": 0,\n        \"total_in\": 0,\n        \"next_out\": None,\n        \"avail_out\": 0,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": None,\n    }\n    \n    # Call mz_inflateInit on the stream pointer equivalent (dictionary representation or mock)\n    # MZ_OK is 0 according to specifications\n    result = mz_inflateInit(stream)\n    assert result == 0  # MZ_OK\n\n\ndef test_semantic_inflate_init_null_stream():\n    \"\"\"Test handling of None/NULL stream input to mz_inflateInit.\"\"\"\n    # Passing None should return an error code like MZ_STREAM_ERROR (-2) or MZ_MEM_ERROR (-4)\n    # without raising an unhandled exception.\n    result = mz_inflateInit(None)\n    assert result != 0  # Should indicate failure\n\n\ndef test_semantic_inflate_init_reset_and_end_lifecycle():\n    \"\"\"Test the stream lifecycle: initialize, reset, and end.\"\"\"\n    stream = {\n        \"next_in\": b\"some data\",\n        \"avail_in\": 9,\n        \"total_in\": 0,\n        \"next_out\": bytearray(10),\n        \"avail_out\": 10,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": None,\n    }\n    \n    # Initialize\n    init_res = mz_inflateInit(stream)\n    assert init_res == 0  # MZ_OK\n    \n    # Reset\n    if 'mz_inflateReset' in globals():\n        reset_res = mz_inflateReset(stream)\n        assert reset_res == 0\n        \n    # End\n    if 'mz_inflateEnd' in globals():\n        end_res = mz_inflateEnd(stream)\n        assert end_res == 0\n\n\ndef test_semantic_inflate_init_multiple_calls():\n    \"\"\"Test multiple sequential initializations on separate stream objects.\"\"\"\n    stream1 = {\"next_in\": None, \"avail_in\": 0, \"total_in\": 0, \"next_out\": None, \"avail_out\": 0, \"total_out\": 0, \"msg\": None, \"state\": None}\n    stream2 = {\"next_in\": None, \"avail_in\": 0, \"total_in\": 0, \"next_out\": None, \"avail_out\": 0, \"total_out\": 0, \"msg\": None, \"state\": None}\n    \n    res1 = mz_inflateInit(stream1)\n    res2 = mz_inflateInit(stream2)\n    \n    assert res1 == 0\n    assert res2 == 0\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    avail_in=st.integers(min_value=0, max_value=65535),\n    avail_out=st.integers(min_value=0, max_value=65535)\n)\ndef test_auto_property_inflate_init_streams(avail_in, avail_out):\n    \"\"\"Property-based test verifying mz_inflateInit robustness with varied initial stream fields.\"\"\"\n    stream = {\n        \"next_in\": None,\n        \"avail_in\": avail_in,\n        \"total_in\": 0,\n        \"next_out\": None,\n        \"avail_out\": avail_out,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": None,\n    }\n    \n    result = mz_inflateInit(stream)\n    # Should either succeed (MZ_OK == 0) or return a stream/memory error code, but never crash or raise exceptions.\n    assert isinstance(result, int)",
+      "execution": {
+        "total_tests": 5,
+        "passed": 1,
+        "failed": 4,
+        "errors": 0,
+        "pass_rate": 20.0,
+        "semantic_tests": {
+          "passed": 1,
+          "failed": 3,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 0,
+          "failed": 1,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": " has no attribute 'state'\n___________________ test_auto_property_inflate_init_streams ___________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpkwqrpa1y.py:358: in test_auto_property_inflate_init_streams\n    @given(\n            \nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpkwqrpa1y.py:375: in test_auto_property_inflate_init_streams\n    result = mz_inflateInit(stream)\n             ^^^^^^^^^^^^^^^^^^^^^^\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpkwqrpa1y.py:283: in mz_inflateInit\n    return mz_inflateInit2(pStream, MZ_DEFAULT_WINDOW_BITS)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmpkwqrpa1y.py:271: in mz_inflateInit2\n    pStream.state = state\n    ^^^^^^^^^^^^^\nE   AttributeError: 'dict' object has no attribute 'state'\nE   Failing test case: test_auto_property_inflate_init_streams(\nE       # The test always failed when commented parts were varied together.\nE       avail_in=0,  # or any other generated value\nE       avail_out=0,  # or any other generated value\nE   )\n=========================== short test summary info ===========================\nFAILED ::test_semantic_inflate_init_valid_stream - AttributeError: 'dict' obj...\nFAILED ::test_semantic_inflate_init_reset_and_end_lifecycle - AttributeError:...\nFAILED ::test_semantic_inflate_init_multiple_calls - AttributeError: 'dict' o...\nFAILED ::test_auto_property_inflate_init_streams - AttributeError: 'dict' obj...\n======================== 4 failed, 1 passed in 12.50s =========================\n",
+        "differential": {
+          "reference_pass_rate": 60.0,
+          "reference_passed": 3,
+          "reference_total": 5,
+          "differential_agreement_rate": 0.0,
+          "both_passed_count": 0
+        }
+      }
+    }
+  },
+  "mz_inflateInit2": {
+    "doc_hash": "ecd84ca40f3b",
+    "db_id": "miniz_miniz_c_mz_inflateInit2",
+    "codewiki_doc": "- **`mz_inflateInit(mz_streamp pStream)`**: Wraps `mz_inflateInit2` with `MZ_DEFAULT_WINDOW_BITS`. - **`mz_inflateInit2(mz_streamp pStream, int window_bits)`**: Validates window bits, sets up default memory allocators (`miniz_def_alloc_func` / `miniz_def_free_func` from [miniz_utilities.md](miniz_utilities.md)), allocates `inflate_state`, and initializes internal decompressor structures. - **`mz_inflateReset(mz_streamp pStream)`**: Resets stream counters, Adler checksum, and internal decompressor state without re-allocating memory. - **`mz_inflateEnd(mz_streamp pStream)`**: Frees the internal `inflate_state` using the configured free function. Validates window bits, sets up default memory allocators (`miniz_def_alloc_func` / `miniz_def_free_func` from [miniz_utilities.md](miniz_utilities.md)), allocates `inflate_state`, and initializes internal decompressor structures.",
+    "retrieval": {
+      "rank": 1,
+      "reciprocal_rank": 1.0,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "top_match": "mz_inflateInit2",
+      "top_similarity": 0.7589
+    },
+    "codebert": {
+      "precision": 0.6595,
+      "recall": 0.8155,
+      "f1": 0.7293
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          3.0,
+          4.0,
+          4.0,
+          3.0,
+          4.0
+        ],
+        "mean": 3.6,
+        "std": 0.49,
+        "sample_reasoning": "DEF-1: Omission of Error Handling, as the documentation fails to explicitly list the specific return codes like MZ_STREAM_ERROR, MZ_PARAM_ERROR, and MZ_MEM_ERROR for NULL streams, invalid window bits, or allocation failures. However, it accurately describes the allocation, initialization, default allocators, and parameter validation. Score adjusted to 3 due to the omission of error handling documentation."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.0,
+        "std": 0.0,
+        "sample_reasoning": "ALIGN-1: The generated documentation mentions that the function 'validates window bits', but it completely fails to state the ground truth constraints that window_bits must be either MZ_DEFAULT_WINDOW_BITS or -MZ_DEFAULT_WINDOW_BITS. Therefore, it misses the specific configuration requirements outlined by the author."
+      },
+      "combined_score": 3.3
+    },
+    "roundtrip": {
+      "function_name": "mz_inflateInit2",
+      "library": "miniz",
+      "signature": "int mz_inflateInit2(mz_streamp pStream, int window_bits)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Constants and Error Codes from miniz specification\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\n\nclass mz_internal_state:\n    def __init__(self, *args, **kwargs):\n        self.window_bits = kwargs.get(\"window_bits\", args[0] if args else 0)\n        self.alloc_func = kwargs.get(\"alloc_func\", miniz_def_alloc_func)\n        self.free_func = kwargs.get(\"free_func\", miniz_def_free_func)\n\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        self.next_in = kwargs.get(\"next_in\", None)\n        self.avail_in = kwargs.get(\"avail_in\", 0)\n        self.total_in = kwargs.get(\"total_in\", 0)\n        self.next_out = kwargs.get(\"next_out\", None)\n        self.avail_out = kwargs.get(\"avail_out\", 0)\n        self.total_out = kwargs.get(\"total_out\", 0)\n        self.msg = kwargs.get(\"msg\", None)\n        self.state = kwargs.get(\"state\", None)\n\n\ndef miniz_def_alloc_func(opaque, items, size):\n    # Default memory allocator mock\n    try:\n        return bytearray(items * size)\n    except Exception:\n        return None\n\n\ndef miniz_def_free_func(opaque, address):\n    # Default memory free function mock\n    pass\n\n\ndef mz_inflateInit2(pStream, window_bits):\n    \"\"\"\n    Validates window bits, sets up default memory allocators, \n    allocates inflate_state, and initializes internal decompressor structures.\n    \"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    # Basic validation for window_bits (typically between 8 and 15, or negative for raw deflate)\n    if window_bits < -15 or window_bits > 47:\n        return MZ_STREAM_ERROR\n\n    # Setup default memory allocators / internal state allocation\n    try:\n        state = mz_internal_state(window_bits=window_bits)\n        state.alloc_func = miniz_def_alloc_func\n        state.free_func = miniz_def_free_func\n        \n        # If pStream is a list container (output pointer convention), extract the stream object\n        if isinstance(pStream, list):\n            if not pStream:\n                return MZ_STREAM_ERROR\n            stream_obj = pStream[0]\n        else:\n            stream_obj = pStream\n\n        if stream_obj is None:\n            return MZ_STREAM_ERROR\n\n        stream_obj.state = state\n        stream_obj.total_in = 0\n        stream_obj.total_out = 0\n        stream_obj.msg = None\n\n        return MZ_OK\n    except Exception:\n        return MZ_MEM_ERROR",
+      "reference_code": "# Constants and Error Codes from miniz\nMZ_OK = 0\nMZ_STREAM_ERROR = -2\nMZ_PARAM_ERROR = -10\nMZ_MEM_ERROR = -4\n\nMZ_DEFAULT_WINDOW_BITS = 15\nTINFL_STATUS_NEEDS_MORE_INPUT = 1\n\n\nclass InflateState:\n    def __init__(self):\n        self.m_decomp = None\n        self.m_dict_ofs = 0\n        self.m_dict_avail = 0\n        self.m_last_status = 0\n        self.m_first_call = 0\n        self.m_has_flushed = 0\n        self.m_window_bits = 0\n\n\ndef tinfl_init(decomp):\n    # Mock/equivalent of tinfl_init from miniz\n    pass\n\n\ndef miniz_def_alloc_func(opaque, items, size):\n    # Pure Python memory allocation mock (similar to malloc/calloc)\n    return InflateState()\n\n\ndef miniz_def_free_func(opaque, address):\n    # Pure Python memory deallocation mock\n    pass\n\n\ndef mz_inflateInit2(pStream, window_bits):\n    if pStream is None:\n        return MZ_STREAM_ERROR\n    \n    if (window_bits != MZ_DEFAULT_WINDOW_BITS) and (-window_bits != MZ_DEFAULT_WINDOW_BITS):\n        return MZ_PARAM_ERROR\n\n    pStream.data_type = 0\n    pStream.adler = 0\n    pStream.msg = None\n    pStream.total_in = 0\n    pStream.total_out = 0\n    pStream.reserved = 0\n\n    if not hasattr(pStream, 'zalloc') or pStream.zalloc is None:\n        pStream.zalloc = miniz_def_alloc_func\n    if not hasattr(pStream, 'zfree') or pStream.zfree is None:\n        pStream.zfree = miniz_def_free_func\n\n    opaque = getattr(pStream, 'opaque', None)\n    pDecomp = pStream.zalloc(opaque, 1, 0)\n    \n    if pDecomp is None:\n        return MZ_MEM_ERROR\n\n    pStream.state = pDecomp\n\n    tinfl_init(pDecomp.m_decomp)\n    pDecomp.m_dict_ofs = 0\n    pDecomp.m_dict_avail = 0\n    pDecomp.m_last_status = TINFL_STATUS_NEEDS_MORE_INPUT\n    pDecomp.m_first_call = 1\n    pDecomp.m_has_flushed = 0\n    pDecomp.m_window_bits = window_bits\n\n    return MZ_OK",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_inflate_init2_success():\n    # Happy path: test mz_inflateInit2 with default/valid window bits (e.g., 15)\n    stream = {\n        \"next_in\": None,\n        \"avail_in\": 0,\n        \"total_in\": 0,\n        \"next_out\": None,\n        \"avail_out\": 0,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": None\n    }\n    \n    # MZ_OK is 0\n    result = mz_inflateInit2(stream, 15)\n    assert result == 0\n    \n    # Clean up allocated state to prevent resource leaks\n    if \"state\" in stream and stream[\"state\"] is not None:\n        mz_inflateEnd(stream)\n\n\ndef test_semantic_inflate_init2_custom_window_bits():\n    # Test valid alternative window bits (e.g., 31 for gzip decoding, or smaller windows)\n    stream = {\n        \"next_in\": None,\n        \"avail_in\": 0,\n        \"total_in\": 0,\n        \"next_out\": None,\n        \"avail_out\": 0,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": None\n    }\n    \n    result = mz_inflateInit2(stream, 31)\n    assert result == 0\n    \n    if \"state\" in stream and stream[\"state\"] is not None:\n        mz_inflateEnd(stream)\n\n\ndef test_semantic_inflate_init2_invalid_stream_null():\n    # Edge case: passing None or invalid stream pointer should return an error (e.g., MZ_STREAM_ERROR = -2 or MZ_MEM_ERROR)\n    result = mz_inflateInit2(None, 15)\n    assert result != 0\n\n\ndef test_semantic_inflate_init2_invalid_window_bits():\n    # Edge case: invalid window bits value should return an error code, not raise an exception\n    stream = {\n        \"next_in\": None,\n        \"avail_in\": 0,\n        \"total_in\": 0,\n        \"next_out\": None,\n        \"avail_out\": 0,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": None\n    }\n    \n    result = mz_inflateInit2(stream, -999)\n    assert result != 0\n\n\n@settings(max_examples=50, deadline=None)\n@given(window_bits=st.integers(min_value=-1000, max_value=1000))\ndef test_auto_property_inflate_init2(window_bits):\n    stream = {\n        \"next_in\": None,\n        \"avail_in\": 0,\n        \"total_in\": 0,\n        \"next_out\": None,\n        \"avail_out\": 0,\n        \"total_out\": 0,\n        \"msg\": None,\n        \"state\": None\n    }\n    \n    result = mz_inflateInit2(stream, window_bits)\n    # The function should return an integer status code (MZ_OK or error codes) without crashing\n    assert isinstance(result, int)\n    \n    if result == 0:\n        # If successfully initialized, clean up\n        try:\n            mz_inflateEnd(stream)\n        except Exception:\n            pass",
+      "execution": {
+        "total_tests": 5,
+        "passed": 3,
+        "failed": 2,
+        "errors": 0,
+        "pass_rate": 60.0,
+        "semantic_tests": {
+          "passed": 2,
+          "failed": 2,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 5 items\n\n::test_semantic_inflate_init2_success FAILED                             [ 20%]\n::test_semantic_inflate_init2_custom_window_bits FAILED                  [ 40%]\n::test_semantic_inflate_init2_invalid_stream_null PASSED                 [ 60%]\n::test_semantic_inflate_init2_invalid_window_bits PASSED                 [ 80%]\n::test_auto_property_inflate_init2 PASSED                                [100%]\n\n================================== FAILURES ===================================\n_____________________ test_semantic_inflate_init2_success _____________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmphkj1fh_d.py:328: in test_semantic_inflate_init2_success\n    assert result == 0\nE   assert -4 == 0\n_______________ test_semantic_inflate_init2_custom_window_bits ________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmphkj1fh_d.py:349: in test_semantic_inflate_init2_custom_window_bits\n    assert result == 0\nE   assert -4 == 0\n=========================== short test summary info ===========================\nFAILED ::test_semantic_inflate_init2_success - assert -4 == 0\nFAILED ::test_semantic_inflate_init2_custom_window_bits - assert -4 == 0\n========================= 2 failed, 3 passed in 2.56s =========================\n",
+        "differential": {
+          "reference_pass_rate": 60.0,
+          "reference_passed": 3,
+          "reference_total": 5,
+          "differential_agreement_rate": 60.0,
+          "both_passed_count": 3
+        }
+      }
+    }
+  },
+  "mz_inflateReset": {
+    "doc_hash": "4e5c1619dfdd",
+    "db_id": "miniz_miniz_c_mz_inflateReset",
+    "codewiki_doc": "- **`mz_inflateInit(mz_streamp pStream)`**: Wraps `mz_inflateInit2` with `MZ_DEFAULT_WINDOW_BITS`. - **`mz_inflateInit2(mz_streamp pStream, int window_bits)`**: Validates window bits, sets up default memory allocators (`miniz_def_alloc_func` / `miniz_def_free_func` from [miniz_utilities.md](miniz_utilities.md)), allocates `inflate_state`, and initializes internal decompressor structures. - **`mz_inflateReset(mz_streamp pStream)`**: Resets stream counters, Adler checksum, and internal decompressor state without re-allocating memory. - **`mz_inflateEnd(mz_streamp pStream)`**: Frees the internal `inflate_state` using the configured free function. Resets stream counters, Adler checksum, and internal decompressor state without re-allocating memory.",
+    "retrieval": {
+      "rank": 10,
+      "reciprocal_rank": 0.1,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "mz_inflateInit2",
+      "top_similarity": 0.7382
+    },
+    "codebert": {
+      "precision": 0.6953,
+      "recall": 0.799,
+      "f1": 0.7436
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0
+        ],
+        "mean": 4.0,
+        "std": 0.0,
+        "sample_reasoning": "DEF-1: The documentation for mz_inflateReset fails to explicitly mention the MZ_STREAM_ERROR return value when the input stream pointer is NULL. However, it accurately describes resetting stream counters, Adler checksum, and internal decompressor states without re-allocation. The score is a 4 because it is technically faithful, concise, and contains no hallucinations, with only a minor omission of error handling documentation."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "mean": 5.0,
+        "std": 0.0,
+        "sample_reasoning": "None. The generated documentation accurately captures the primary functional intent of mz_inflateReset (resetting internal states and stream parameters without reallocating memory), matching the Ground Truth."
+      },
+      "combined_score": 4.5
+    },
+    "roundtrip": {
+      "function_name": "mz_inflateReset",
+      "library": "miniz",
+      "signature": "int mz_inflateReset(mz_streamp pStream)",
+      "function_type": "Stateless / Primitive",
+      "synthesized_code": "# Error codes\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\n# Strategy, compression levels, flush types\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        self.next_in = kwargs.get('next_in', None)\n        self.avail_in = kwargs.get('avail_in', 0)\n        self.total_in = kwargs.get('total_in', 0)\n        self.next_out = kwargs.get('next_out', None)\n        self.avail_out = kwargs.get('avail_out', 0)\n        self.total_out = kwargs.get('total_out', 0)\n        self.msg = kwargs.get('msg', None)\n        self.state = kwargs.get('state', None)\n\nmz_streamp = mz_stream_s\n\ndef mz_inflateReset(pStream):\n    \"\"\"\n    Resets stream counters, Adler checksum, and internal decompressor state without re-allocating memory.\n    \"\"\"\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    # Reset stream counters\n    pStream.total_in = 0\n    pStream.total_out = 0\n    pStream.msg = None\n\n    # Reset internal decompressor state if it exists\n    if hasattr(pStream, 'state') and pStream.state is not None:\n        if isinstance(pStream.state, dict):\n            pStream.state['total_in'] = 0\n            pStream.state['total_out'] = 0\n            pStream.state['adler'] = 1  # MZ_ADLER32_INIT default or similar reset\n        else:\n            if hasattr(pStream.state, 'total_in'):\n                pStream.state.total_in = 0\n            if hasattr(pStream.state, 'total_out'):\n                pStream.state.total_out = 0\n            if hasattr(pStream.state, 'adler'):\n                pStream.state.adler = 1\n\n    return MZ_OK",
+      "reference_code": "# Constants and Error Codes\nMZ_OK = 0\nMZ_STREAM_ERROR = -2\n\nTINFL_STATUS_NEEDS_MORE_INPUT = 1\n\n\ndef tinfl_init(decomp):\n    \"\"\"Initializes the tinfl decompressor state.\"\"\"\n    decomp.m_dict_ofs = 0\n    decomp.m_dict_avail = 0\n    decomp.m_last_status = TINFL_STATUS_NEEDS_MORE_INPUT\n    decomp.m_first_call = 1\n    decomp.m_has_flushed = 0\n\n\ndef mz_inflateReset(pStream):\n    if pStream is None:\n        return MZ_STREAM_ERROR\n\n    pStream.data_type = 0\n    pStream.adler = 0\n    pStream.msg = None\n    pStream.total_in = 0\n    pStream.total_out = 0\n    pStream.reserved = 0\n\n    pDecomp = pStream.state\n    if pDecomp is None:\n        return MZ_STREAM_ERROR\n\n    tinfl_init(pDecomp.m_decomp)\n    pDecomp.m_dict_ofs = 0\n    pDecomp.m_dict_avail = 0\n    pDecomp.m_last_status = TINFL_STATUS_NEEDS_MORE_INPUT\n    pDecomp.m_first_call = 1\n    pDecomp.m_has_flushed = 0\n    # pDecomp.m_window_bits = window_bits\n\n    return MZ_OK",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_null_stream():\n    \"\"\"Verify that passing None (NULL stream) to mz_inflateReset returns MZ_STREAM_ERROR.\"\"\"\n    # According to miniz conventions, passing NULL stream should result in MZ_STREAM_ERROR (-2)\n    result = mz_inflateReset(None)\n    assert result == -2  # MZ_STREAM_ERROR\n\n\ndef test_semantic_uninitialized_stream():\n    \"\"\"Verify resetting a stream whose state is uninitialized (None state).\"\"\"\n    # Create a stream dictionary or object mocking mz_stream_s\n    # struct mz_stream_s: next_in, avail_in, total_in, next_out, avail_out, total_out, msg, state\n    class Stream:\n        def __init__(self):\n            self.next_in = None\n            self.avail_in = 0\n            self.total_in = 0\n            self.next_out = None\n            self.avail_out = 0\n            self.total_out = 0\n            self.msg = None\n            self.state = None\n\n    stream = Stream()\n    result = mz_inflateReset(stream)\n    # Depending on implementation, resetting an uninitialized state might return MZ_STREAM_ERROR\n    assert result == -2 or result == 0\n\n\ndef test_semantic_initialized_stream_reset():\n    \"\"\"Verify standard initialization and subsequent reset of the inflate stream.\"\"\"\n    class Stream:\n        def __init__(self):\n            self.next_in = None\n            self.avail_in = 10\n            self.total_in = 100\n            self.next_out = None\n            self.avail_out = 20\n            self.total_out = 200\n            self.msg = \"some_error\"\n            self.state = {\"internal\": \"state_data\"}\n\n    stream = Stream()\n    \n    # If mz_inflateInit is available, we use it, or simulate normal reset behavior\n    # Calling mz_inflateReset directly on a stream with state\n    result = mz_inflateReset(stream)\n    \n    # Check that it returns MZ_OK (0) upon successful reset\n    assert result == 0  # MZ_OK\n\n\ndef test_semantic_reset_clears_counters():\n    \"\"\"Verify that mz_inflateReset resets stream counters and state appropriately.\"\"\"\n    class Stream:\n        def __init__(self):\n            self.next_in = None\n            self.avail_in = 50\n            self.total_in = 500\n            self.next_out = None\n            self.avail_out = 50\n            self.total_out = 500\n            self.msg = \"test\"\n            self.state = object()\n\n    stream = Stream()\n    result = mz_inflateReset(stream)\n    \n    # The function should successfully execute and return MZ_OK (0)\n    assert result == 0\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    avail_in=st.integers(min_value=0, max_value=10000),\n    total_in=st.integers(min_value=0, max_value=100000),\n    avail_out=st.integers(min_value=0, max_value=10000),\n    total_out=st.integers(min_value=0, max_value=100000)\n)\ndef test_auto_property_stream_reset_counters(avail_in, total_in, avail_out, total_out):\n    \"\"\"Property-based test for mz_inflateReset with varying stream fields.\"\"\"\n    class Stream:\n        def __init__(self):\n            self.next_in = None\n            self.avail_in = avail_in\n            self.total_in = total_in\n            self.next_out = None\n            self.avail_out = avail_out\n            self.total_out = total_out\n            self.msg = None\n            self.state = {}\n\n    stream = Stream()\n    result = mz_inflateReset(stream)\n    \n    # Ensure return code is an integer (typically MZ_OK or MZ_STREAM_ERROR)\n    assert isinstance(result, int)\n\n\n@settings(max_examples=30, deadline=None)\n@given(has_state=st.booleans())\ndef test_auto_property_stream_state_presence(has_state):\n    \"\"\"Property-based test varying the presence of the internal state object.\"\"\"\n    class Stream:\n        def __init__(self, state):\n            self.next_in = None\n            self.avail_in = 0\n            self.total_in = 0\n            self.next_out = None\n            self.avail_out = 0\n            self.total_out = 0\n            self.msg = None\n            self.state = state\n\n    stream = Stream(object() if has_state else None)\n    result = mz_inflateReset(stream)\n    \n    assert isinstance(result, int)",
+      "execution": {
+        "total_tests": 6,
+        "passed": 6,
+        "failed": 0,
+        "errors": 0,
+        "pass_rate": 100.0,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 0,
+          "total": 4
+        },
+        "auto_property_tests": {
+          "passed": 2,
+          "failed": 0,
+          "total": 2
+        },
+        "is_success": true,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 6 items\n\n::test_semantic_null_stream PASSED                                       [ 16%]\n::test_semantic_uninitialized_stream PASSED                              [ 33%]\n::test_semantic_initialized_stream_reset PASSED                          [ 50%]\n::test_semantic_reset_clears_counters PASSED                             [ 66%]\n::test_auto_property_stream_reset_counters PASSED                        [ 83%]\n::test_auto_property_stream_state_presence PASSED                        [100%]\n\n============================== 6 passed in 2.32s ==============================\n",
+        "differential": {
+          "reference_pass_rate": 33.3,
+          "reference_passed": 2,
+          "reference_total": 6,
+          "differential_agreement_rate": 33.3,
+          "both_passed_count": 2
+        }
+      }
+    }
+  },
+  "mz_uncompress": {
+    "doc_hash": "2099bd0dd1d0",
+    "db_id": "miniz_miniz_c_mz_uncompress",
+    "codewiki_doc": "- **`mz_uncompress2`**: Allocates a temporary `mz_stream`, initializes it via `mz_inflateInit`, performs `mz_inflate` with `MZ_FINISH`, updates output lengths, and cleans up via `mz_inflateEnd`. - **`mz_uncompress`**: Convenience wrapper around `mz_uncompress2` taking a fixed source length. --- Convenience wrapper around `mz_uncompress2` taking a fixed source length.",
+    "retrieval": {
+      "rank": 10,
+      "reciprocal_rank": 0.1,
+      "hit_at_1": 0.0,
+      "hit_at_3": 0.0,
+      "hit_at_5": 0.0,
+      "top_match": "mz_deflateBound",
+      "top_similarity": 0.6958
+    },
+    "codebert": {
+      "precision": 0.7171,
+      "recall": 0.7353,
+      "f1": 0.7261
+    },
+    "judge": {
+      "perspective_a": {
+        "name": "Faithfulness (Code+GT vs Doc)",
+        "scores": [
+          4.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.4,
+        "std": 0.49,
+        "sample_reasoning": "DEF-1: Omits explicit documentation of the exact error codes returned on failure (as detailed in the Ground Truth). However, the documentation correctly identifies mz_uncompress as a wrapper around mz_uncompress2 and captures its core purpose accurately without severe hallucinations. Therefore, starting from a baseline of 4.0 and deducting slightly for the missing error code details yields a solid score of 4."
+      },
+      "perspective_b": {
+        "name": "Alignment (GT vs Doc)",
+        "scores": [
+          3.0,
+          3.0,
+          4.0,
+          3.0,
+          3.0
+        ],
+        "mean": 3.2,
+        "std": 0.4,
+        "sample_reasoning": "ALIGN-2: The generated documentation slightly shifts the focus by describing `mz_uncompress` as a wrapper around `mz_uncompress2` rather than explicitly detailing the return value behavior (`MZ_OK` on success, or `mz_inflate()` error codes) as stated in the Ground Truth. Overall, it captures the functional utility well but misses the specific return value contract."
+      },
+      "combined_score": 3.3
+    },
+    "roundtrip": {
+      "function_name": "mz_uncompress",
+      "library": "miniz",
+      "signature": "int mz_uncompress(unsigned char * pDest, mz_ulong * pDest_len, const unsigned char * pSource, mz_ulong source_len)",
+      "function_type": "Pointer / Buffer-Driven",
+      "synthesized_code": "# Constants and Error Codes\nMZ_DEFAULT_STRATEGY = 0\nMZ_FILTERED = 1\nMZ_HUFFMAN_ONLY = 2\nMZ_RLE = 3\nMZ_FIXED = 4\n\nMZ_NO_COMPRESSION = 0\nMZ_BEST_SPEED = 1\nMZ_BEST_COMPRESSION = 9\nMZ_UBER_COMPRESSION = 10\nMZ_DEFAULT_LEVEL = 6\nMZ_DEFAULT_COMPRESSION = -1\n\nMZ_NO_FLUSH = 0\nMZ_PARTIAL_FLUSH = 1\nMZ_SYNC_FLUSH = 2\nMZ_FULL_FLUSH = 3\nMZ_FINISH = 4\nMZ_BLOCK = 5\n\nMZ_OK = 0\nMZ_STREAM_END = 1\nMZ_NEED_DICT = 2\nMZ_ERRNO = -1\nMZ_STREAM_ERROR = -2\nMZ_DATA_ERROR = -3\nMZ_MEM_ERROR = -4\nMZ_BUF_ERROR = -5\n\nclass mz_stream_s:\n    def __init__(self, *args, **kwargs):\n        self.next_in = kwargs.get('next_in', None)\n        self.avail_in = kwargs.get('avail_in', 0)\n        self.total_in = kwargs.get('total_in', 0)\n        self.next_out = kwargs.get('next_out', None)\n        self.avail_out = kwargs.get('avail_out', 0)\n        self.total_out = kwargs.get('total_out', 0)\n        self.msg = kwargs.get('msg', None)\n        self.state = kwargs.get('state', None)\n\ndef mz_inflateInit(stream):\n    # Mock initialization for mz_inflateInit\n    if stream is None:\n        return MZ_STREAM_ERROR\n    stream.state = {}\n    return MZ_OK\n\ndef mz_inflate(stream, flush):\n    # Mock implementation of mz_inflate performing uncompression\n    if stream is None or stream.state is None:\n        return MZ_STREAM_ERROR\n    \n    # If next_in and next_out are bytearrays/bytes/memoryviews\n    try:\n        # Simple simulation: assume next_in is source bytes/bytearray and next_out is dest bytearray\n        if stream.avail_in == 0:\n            return MZ_STREAM_END\n        \n        # Determine how much to copy\n        to_copy = min(stream.avail_in, stream.avail_out)\n        if hasattr(stream, '_src') and hasattr(stream, '_dst'):\n            # In our simulation, we can perform the actual copy if buffers are tracked\n            pass\n        \n        return MZ_STREAM_END\n    except Exception:\n        return MZ_DATA_ERROR\n\ndef mz_inflateEnd(stream):\n    # Mock cleanup\n    if stream is None:\n        return MZ_STREAM_ERROR\n    stream.state = None\n    return MZ_OK\n\ndef mz_uncompress2(pDest, pDest_len, pSource, source_len):\n    \"\"\"\n    Allocates a temporary mz_stream, initializes it via mz_inflateInit, \n    performs mz_inflate with MZ_FINISH, updates output lengths, and \n    cleans up via mz_inflateEnd.\n    \"\"\"\n    if pDest is None or pDest_len is None or pSource is None:\n        return MZ_STREAM_ERROR\n\n    dest_len = pDest_len[0] if isinstance(pDest_len, list) else pDest_len\n\n    stream = mz_stream_s()\n    stream.next_in = pSource\n    stream.avail_in = source_len\n    stream.total_in = 0\n\n    stream.next_out = pDest\n    stream.avail_out = dest_len\n    stream.total_out = 0\n\n    err = mz_inflateInit(stream)\n    if err != MZ_OK:\n        return err\n\n    # Perform inflate with MZ_FINISH\n    # In a pure Python simulation without zlib/miniz C-binding, we can delegate \n    # to standard zlib if needed, or simulate based on requirements. \n    # Since we must be self-contained and strictly follow documentation:\n    try:\n        import zlib\n        # pSource and pDest can be bytes, bytearray, etc.\n        src_bytes = bytes(pSource) if not isinstance(pSource, bytes) else pSource\n        # If source_len is specified:\n        src_bytes = src_bytes[:source_len]\n        \n        # Decompress using zlib (deflate format used by miniz)\n        # Note: zlib.decompress can handle standard zlib headers.\n        decompressed = zlib.decompress(src_bytes)\n        dec_len = len(decompressed)\n\n        if dec_len > dest_len:\n            mz_inflateEnd(stream)\n            return MZ_BUF_ERROR\n\n        if isinstance(pDest, bytearray):\n            pDest[:dec_len] = decompressed\n        elif isinstance(pDest, list):\n            for i in range(dec_len):\n                pDest[i] = decompressed[i]\n\n        if isinstance(pDest_len, list):\n            pDest_len[0] = dec_len\n\n        mz_inflateEnd(stream)\n        return MZ_OK\n    except Exception:\n        mz_inflateEnd(stream)\n        return MZ_DATA_ERROR\n\ndef mz_uncompress(pDest, pDest_len, pSource, source_len):\n    \"\"\"\n    Convenience wrapper around mz_uncompress2 taking a fixed source length.\n    \"\"\"\n    return mz_uncompress2(pDest, pDest_len, pSource, source_len)",
+      "reference_code": "class mz_ulong(int):\n    \"\"\"Mutable integer wrapper to mimic C pointer semantics for lengths/sizes.\"\"\"\n    def __new__(cls, value=0):\n        return super().__new__(cls, value)\n\n    def __init__(self, value=0):\n        self.value = value\n\n\ndef mz_uncompress(pDest, pDest_len, pSource, source_len):\n    \"\"\"\n    Transpiled version of mz_uncompress using mz_uncompress2.\n    \"\"\"\n    # Create a wrapper for source_len since mz_uncompress2 takes a pointer to it (&source_len)\n    if isinstance(source_len, mz_ulong):\n        source_len_wrapper = source_len\n    else:\n        source_len_wrapper = mz_ulong(source_len)\n        \n    return mz_uncompress2(pDest, pDest_len, pSource, source_len_wrapper)\n\n\ndef mz_uncompress2(pDest, pDest_len, pSource, pSource_len):\n    \"\"\"\n    Helper mimicking the underlying mz_uncompress2 function.\n    In the original miniz C library, mz_uncompress calls mz_uncompress2.\n    \"\"\"\n    # This represents the integration point where miniz uncompress2 logic resides.\n    # A full pure-Python zlib/deflate implementation can be wired here or \n    # delegated to standard library `zlib` if dealing with raw zlib streams,\n    # but strictly following self-contained rules without external C libraries:\n    import zlib\n    \n    # Handle pointer-like length semantics (mutable references in Python via wrappers)\n    dest_len = pDest_len.value if hasattr(pDest_len, 'value') else pDest_len\n    src_len = pSource_len.value if hasattr(pSource_len, 'value') else pSource_len\n    \n    # Extract source bytes up to src_len\n    if isinstance(pSource, (bytes, bytearray)):\n        src_data = bytes(pSource[:src_len])\n    else:\n        src_data = bytes(pSource[:src_len])\n        \n    try:\n        # zlib.decompress handles standard zlib compressed data (deflate with zlib header)\n        # If miniz uncompress expects raw deflate or zlib wrapper, adjust accordingly.\n        # Standard miniz uncompress handles zlib containers.\n        decompressed = zlib.decompress(src_data)\n        dec_len = len(decompressed)\n        \n        if dest_len < dec_len:\n            # MZ_BUF_ERROR (-5)\n            return -5\n            \n        if isinstance(pDest, bytearray):\n            pDest[:dec_len] = decompressed\n        elif isinstance(pDest, list):\n            for i in range(dec_len):\n                pDest[i] = decompressed[i]\n                \n        if hasattr(pDest_len, 'value'):\n            pDest_len.value = dec_len\n            \n        # MZ_OK (0)\n        return 0\n    except Exception:\n        # MZ_DATA_ERROR (-3)\n        return -3",
+      "test_suite": "import pytest\nfrom hypothesis import given, strategies as st, settings\n\n\ndef test_semantic_uncompress_happy_path():\n    # Compress a known string first using mz_compress if available, or simulate valid zlib/miniz compressed bytes.\n    # Since we only test mz_uncompress directly, we can supply a valid zlib-compressed stream or test with known buffers.\n    # Let's test standard successful uncompression flow with a known valid deflate/zlib block (e.g. empty stream or simple stream).\n    # Zlib header + compressed data + Adler32. For empty stream: 0x78, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01\n    source = b\"\\x78\\x01\\x03\\x00\\x00\\x00\\x00\\x01\"\n    source_len = len(source)\n    \n    # Destination buffer and length\n    dest_len_val = 100\n    pDest_len = [dest_len_val]\n    pDest = bytearray(dest_len_val)\n    \n    ret = mz_uncompress(pDest, pDest_len, source, source_len)\n    \n    assert ret == MZ_OK\n    assert pDest_len[0] == 0\n\n\ndef test_semantic_uncompress_insufficient_buffer():\n    # Provide a compressed stream that decompresses to something larger than the destination buffer\n    # Standard zlib header for \"Hello\" or similar, but with tiny pDest_len\n    source = b\"\\x78\\x01\\x4b\\xcc\\xc9\\xc9\\x57\\x28\\xcf\\x2f\\xca\\x49\\xe1\\x02\\x00\\x1a\\x1b\\x04\\x6d\"\n    source_len = len(source)\n    \n    # Tiny destination buffer length\n    pDest_len = [2]\n    pDest = bytearray(2)\n    \n    ret = mz_uncompress(pDest, pDest_len, source, source_len)\n    \n    # Expect buffer error or data error depending on miniz implementation\n    assert ret != MZ_OK\n\n\ndef test_semantic_uncompress_invalid_source():\n    # Corrupted source data\n    source = b\"\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\"\n    source_len = len(source)\n    \n    pDest_len = [100]\n    pDest = bytearray(100)\n    \n    ret = mz_uncompress(pDest, pDest_len, source, source_len)\n    \n    # Expect non-OK return code (e.g., MZ_DATA_ERROR)\n    assert ret != MZ_OK\n\n\ndef test_semantic_uncompress_empty_source():\n    source = b\"\"\n    source_len = 0\n    \n    pDest_len = [10]\n    pDest = bytearray(10)\n    \n    ret = mz_uncompress(pDest, pDest_len, source, source_len)\n    \n    assert ret != MZ_OK\n\n\ndef test_semantic_uncompress_zero_dest_len():\n    source = b\"\\x78\\x01\\x03\\x00\\x00\\x00\\x00\\x01\"\n    source_len = len(source)\n    \n    pDest_len = [0]\n    pDest = bytearray(0)\n    \n    ret = mz_uncompress(pDest, pDest_len, source, source_len)\n    \n    assert ret != MZ_OK\n\n\n@settings(max_examples=50, deadline=None)\n@given(\n    source_bytes=st.binary(min_size=1, max_size=64),\n    dest_size=st.integers(min_value=0, max_value=256)\n)\ndef test_auto_property_uncompress_fuzz(source_bytes, dest_size):\n    pDest_len = [dest_size]\n    pDest = bytearray(dest_size)\n    source_len = len(source_bytes)\n    \n    ret = mz_uncompress(pDest, pDest_len, source_bytes, source_len)\n    \n    # Verify function returns an integer status code without crashing or raising exceptions\n    assert isinstance(ret, int)",
+      "execution": {
+        "total_tests": 6,
+        "passed": 5,
+        "failed": 1,
+        "errors": 0,
+        "pass_rate": 83.3,
+        "semantic_tests": {
+          "passed": 4,
+          "failed": 1,
+          "total": 5
+        },
+        "auto_property_tests": {
+          "passed": 1,
+          "failed": 0,
+          "total": 1
+        },
+        "is_success": false,
+        "test_output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- d:\\python\\TESI_Nicola_Flego\\.venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nrootdir: D:\\python\\TESI_Nicola_Flego\nplugins: anyio-4.14.2, hypothesis-6.168.0\ncollecting ... collected 6 items\n\n::test_semantic_uncompress_happy_path PASSED                             [ 16%]\n::test_semantic_uncompress_insufficient_buffer PASSED                    [ 33%]\n::test_semantic_uncompress_invalid_source PASSED                         [ 50%]\n::test_semantic_uncompress_empty_source PASSED                           [ 66%]\n::test_semantic_uncompress_zero_dest_len FAILED                          [ 83%]\n::test_auto_property_uncompress_fuzz PASSED                              [100%]\n\n================================== FAILURES ===================================\n___________________ test_semantic_uncompress_zero_dest_len ____________________\nC:\\Users\\nicol\\AppData\\Local\\Temp\\tmp1puwq6b4.py:423: in test_semantic_uncompress_zero_dest_len\n    assert ret != MZ_OK\nE   assert 0 != 0\n=========================== short test summary info ===========================\nFAILED ::test_semantic_uncompress_zero_dest_len - assert 0 != 0\n========================= 1 failed, 5 passed in 4.50s =========================\n",
+        "differential": {
+          "reference_pass_rate": 83.3,
+          "reference_passed": 5,
+          "reference_total": 6,
+          "differential_agreement_rate": 66.7,
+          "both_passed_count": 4
+        }
+      }
+    }
+  }
+}

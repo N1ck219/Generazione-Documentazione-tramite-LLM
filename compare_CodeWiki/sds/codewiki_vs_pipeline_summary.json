@@ -1,0 +1,1153 @@
+{
+  "library": "sds",
+  "n_common": 35,
+  "n_codewiki_documented": 35,
+  "pipeline_runs": [
+    "results\\benchmark_all\\run_20260917_161553_multiagent\\eval_report_multiagent.json",
+    "results\\benchmark_all\\run_20260917_175114_multiagent\\eval_report_multiagent.json",
+    "results\\benchmark_all\\run_20260921_155351_multiagent\\eval_report_multiagent.json",
+    "results\\benchmark_all\\run_20260921_175447_multiagent\\eval_report_multiagent.json",
+    "results\\benchmark_sds\\run_20261003_120009_multiagent\\eval_report_multiagent.json",
+    "results\\benchmark_sds\\run_20261003_121306_multiagent\\eval_report_multiagent.json",
+    "results\\benchmark_sds\\run_20261003_122734_multiagent\\eval_report_multiagent.json"
+  ],
+  "missing_in_pipeline": [],
+  "metrics": [
+    {
+      "metric": "sbert_similarity",
+      "label": "SBERT",
+      "group": "nlp",
+      "n": 35,
+      "codewiki_mean": 0.6279,
+      "pipeline_mean": 0.7035,
+      "delta": 0.0756,
+      "p_value": 0.03561751253437251
+    },
+    {
+      "metric": "bertscore_f1",
+      "label": "BERTScore F1",
+      "group": "nlp",
+      "n": 35,
+      "codewiki_mean": 0.5914,
+      "pipeline_mean": 0.5951,
+      "delta": 0.0037,
+      "p_value": 0.7158310085069388
+    },
+    {
+      "metric": "bleurt_estimate",
+      "label": "BLEURT (stima)",
+      "group": "nlp",
+      "n": 35,
+      "codewiki_mean": 0.497,
+      "pipeline_mean": 0.5953,
+      "delta": 0.0982,
+      "p_value": 0.0008381715742871165
+    },
+    {
+      "metric": "meteor_score",
+      "label": "METEOR",
+      "group": "nlp",
+      "n": 35,
+      "codewiki_mean": 0.4233,
+      "pipeline_mean": 0.4376,
+      "delta": 0.0143,
+      "p_value": 0.5544616600964218
+    },
+    {
+      "metric": "tfidf_cosine",
+      "label": "TF-IDF cosine",
+      "group": "nlp",
+      "n": 35,
+      "codewiki_mean": 0.3338,
+      "pipeline_mean": 0.4437,
+      "delta": 0.1099,
+      "p_value": 0.0007569203798492143
+    },
+    {
+      "metric": "rouge_l",
+      "label": "ROUGE-L",
+      "group": "nlp",
+      "n": 35,
+      "codewiki_mean": 0.2187,
+      "pipeline_mean": 0.1717,
+      "delta": -0.047,
+      "p_value": 0.2776432923583433
+    },
+    {
+      "metric": "concept_checklist_score",
+      "label": "Concept checklist",
+      "group": "nlp",
+      "n": 35,
+      "codewiki_mean": 0.6286,
+      "pipeline_mean": 0.7762,
+      "delta": 0.1476,
+      "p_value": 0.004986987681773216
+    },
+    {
+      "metric": "actionability_score",
+      "label": "Actionability",
+      "group": "nlp",
+      "n": 35,
+      "codewiki_mean": 0.2671,
+      "pipeline_mean": 0.81,
+      "delta": 0.5429,
+      "p_value": 1.2121136522643167e-07
+    },
+    {
+      "metric": "error_doc_rate",
+      "label": "Error doc. rate",
+      "group": "nlp",
+      "n": 10,
+      "codewiki_mean": 0.2,
+      "pipeline_mean": 0.9,
+      "delta": 0.7,
+      "p_value": 0.0390625
+    },
+    {
+      "metric": "edge_case_coverage",
+      "label": "Edge case coverage",
+      "group": "nlp",
+      "n": 22,
+      "codewiki_mean": 0.1591,
+      "pipeline_mean": 0.8182,
+      "delta": 0.6591,
+      "p_value": 0.00015228438809614412
+    },
+    {
+      "metric": "length_ratio",
+      "label": "Length ratio",
+      "group": "nlp",
+      "n": 35,
+      "codewiki_mean": 0.5096,
+      "pipeline_mean": 3.9491,
+      "delta": 3.4395,
+      "p_value": null
+    },
+    {
+      "metric": "codebert_f1",
+      "label": "CodeBERTScore F1",
+      "group": "advanced",
+      "n": 35,
+      "codewiki_mean": 0.7611,
+      "pipeline_mean": 0.75,
+      "delta": -0.0111,
+      "p_value": 0.2191847647773102
+    },
+    {
+      "metric": "retrieval_rr",
+      "label": "Retrieval MRR",
+      "group": "advanced",
+      "n": 35,
+      "codewiki_mean": 0.4901,
+      "pipeline_mean": 0.4708,
+      "delta": -0.0192,
+      "p_value": 0.7798944190764258
+    },
+    {
+      "metric": "hit_at_1",
+      "label": "Retrieval Hit@1",
+      "group": "advanced",
+      "n": 35,
+      "codewiki_mean": 0.4,
+      "pipeline_mean": 0.2857,
+      "delta": -0.1143,
+      "p_value": 0.2059032107320684
+    },
+    {
+      "metric": "hit_at_5",
+      "label": "Retrieval Hit@5",
+      "group": "advanced",
+      "n": 35,
+      "codewiki_mean": 0.5714,
+      "pipeline_mean": 0.6857,
+      "delta": 0.1143,
+      "p_value": 0.24821307898992362
+    },
+    {
+      "metric": "judge_a",
+      "label": "Judge A - Faithfulness",
+      "group": "advanced",
+      "n": 35,
+      "codewiki_mean": 3.7143,
+      "pipeline_mean": 4.6,
+      "delta": 0.8857,
+      "p_value": 1.0806329017957333e-06
+    },
+    {
+      "metric": "judge_b",
+      "label": "Judge B - Alignment",
+      "group": "advanced",
+      "n": 35,
+      "codewiki_mean": 3.2857,
+      "pipeline_mean": 4.5257,
+      "delta": 1.24,
+      "p_value": 1.9562031873373163e-05
+    },
+    {
+      "metric": "judge_combined",
+      "label": "Judge combinato",
+      "group": "advanced",
+      "n": 35,
+      "codewiki_mean": 3.5,
+      "pipeline_mean": 4.5629,
+      "delta": 1.0629,
+      "p_value": 1.0956578384792096e-06
+    },
+    {
+      "metric": "roundtrip_pass_rate",
+      "label": "Round-trip pass rate (%)",
+      "group": "advanced",
+      "n": 35,
+      "codewiki_mean": 50.38,
+      "pipeline_mean": 46.7086,
+      "delta": -3.6714,
+      "p_value": 0.8192403756317822
+    },
+    {
+      "metric": "roundtrip_dual_agreement",
+      "label": "Dual agreement (%)",
+      "group": "advanced",
+      "n": 35,
+      "codewiki_mean": 33.3371,
+      "pipeline_mean": 29.2257,
+      "delta": -4.1114,
+      "p_value": 0.3952087737967991
+    }
+  ],
+  "extra": {
+    "n_functions": 35,
+    "n_valid_both": 31,
+    "no_tests": {
+      "pipeline": 2,
+      "codewiki": 2
+    },
+    "reference_suite_fails": {
+      "pipeline": 14,
+      "codewiki": 13
+    },
+    "pass_rate": {
+      "pipeline": 52.19677419354839,
+      "codewiki": 50.42903225806452,
+      "p_value": 0.6809017565645358,
+      "n": 31
+    },
+    "dual": {
+      "pipeline": 32.458064516129035,
+      "codewiki": 34.41290322580646,
+      "p_value": 0.5552316493846132,
+      "n": 31
+    },
+    "error_categories": {
+      "Behavioral / Contract Failure": {
+        "pipeline": 56,
+        "codewiki": 42
+      },
+      "Interface / Signature Mismatch": {
+        "pipeline": 19,
+        "codewiki": 32
+      },
+      "Missing Symbol / Environment": {
+        "pipeline": 18,
+        "codewiki": 9
+      },
+      "Other Execution Error": {
+        "pipeline": 5,
+        "codewiki": 8
+      }
+    },
+    "per_function": {
+      "sdsAllocSize": {
+        "pipeline": {
+          "pass_rate": 60.0,
+          "total_tests": 5,
+          "passed": 3,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 20.0,
+          "total_tests": 5,
+          "passed": 1,
+          "dual": 20.0,
+          "ref_pass": 20.0,
+          "flags": [
+            "sintesi vuota"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdsIncrLen": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 0,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "timeout",
+            "test falliscono sul reference"
+          ],
+          "no_tests": true
+        }
+      },
+      "sdsMakeRoomFor": {
+        "pipeline": {
+          "pass_rate": 16.7,
+          "total_tests": 6,
+          "passed": 1,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdsRemoveFreeSpace": {
+        "pipeline": {
+          "pass_rate": 40.0,
+          "total_tests": 5,
+          "passed": 2,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdsalloc": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdscat": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 16.7,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdscatfmt": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 7,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 16.7,
+          "total_tests": 6,
+          "passed": 1,
+          "dual": 16.7,
+          "ref_pass": 16.7,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdscatlen": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 83.3,
+          "total_tests": 6,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdscatprintf": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdscatrepr": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 50.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdscatsds": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 33.3,
+          "total_tests": 6,
+          "passed": 2,
+          "dual": 33.3,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdscatvprintf": {
+        "pipeline": {
+          "pass_rate": 50.0,
+          "total_tests": 6,
+          "passed": 3,
+          "dual": 33.3,
+          "ref_pass": 33.3,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdsclear": {
+        "pipeline": {
+          "pass_rate": 20.0,
+          "total_tests": 5,
+          "passed": 1,
+          "dual": 20.0,
+          "ref_pass": 20.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 50.0,
+          "total_tests": 4,
+          "passed": 2,
+          "dual": 50.0,
+          "ref_pass": 50.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdscmp": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 8,
+          "passed": 8,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 8,
+          "passed": 8,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdscpy": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdscpylen": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 5,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdsdup": {
+        "pipeline": {
+          "pass_rate": 40.0,
+          "total_tests": 5,
+          "passed": 2,
+          "dual": 40.0,
+          "ref_pass": 40.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 60.0,
+          "total_tests": 5,
+          "passed": 3,
+          "dual": 60.0,
+          "ref_pass": 60.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdsempty": {
+        "pipeline": {
+          "pass_rate": 50.0,
+          "total_tests": 6,
+          "passed": 3,
+          "dual": 50.0,
+          "ref_pass": 83.3,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 50.0,
+          "total_tests": 6,
+          "passed": 3,
+          "dual": 50.0,
+          "ref_pass": 83.3,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdsfree": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdsfreesplitres": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdsfromlonglong": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdsgrowzero": {
+        "pipeline": {
+          "pass_rate": 33.3,
+          "total_tests": 6,
+          "passed": 2,
+          "dual": 33.3,
+          "ref_pass": 33.3,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdsjoin": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 7,
+          "passed": 7,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdsjoinsds": {
+        "pipeline": {
+          "pass_rate": 16.7,
+          "total_tests": 6,
+          "passed": 1,
+          "dual": 16.7,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 0,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "timeout",
+            "test falliscono sul reference"
+          ],
+          "no_tests": true
+        }
+      },
+      "sdsmapchars": {
+        "pipeline": {
+          "pass_rate": 71.4,
+          "total_tests": 7,
+          "passed": 5,
+          "dual": 42.9,
+          "ref_pass": 42.9,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 66.7,
+          "total_tests": 6,
+          "passed": 4,
+          "dual": 50.0,
+          "ref_pass": 50.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdsnew": {
+        "pipeline": {
+          "pass_rate": 20.0,
+          "total_tests": 5,
+          "passed": 1,
+          "dual": 20.0,
+          "ref_pass": 20.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 20.0,
+          "ref_pass": 20.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdsnewlen": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdsrange": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 7,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 33.3,
+          "total_tests": 6,
+          "passed": 2,
+          "dual": 16.7,
+          "ref_pass": 16.7,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdssplitargs": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 16.7,
+          "ref_pass": 16.7,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 66.7,
+          "total_tests": 6,
+          "passed": 4,
+          "dual": 16.7,
+          "ref_pass": 16.7,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdssplitlen": {
+        "pipeline": {
+          "pass_rate": 33.3,
+          "total_tests": 6,
+          "passed": 2,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 6,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdstolower": {
+        "pipeline": {
+          "pass_rate": 66.7,
+          "total_tests": 6,
+          "passed": 4,
+          "dual": 33.3,
+          "ref_pass": 33.3,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 50.0,
+          "total_tests": 6,
+          "passed": 3,
+          "dual": 16.7,
+          "ref_pass": 16.7,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdstoupper": {
+        "pipeline": {
+          "pass_rate": 100.0,
+          "total_tests": 6,
+          "passed": 6,
+          "dual": 16.7,
+          "ref_pass": 16.7,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 33.3,
+          "total_tests": 6,
+          "passed": 2,
+          "dual": 16.7,
+          "ref_pass": 16.7,
+          "flags": [],
+          "no_tests": false
+        }
+      },
+      "sdstrim": {
+        "pipeline": {
+          "pass_rate": 16.7,
+          "total_tests": 6,
+          "passed": 1,
+          "dual": 0.0,
+          "ref_pass": 16.7,
+          "flags": [],
+          "no_tests": false
+        },
+        "codewiki": {
+          "pass_rate": 0.0,
+          "total_tests": 8,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdsull2str": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 0,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "timeout"
+          ],
+          "no_tests": true
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "test falliscono sul reference"
+          ],
+          "no_tests": false
+        }
+      },
+      "sdsupdatelen": {
+        "pipeline": {
+          "pass_rate": 0.0,
+          "total_tests": 0,
+          "passed": 0,
+          "dual": 0.0,
+          "ref_pass": 0.0,
+          "flags": [
+            "timeout"
+          ],
+          "no_tests": true
+        },
+        "codewiki": {
+          "pass_rate": 100.0,
+          "total_tests": 5,
+          "passed": 5,
+          "dual": 100.0,
+          "ref_pass": 100.0,
+          "flags": [],
+          "no_tests": false
+        }
+      }
+    },
+    "win_loss": [
+      {
+        "metric": "sbert_similarity",
+        "label": "SBERT",
+        "n": 35,
+        "pipeline_wins": 19,
+        "ties": 1,
+        "codewiki_wins": 15
+      },
+      {
+        "metric": "bertscore_f1",
+        "label": "BERTScore F1",
+        "n": 35,
+        "pipeline_wins": 15,
+        "ties": 7,
+        "codewiki_wins": 13
+      },
+      {
+        "metric": "bleurt_estimate",
+        "label": "BLEURT (stima)",
+        "n": 35,
+        "pipeline_wins": 26,
+        "ties": 1,
+        "codewiki_wins": 8
+      },
+      {
+        "metric": "meteor_score",
+        "label": "METEOR",
+        "n": 35,
+        "pipeline_wins": 18,
+        "ties": 2,
+        "codewiki_wins": 15
+      },
+      {
+        "metric": "tfidf_cosine",
+        "label": "TF-IDF cosine",
+        "n": 35,
+        "pipeline_wins": 22,
+        "ties": 4,
+        "codewiki_wins": 9
+      },
+      {
+        "metric": "rouge_l",
+        "label": "ROUGE-L",
+        "n": 35,
+        "pipeline_wins": 17,
+        "ties": 2,
+        "codewiki_wins": 16
+      },
+      {
+        "metric": "concept_checklist_score",
+        "label": "Concept checklist",
+        "n": 35,
+        "pipeline_wins": 11,
+        "ties": 23,
+        "codewiki_wins": 1
+      },
+      {
+        "metric": "actionability_score",
+        "label": "Actionability",
+        "n": 35,
+        "pipeline_wins": 34,
+        "ties": 1,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "error_doc_rate",
+        "label": "Error doc. rate",
+        "n": 10,
+        "pipeline_wins": 8,
+        "ties": 1,
+        "codewiki_wins": 1
+      },
+      {
+        "metric": "edge_case_coverage",
+        "label": "Edge case coverage",
+        "n": 22,
+        "pipeline_wins": 17,
+        "ties": 5,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "codebert_f1",
+        "label": "CodeBERTScore F1",
+        "n": 35,
+        "pipeline_wins": 10,
+        "ties": 8,
+        "codewiki_wins": 17
+      },
+      {
+        "metric": "retrieval_rr",
+        "label": "Retrieval MRR",
+        "n": 35,
+        "pipeline_wins": 15,
+        "ties": 10,
+        "codewiki_wins": 10
+      },
+      {
+        "metric": "judge_a",
+        "label": "Judge A - Faithfulness",
+        "n": 35,
+        "pipeline_wins": 31,
+        "ties": 4,
+        "codewiki_wins": 0
+      },
+      {
+        "metric": "judge_b",
+        "label": "Judge B - Alignment",
+        "n": 35,
+        "pipeline_wins": 25,
+        "ties": 8,
+        "codewiki_wins": 2
+      },
+      {
+        "metric": "roundtrip_pass_rate",
+        "label": "Round-trip pass rate",
+        "n": 35,
+        "pipeline_wins": 13,
+        "ties": 12,
+        "codewiki_wins": 10
+      },
+      {
+        "metric": "roundtrip_dual_agreement",
+        "label": "Dual agreement",
+        "n": 35,
+        "pipeline_wins": 5,
+        "ties": 21,
+        "codewiki_wins": 9
+      }
+    ]
+  }
+}

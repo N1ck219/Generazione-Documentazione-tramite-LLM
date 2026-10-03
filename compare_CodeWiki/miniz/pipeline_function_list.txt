@@ -2,12 +2,5 @@
 deflateInit
 inflateInit
 mz_adler32
-mz_compressBound
 mz_crc32
-mz_deflateEnd
-mz_deflateInit
-mz_inflateEnd
-mz_inflateInit
-mz_inflateInit2
-mz_uncompress
 mz_version

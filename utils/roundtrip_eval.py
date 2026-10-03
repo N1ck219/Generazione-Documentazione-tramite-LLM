@@ -192,7 +192,8 @@ C/C++ Signature: `{signature}`
 - STRICTLY FORBIDDEN: Do NOT import or use `ctypes` or `ctypes.CDLL(None)`. Implement pure Python logic or pure Python mocks for memory allocation (e.g. bytearray or integer IDs).
 - Return ONLY valid Python code inside a single ```python ... ``` block without conversational filler.
 """
-        response = self._call_gemini(prompt)
+        # _call_gemini puo' restituire None (errore API, risposta bloccata): sintesi vuota, non un crash
+        response = self._call_gemini(prompt) or ""
         match = re.search(r"```python\s*(.*?)\s*```", response, re.DOTALL)
         code = match.group(1).strip() if match else response.strip()
 
@@ -208,7 +209,7 @@ Please fix the syntax error and return the corrected, complete, self-contained P
 Code:
 {code}
 """
-            fixed_response = self._call_gemini(fix_prompt)
+            fixed_response = self._call_gemini(fix_prompt) or ""
             fixed_match = re.search(r"```python\s*(.*?)\s*```", fixed_response, re.DOTALL)
             fixed_code = fixed_match.group(1).strip() if fixed_match else fixed_response.strip()
             try:
@@ -271,7 +272,7 @@ C/C++ Signature: `{signature}`
 - STRICTLY FORBIDDEN: Do NOT import or use `ctypes` or `ctypes.CDLL(None)`. Implement pure Python logic or pure Python mocks for memory allocation.
 - Return ONLY valid Python code inside a single ```python ... ``` block without conversational filler.
 """
-        response = self._call_gemini(prompt)
+        response = self._call_gemini(prompt) or ""
         match = re.search(r"```python\s*(.*?)\s*```", response, re.DOTALL)
         code = match.group(1).strip() if match else response.strip()
 
@@ -285,7 +286,7 @@ Please fix the syntax error and return the corrected, complete, self-contained P
 Code:
 {code}
 """
-            fixed_response = self._call_gemini(fix_prompt)
+            fixed_response = self._call_gemini(fix_prompt) or ""
             fixed_match = re.search(r"```python\s*(.*?)\s*```", fixed_response, re.DOTALL)
             fixed_code = fixed_match.group(1).strip() if fixed_match else fixed_response.strip()
             try:
@@ -370,7 +371,7 @@ C/C++ Signature: `{signature}`
 {invocation_guidance}
 Return ONLY executable Python code inside a single ```python ... ``` block.
 """
-        response = self._call_gemini(prompt)
+        response = self._call_gemini(prompt) or ""
         match = re.search(r"```python\s*(.*?)\s*```", response, re.DOTALL)
         raw_test = match.group(1).strip() if match else response.strip()
         # Rimuove import errati generati dal modello (es. from implementation import ..., import implementation)
@@ -394,7 +395,7 @@ Please fix the syntax error and return the corrected, complete Python test code 
 Code:
 {cleaned_test}
 """
-            fixed_response = self._call_gemini(fix_prompt)
+            fixed_response = self._call_gemini(fix_prompt) or ""
             fixed_match = re.search(r"```python\s*(.*?)\s*```", fixed_response, re.DOTALL)
             fixed_test = fixed_match.group(1).strip() if fixed_match else fixed_response.strip()
             fixed_lines = [re.sub(r"\ballow_inf\s*=", "allow_infinity=", l) for l in fixed_test.splitlines() if not re.match(r"^\s*(from|import)\s+implementation\b", l)]
