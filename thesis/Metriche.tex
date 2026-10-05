@@ -1079,8 +1079,8 @@ text.
 	zero norm, or the target is not found, the position is set to the last one; if the query is empty,
 	the model is not available or an exception occurs, the position is set to $1$ (see the limits).
 
-	\item \textbf{Output range and interpretation}: $\mathrm{RR}\in(0,1]$ per function and
-	$\mathrm{MRR}\in(0,1]$ on average; $\mathrm{Hit@}K\in[0,1]$. $\mathrm{MRR}=1$ means that every
+	\item \textbf{Output range and interpretation}: $\mathrm{RR}\in[0,1]$ per function and
+	$\mathrm{MRR}\in[0,1]$ on average; $\mathrm{Hit@}K\in[0,1]$. $\mathrm{MRR}=1$ means that every
 	description retrieves its own function at the first position. Hit@1 is the strictest reading,
 	because it counts only the exact first position, whereas Hit@5 tolerates a few similar
 	functions ahead of the target. The MRR is more sensitive to the top positions: moving from rank
