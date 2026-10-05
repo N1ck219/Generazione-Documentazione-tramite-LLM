@@ -170,7 +170,7 @@ def build_case_study_report(controlled_res, real_res, output_path: str):
         m_max = r_max["metrics"]
         lines.append(f"### 2.1 Caso di Massima Corrispondenza Reale (SBERT: {m_max['sbert_similarity']:.3f})\n")
         lines.append(f"- **Funzione**: `{r_max['function_name']}` | **Firma**: `{r_max['signature']}`")
-        lines.append(f"- **Metriche**: SBERT: `{m_max['sbert_similarity']:.3f}` | BERTScore F1: `{m_max['bert_score_f1']:.3f}` | BLEURT: `{m_max['bleurt_score']:.3f}` | ROUGE-L: `{m_max['rouge_l']:.3f}` | TF-IDF: `{m_max['tfidf_similarity']:.3f}`")
+        lines.append(f"- **Metriche**: SBERT: `{m_max['sbert_similarity']:.3f}` | BERTScore F1: `{m_max['bert_score_f1']:.3f}` | ROUGE-L: `{m_max['rouge_l']:.3f}` | TF-IDF: `{m_max['tfidf_similarity']:.3f}`")
         lines.append("\n**Codice Sorgente C Reale**:")
         lines.append("```c\n" + r_max.get("source_code", "").strip() + "\n```")
         lines.append("\n**Ground Truth Ufficiale (Commento Originale dell'Autore)**:")
@@ -189,7 +189,7 @@ def build_case_study_report(controlled_res, real_res, output_path: str):
             m_med = r_med["metrics"]
             lines.append(f"### 2.2.{idx} Caso Mediano Reale #{idx} (SBERT: {m_med['sbert_similarity']:.3f})\n")
             lines.append(f"- **Funzione**: `{r_med['function_name']}` | **Firma**: `{r_med['signature']}`")
-            lines.append(f"- **Metriche**: SBERT: `{m_med['sbert_similarity']:.3f}` | BERTScore F1: `{m_med['bert_score_f1']:.3f}` | BLEURT: `{m_med['bleurt_score']:.3f}` | ROUGE-L: `{m_med['rouge_l']:.3f}` | TF-IDF: `{m_med['tfidf_similarity']:.3f}`")
+            lines.append(f"- **Metriche**: SBERT: `{m_med['sbert_similarity']:.3f}` | BERTScore F1: `{m_med['bert_score_f1']:.3f}` | ROUGE-L: `{m_med['rouge_l']:.3f}` | TF-IDF: `{m_med['tfidf_similarity']:.3f}`")
             lines.append("\n**Codice Sorgente C Reale**:")
             lines.append("```c\n" + r_med.get("source_code", "").strip() + "\n```")
             lines.append("\n**Ground Truth Ufficiale (Autore)**:")
@@ -205,7 +205,7 @@ def build_case_study_report(controlled_res, real_res, output_path: str):
         m_min = r_min["metrics"]
         lines.append(f"### 2.3 Caso di Minima Corrispondenza Reale (SBERT: {m_min['sbert_similarity']:.3f})\n")
         lines.append(f"- **Funzione**: `{r_min['function_name']}` | **Firma**: `{r_min['signature']}`")
-        lines.append(f"- **Metriche**: SBERT: `{m_min['sbert_similarity']:.3f}` | BERTScore F1: `{m_min['bert_score_f1']:.3f}` | BLEURT: `{m_min['bleurt_score']:.3f}` | ROUGE-L: `{m_min['rouge_l']:.3f}` | TF-IDF: `{m_min['tfidf_similarity']:.3f}`")
+        lines.append(f"- **Metriche**: SBERT: `{m_min['sbert_similarity']:.3f}` | BERTScore F1: `{m_min['bert_score_f1']:.3f}` | ROUGE-L: `{m_min['rouge_l']:.3f}` | TF-IDF: `{m_min['tfidf_similarity']:.3f}`")
         lines.append("\n**Codice Sorgente C Reale**:")
         lines.append("```c\n" + r_min.get("source_code", "").strip() + "\n```")
         lines.append("\n**Ground Truth Ufficiale (Autore)**:")

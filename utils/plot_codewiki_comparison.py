@@ -68,7 +68,6 @@ from utils.codewiki_config import DB_PATH, RESULTS_DIR, LibraryPaths, lib_paths,
 METRICS = [
     ("sbert_similarity",        "SBERT"),
     ("bertscore_f1",            "BERTScore F1"),
-    ("bleurt_estimate",         "BLEURT (stima)"),
     ("meteor_score",            "METEOR"),
     ("tfidf_cosine",            "TF-IDF cosine"),
     ("rouge_l",                 "ROUGE-L"),
@@ -82,7 +81,6 @@ METRICS = [
 PIPELINE_KEYS = {
     "sbert_similarity":        "sbert_similarity",
     "bertscore_f1":            "bert_score_f1",
-    "bleurt_estimate":         "bleurt_score",
     "meteor_score":            "meteor_score",
     "tfidf_cosine":            "tfidf_similarity",
     "rouge_l":                 "rouge_l",

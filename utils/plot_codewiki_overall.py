@@ -46,7 +46,7 @@ REPORT = os.path.join(COMPARE_ROOT, "OVERALL_REPORT.md")
 # (chiave, etichetta, range per normalizzare la differenza)
 HEATMAP_METRICS = [
     ("sbert_similarity", "SBERT", 1.0), ("bertscore_f1", "BERTScore F1", 1.0),
-    ("bleurt_estimate", "BLEURT (stima)", 1.0), ("meteor_score", "METEOR", 1.0),
+    ("meteor_score", "METEOR", 1.0),
     ("tfidf_cosine", "TF-IDF cosine", 1.0), ("rouge_l", "ROUGE-L", 1.0),
     ("concept_checklist_score", "Concept checklist", 1.0), ("actionability_score", "Actionability", 1.0),
     ("error_doc_rate", "Error doc. rate", 1.0), ("edge_case_coverage", "Edge case coverage", 1.0),

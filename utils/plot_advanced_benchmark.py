@@ -43,8 +43,11 @@ def generate_radar_chart(eval_results: List[Dict[str, Any]], output_path: str, m
 
     actionability = np.mean([r["metrics"].get("actionability_score", 0.0) for r in eval_results])
 
-    edr = np.mean([r["metrics"].get("error_documentation_score", 0.0) for r in eval_results])
-    ecc = np.mean([r["metrics"].get("edge_case_coverage", 0.0) for r in eval_results])
+    # EDR/ECC sono None quando non applicabili: media solo sulle funzioni applicabili
+    edr_vals = [r["metrics"]["error_documentation_score"] for r in eval_results if r["metrics"].get("error_documentation_score") is not None]
+    ecc_vals = [r["metrics"]["edge_case_coverage"] for r in eval_results if r["metrics"].get("edge_case_coverage") is not None]
+    edr = np.mean(edr_vals) if edr_vals else 0.0
+    ecc = np.mean(ecc_vals) if ecc_vals else 0.0
     edge_cases = (edr + ecc) / 2.0
 
     hallucination_rate = np.mean([r["metrics"].get("hallucination_rate", 0.0) for r in eval_results]) / 100.0

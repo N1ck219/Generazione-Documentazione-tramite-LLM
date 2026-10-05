@@ -7,7 +7,6 @@ Produce un grafico ad alta risoluzione (300 DPI) per ciascuna metrica NLP:
 4. ROUGE-L
 5. TF-IDF Cosine Similarity
 6. METEOR Score
-7. BLEURT Quality Score
 
 I grafici confrontano le 5 classi concettuali:
 - Equivalenti
@@ -160,13 +159,6 @@ METRICS_CONFIG = [
         'filename': 'nlp_metric_meteor.png',
         'ylabel': 'METEOR Score [0.0 - 1.0]',
         'description': 'Allineamento lessicale avanzato con stemming, sinonimia e penalità di frammentazione'
-    },
-    {
-        'key': 'BLEURT',
-        'title': 'BLEURT Quality Score (Neural Quality Estimator)',
-        'filename': 'nlp_metric_bleurt.png',
-        'ylabel': 'BLEURT Score Stimato [0.0 - 1.0]',
-        'description': 'Stima neurale di naturalezza e qualità calibrata con Brevity Penalty'
     }
 ]
 
@@ -295,11 +287,11 @@ def generate_single_metric_plot(metric_cfg: Dict[str, str], data: List[Dict[str,
 def generate_overview_radar_all_metrics(data: List[Dict[str, Any]]):
     """
     Grafico sinottico opzionale: Radar/Spider chart riassuntivo che compara
-    le 7 metriche medie nelle 5 classi concettuali.
+    le 6 metriche medie nelle 5 classi concettuali.
     """
     categories = CATEGORIES
     metrics = [m['key'] for m in METRICS_CONFIG]
-    metric_labels = ['SBERT', 'BERT F1', 'CodeBERT F1', 'ROUGE-L', 'TF-IDF', 'METEOR', 'BLEURT']
+    metric_labels = ['SBERT', 'BERT F1', 'CodeBERT F1', 'ROUGE-L', 'TF-IDF', 'METEOR']
 
     # Medie per classe su tutti i domini
     cat_means = {cat: [] for cat in categories}
@@ -323,7 +315,7 @@ def generate_overview_radar_all_metrics(data: List[Dict[str, Any]]):
     ax.set_yticks(y)
     ax.set_yticklabels(CAT_LABELS, fontsize=10, fontweight='semibold')
     ax.set_xlabel("Punteggio Medio Aggregato [0.0 - 1.0]", fontsize=11)
-    ax.set_title("Quadro Sinottico: Confronto delle 7 Metriche NLP sulle 5 Classi Concettuali", fontsize=13, pad=12)
+    ax.set_title("Quadro Sinottico: Confronto delle 6 Metriche NLP sulle 5 Classi Concettuali", fontsize=13, pad=12)
     ax.set_xlim(0.0, 1.15)
     ax.legend(loc='lower right', frameon=True, facecolor='#FFFFFF', framealpha=0.95, edgecolor='#CBD5E1', ncol=2)
     ax.grid(axis='x', linestyle='--', alpha=0.5)
@@ -343,7 +335,7 @@ def main():
 
     data = load_data()
 
-    # 1. Genera un grafico individuale per ciascuna delle 7 metriche
+    # 1. Genera un grafico individuale per ciascuna delle 6 metriche
     for m_cfg in METRICS_CONFIG:
         generate_single_metric_plot(m_cfg, data)
 
@@ -351,7 +343,7 @@ def main():
     generate_overview_radar_all_metrics(data)
 
     print("=" * 80)
-    print("Tutti gli 8 grafici unificati a 300 DPI sono pronti in img_finali!")
+    print("Tutti i 7 grafici unificati a 300 DPI sono pronti in img_finali!")
     print("=" * 80)
 
 

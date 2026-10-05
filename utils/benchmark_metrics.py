@@ -11,7 +11,6 @@ Implementa:
    - Sentence-BERT (SBERT) Cosine Similarity (all-MiniLM-L6-v2)
    - BERTScore (Precision, Recall, F1 con RoBERTa / DeBERTa)
    - CodeBERTScore (Precision, Recall, F1 con microsoft/codebert-base)
-   - BLEURT / Neural Quality Estimator
 4. Metriche di Information Extraction / Slot-Filling sui Contratti Software:
    - Parameter Precision, Recall, F1-Score (rispetto all'AST)
    - Return Contract Match (verifica correttezza vs tipo di ritorno AST)
@@ -23,7 +22,7 @@ import re
 import math
 import warnings
 from collections import Counter
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Optional, Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -83,7 +82,8 @@ def parse_doxygen_block(doxygen_text: str) -> Dict[str, Any]:
     params = []
     param_matches = re.finditer(r"@param(?:\[(.*?)\])?\s+([a-zA-Z0-9_]+)\s+(.*?)(?=(?:@param|@return|@warning|@pre|@post|$))", text, re.DOTALL)
     for m in param_matches:
-        direction = m.group(1) or "in"
+        # Direzione solo se dichiarata esplicitamente ([in], [out], [in,out]); stringa vuota altrimenti.
+        direction = (m.group(1) or "").strip()
         p_name = m.group(2).strip()
         p_desc = m.group(3).strip()
         params.append({
@@ -102,12 +102,19 @@ def parse_doxygen_block(doxygen_text: str) -> Dict[str, Any]:
     for m in warning_matches:
         warnings_list.append(m.group(1).strip())
 
+    pre_list = [m.group(1).strip() for m in re.finditer(
+        r"@pre\s+(.*?)(?=(?:@warning|@param|@return|@pre|@post|@complexity|$))", text, re.DOTALL)]
+    post_list = [m.group(1).strip() for m in re.finditer(
+        r"@post\s+(.*?)(?=(?:@warning|@param|@return|@pre|@post|@complexity|$))", text, re.DOTALL)]
+
     return {
         "brief": brief,
         "details": details,
         "params": params,
         "returns": returns,
-        "warnings": warnings_list
+        "warnings": warnings_list,
+        "pre": pre_list,
+        "post": post_list
     }
 
 def tokenize(text: str) -> List[str]:
@@ -240,18 +247,6 @@ def calculate_batch_bert_scores(references: List[str], candidates: List[str], mo
             sim = calculate_sbert_similarity(ref, cand)
             fallback_scores.append({"precision": sim, "recall": sim, "f1": sim})
         return fallback_scores
-
-def calculate_bleurt_score(reference: str, candidate: str) -> float:
-    """
-    Stima BLEURT-style (Quality Evaluation neurale combinando SBERT + ROUGE-L + Length alignment).
-    In assenza del pesante checkpoint BLEURT Cased-512 (1.8GB), implementa la formula standard
-    di correlazione euristica comprovata in letteratura: 0.65 * SBERT + 0.25 * ROUGE-L + 0.10 * LengthAlign.
-    """
-    sbert = calculate_sbert_similarity(reference, candidate)
-    rouge = calculate_rouge_l(reference, candidate)
-    bp = calculate_brevity_penalty(reference, candidate)["brevity_penalty"]
-    bleurt_est = 0.65 * sbert + 0.25 * rouge + 0.10 * bp
-    return round(float(min(1.0, max(0.0, bleurt_est))), 4)
 
 def calculate_meteor_score(reference: str, candidate: str) -> float:
     """
@@ -407,13 +402,20 @@ def calculate_edge_case_coverage(source_code: str, doc_text: str) -> Dict[str, A
         "coverage": cov
     }
 
-def calculate_actionability_score(parsed_doc: Dict[str, Any], formal_params: List[Dict[str, Any]]) -> float:
+def calculate_actionability_score(
+    parsed_doc: Dict[str, Any],
+    formal_params: List[Dict[str, Any]],
+    return_type: Optional[str] = None
+) -> float:
     """
     Actionability Score (AS):
     Misura se uno sviluppatore ha tutte le informazioni per chiamare la funzione correttamente:
-    1. Direzionalita' dei parametri ([in], [out], [in,out]) per tutti i parametri formali (peso: 35%)
+    1. Direzionalita' dei parametri ([in], [out], [in,out]) per tutti i parametri formali (peso: 35%).
+       Conta solo la direzione dichiarata esplicitamente: un @param senza qualificatore non vale.
     2. Presenza di tag @brief chiaro (peso: 20%)
-    3. Presenza di clausola @return dettagliata (se non-void) o assenza pulita (se void) (peso: 25%)
+    3. Presenza di clausola @return dettagliata (se non-void) o assenza pulita (se void) (peso: 25%).
+       La natura void e' dedotta dal tipo di ritorno dell'AST (`return_type`). Se non viene fornito
+       si ricade sull'euristica storica (void == nessun parametro formale).
     4. Menzione di pre-condizioni o sicurezza (pre, warning, ownership) (peso: 20%)
     """
     score = 0.0
@@ -435,7 +437,15 @@ def calculate_actionability_score(parsed_doc: Dict[str, Any], formal_params: Lis
 
     # 3. Return clause
     returns = parsed_doc.get("returns", [])
-    if returns and len(" ".join(returns).strip()) >= 10:
+    if return_type is not None:
+        # Stessa convenzione di calculate_return_match: tipo vuoto o "void" => nessun valore di ritorno
+        is_void = return_type.strip().lower() in ("void", "")
+        if is_void:
+            if not returns:
+                score += 0.25
+        elif returns:
+            score += 0.25 if len(" ".join(returns).strip()) >= 10 else 0.15
+    elif returns and len(" ".join(returns).strip()) >= 10:
         score += 0.25
     elif not returns and not formal_params:
         score += 0.25
@@ -607,7 +617,7 @@ def generate_benchmark_charts(eval_results: List[Dict[str, Any]], output_image_p
     """
     Genera un set completo di grafici ad alta risoluzione:
     1. Confronto metriche per funzione (Bar chart multi-barra orizzontale)
-    2. Bar chart di sintesi delle medie (SBERT, BERTScore, CodeBERTScore, Param F1, BLEURT, ROUGE-L)
+    2. Bar chart di sintesi delle medie (SBERT, BERTScore, CodeBERTScore, Param F1, ROUGE-L)
     """
     if not eval_results:
         return

@@ -32,7 +32,6 @@ Metriche calcolate (solo sulle funzioni con testo CodeWiki e Ground Truth):
   - ROUGE-L F1                     (Longest Common Subsequence)
   - TF-IDF Cosine Similarity       (similarita' vettoriale lessicale)
   - METEOR Score                   (sinonimi + stemming via NLTK WordNet)
-  - BLEURT estimate                (0.65*SBERT + 0.25*ROUGE-L + 0.10*BP)
   - Actionability Score            (completezza operativa; su doc CodeWiki)
   - Edge Case Coverage             (guardie NULL/zero/vuoto menzionate)
   - Error Documentation Rate       (rami di errore documentati)
@@ -74,7 +73,6 @@ from utils.benchmark_metrics import (
     calculate_rouge_l,
     calculate_tfidf_cosine,
     calculate_meteor_score,
-    calculate_bleurt_score,
     calculate_brevity_penalty,
     parse_doxygen_block,
     calculate_actionability_score,
@@ -85,7 +83,7 @@ from utils.benchmark_metrics import (
 
 COMPARISON_KEYS = [
     "rouge_l", "tfidf_cosine", "length_ratio", "brevity_penalty",
-    "sbert_similarity", "meteor_score", "bleurt_estimate",
+    "sbert_similarity", "meteor_score",
     "concept_checklist_score", "bertscore_f1",
 ]
 
@@ -210,7 +208,6 @@ def evaluate_single(group: Dict) -> Dict[str, Any]:
     # ── Livello Semantico Denso ───────────────────────────────────────────────
     result["sbert_similarity"] = calculate_sbert_similarity(reference, candidate)
     result["meteor_score"]     = calculate_meteor_score(reference, candidate)
-    result["bleurt_estimate"]  = calculate_bleurt_score(reference, candidate)
 
     # ── Semantic Concept Checklist ────────────────────────────────────────────
     checklist = evaluate_semantic_checklist(reference, candidate)
@@ -228,7 +225,7 @@ def evaluate_single(group: Dict) -> Dict[str, Any]:
     if not parsed_cw["brief"]:
         parsed_cw["brief"] = candidate[:300]
 
-    result["actionability_score"] = calculate_actionability_score(parsed_cw, parameters)
+    result["actionability_score"] = calculate_actionability_score(parsed_cw, parameters, group.get("return_type", ""))
 
     # EDR ed ECC richiedono il codice sorgente. Se il codice non contiene rami
     # di errore / guardie la metrica non e' applicabile (None): le funzioni di
@@ -310,7 +307,6 @@ def compute_summary(
         ("rouge_l",                 "ROUGE-L"),
         ("tfidf_cosine",            "TF-IDF Cosine"),
         ("meteor_score",            "METEOR"),
-        ("bleurt_estimate",         "BLEURT Estimate"),
         ("concept_checklist_score", "Semantic Concept Checklist"),
         ("actionability_score",     "Actionability Score"),
         ("error_doc_rate",          "Error Documentation Rate"),
@@ -397,7 +393,7 @@ def generate_markdown_report(summary: Dict, results: List[Dict], library: str) -
 
     metric_keys = [
         "sbert_similarity", "bertscore_f1", "rouge_l", "tfidf_cosine",
-        "meteor_score", "bleurt_estimate", "concept_checklist_score",
+        "meteor_score", "concept_checklist_score",
         "actionability_score", "error_doc_rate", "edge_case_coverage",
         "length_ratio",
     ]
@@ -594,7 +590,7 @@ def run(library: str, no_bert: bool = False, limit: int = None, no_plots: bool =
     print()
 
     for key in ["sbert_similarity", "bertscore_f1", "rouge_l", "meteor_score",
-                "bleurt_estimate", "actionability_score",
+                "actionability_score",
                 "concept_checklist_score", "error_doc_rate", "edge_case_coverage"]:
         s = summary[key]
         if s["mean"] is not None:

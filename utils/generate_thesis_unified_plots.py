@@ -271,7 +271,8 @@ def plot_radar_overview():
     ast_f1 = np.mean([x['metrics']['param_f1'] for x in data])
     actionability = np.mean([x['metrics']['actionability_score'] for x in data])
     sbert = np.mean([x['metrics']['sbert_similarity'] for x in data])
-    error_cov = np.mean([x['metrics']['error_documentation_score'] for x in data])
+    _edr = [x['metrics']['error_documentation_score'] for x in data if x['metrics'].get('error_documentation_score') is not None]
+    error_cov = np.mean(_edr) if _edr else 0.0
     rt_pass = np.mean([x['metrics']['roundtrip_pass_rate'] / 100.0 for x in data])
     retrieval_rr = np.mean([x['metrics']['retrieval_rr'] for x in data])
 

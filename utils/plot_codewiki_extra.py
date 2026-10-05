@@ -38,7 +38,6 @@ TIE_FRACTION = 0.01  # |delta| sotto l'1% del range della metrica = pareggio
 OVERVIEW_METRICS: List[Tuple[str, str, float]] = [
     ("sbert_similarity", "SBERT", 1.0),
     ("bertscore_f1", "BERTScore F1", 1.0),
-    ("bleurt_estimate", "BLEURT (stima)", 1.0),
     ("meteor_score", "METEOR", 1.0),
     ("tfidf_cosine", "TF-IDF cosine", 1.0),
     ("rouge_l", "ROUGE-L", 1.0),

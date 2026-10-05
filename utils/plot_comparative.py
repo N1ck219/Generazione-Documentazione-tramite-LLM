@@ -114,7 +114,6 @@ def main():
         "BERTScore F1",
         "CodeBERT F1",
         "METEOR",
-        "BLEURT",
         "Checklist",
         "Judge Combined"
     ]
@@ -124,7 +123,6 @@ def main():
         0.6433,
         0.6755,
         0.4723,
-        0.6023,
         0.625,
         4.635 / 5.0
     ]
@@ -133,7 +131,6 @@ def main():
         0.5958,
         0.6438,
         0.4248,
-        0.5651,
         0.550,
         4.365 / 5.0
     ]

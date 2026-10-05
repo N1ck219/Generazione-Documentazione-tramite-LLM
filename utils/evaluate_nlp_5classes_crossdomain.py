@@ -16,8 +16,8 @@ attraverso 5 classi concettuali e 6 rappresentazioni/campi:
   5. Mermaid vs Mermaid (Diagrammi AST e Flowchart di controllo)
   6. Pseudocodice vs Pseudocodice (Rappresentazione Canonica Intermedia)
 
-- 7 Metriche NLP:
-  SBERT, BERTScore F1, CodeBERTScore F1, ROUGE-L, TF-IDF Cosine, METEOR, BLEURT
+- 6 Metriche NLP:
+  SBERT, BERTScore F1, CodeBERTScore F1, ROUGE-L, TF-IDF Cosine, METEOR
 """
 
 import os
@@ -37,7 +37,6 @@ from utils.benchmark_metrics import (
     calculate_rouge_l,
     calculate_tfidf_cosine,
     calculate_meteor_score,
-    calculate_bleurt_score,
 )
 
 BENCHMARK_PAIRS = [
@@ -581,31 +580,27 @@ def run_evaluation() -> List[Dict[str, Any]]:
     cands = [case["candidate"] for case in BENCHMARK_PAIRS]
 
     # 1. ROUGE-L & TF-IDF Cosine
-    print("[1/6] Calcolo ROUGE-L e TF-IDF Cosine...")
+    print("[1/5] Calcolo ROUGE-L e TF-IDF Cosine...")
     rouge_l_scores = [calculate_rouge_l(r, c) for r, c in zip(refs, cands)]
     tfidf_scores = [calculate_tfidf_cosine(r, c) for r, c in zip(refs, cands)]
 
     # 2. METEOR
-    print("[2/6] Calcolo METEOR Score...")
+    print("[2/5] Calcolo METEOR Score...")
     meteor_scores = [calculate_meteor_score(r, c) for r, c in zip(refs, cands)]
 
     # 3. SBERT
-    print("[3/6] Calcolo SBERT (all-MiniLM-L6-v2)...")
+    print("[3/5] Calcolo SBERT (all-MiniLM-L6-v2)...")
     sbert_scores = [calculate_sbert_similarity(r, c) for r, c in zip(refs, cands)]
 
     # 4. BERTScore F1 (General)
-    print("[4/6] Calcolo BERTScore F1 (bert-base-uncased)...")
+    print("[4/5] Calcolo BERTScore F1 (bert-base-uncased)...")
     bert_results = calculate_batch_bert_scores(refs, cands, model_type="bert-base-uncased")
     bert_f1_scores = [b["f1"] for b in bert_results]
 
     # 5. CodeBERTScore F1 (Code-specific)
-    print("[5/6] Calcolo CodeBERTScore F1 (microsoft/codebert-base)...")
+    print("[5/5] Calcolo CodeBERTScore F1 (microsoft/codebert-base)...")
     codebert_results = calculate_batch_bert_scores(refs, cands, model_type="microsoft/codebert-base")
     codebert_f1_scores = [cb["f1"] for cb in codebert_results]
-
-    # 6. BLEURT
-    print("[6/6] Calcolo BLEURT Quality Score...")
-    bleurt_scores = [calculate_bleurt_score(r, c) for r, c in zip(refs, cands)]
 
     full_results = []
     for i, case in enumerate(BENCHMARK_PAIRS):
@@ -619,8 +614,7 @@ def run_evaluation() -> List[Dict[str, Any]]:
                 "CodeBERT_F1": codebert_f1_scores[i],
                 "ROUGE_L": rouge_l_scores[i],
                 "TFIDF_Cosine": tfidf_scores[i],
-                "METEOR": meteor_scores[i],
-                "BLEURT": bleurt_scores[i]
+                "METEOR": meteor_scores[i]
             }
         }
         full_results.append(res)

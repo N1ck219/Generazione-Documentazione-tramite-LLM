@@ -355,6 +355,7 @@ def run_evaluation(
                 "name": fname,
                 "return_type": item["return_type"],
                 "parameters": item["parameters"],
+                "source_code": code,  # serve ai controlli sul codice (es. corto circuito (ptr != NULL) &&)
                 "time_complexity": item["time_complexity"],
                 "space_complexity": item["space_complexity"]
             }
@@ -399,7 +400,6 @@ def run_evaluation(
             calculate_return_match,
             calculate_sbert_similarity,
             calculate_brevity_penalty,
-            calculate_bleurt_score,
             calculate_code_retrieval_mrr,
             calculate_batch_bert_scores,
             calculate_meteor_score,
@@ -423,13 +423,12 @@ def run_evaluation(
         recall = calculate_token_recall(gt_doc, generated_description)
         sbert_sim = calculate_sbert_similarity(gt_doc, generated_description)
         brevity_info = calculate_brevity_penalty(gt_doc, generated_description)
-        bleurt_val = calculate_bleurt_score(gt_doc, generated_description)
         checklist_info = evaluate_semantic_checklist(gt_doc, generated_description)
 
         # 3. Ramo Qualità Intrinseca del Software (EDR, ECC, Actionability, Hallucination)
         edr_info = calculate_error_documentation_rate(code, parsed_doc.get("returns", []), parsed_doc.get("details", ""))
         ecc_info = calculate_edge_case_coverage(code, doxygen_block)
-        actionability_val = calculate_actionability_score(parsed_doc, item.get("parameters", []))
+        actionability_val = calculate_actionability_score(parsed_doc, item.get("parameters", []), item.get("return_type", ""))
         hallucination_val = calculate_hallucination_rate(val_res.get("errors", []), len(parsed_doc.get("params", [])) + max(1, len(parsed_doc.get("returns", []))))
 
         # 4. Ramo Task a Valle: Code Retrieval (MRR / Hit@K)
@@ -475,11 +474,12 @@ def run_evaluation(
                 "codebert_score_f1": 0.0,  # popolato in batch sotto
                 "codebert_score_precision": 0.0,
                 "codebert_score_recall": 0.0,
-                "bleurt_score": bleurt_val,
                 "meteor_score": meteor_val,
                 "concept_checklist_score": checklist_info["checklist_score"],
-                "error_documentation_score": edr_info["score"],
-                "edge_case_coverage": ecc_info["coverage"],
+                # None se la metrica non e' applicabile (nessun ramo di errore / nessuna guardia nel sorgente):
+                # le funzioni non applicabili non entrano nelle medie.
+                "error_documentation_score": edr_info["score"] if edr_info["has_code_error"] else None,
+                "edge_case_coverage": ecc_info["coverage"] if ecc_info["code_guard_count"] > 0 else None,
                 "actionability_score": actionability_val,
                 "hallucination_rate": hallucination_val,
                 "length_ratio": brevity_info["length_ratio"],
@@ -782,6 +782,11 @@ def run_evaluation(
     print("=" * 65)
 
 
+def _fmt_na(value) -> str:
+    """Valore di una metrica non applicabile (None) -> 'N/A'."""
+    return "N/A" if value is None else str(value)
+
+
 def write_markdown_report(md_path: str, library: str, mode: str, results: List[Dict[str, Any]], chart_filename: str = "", roundtrip_summary: Dict[str, Any] = None, rt_chart_filename: str = "", reproduction_command: str = "", advanced_chart_filenames: List[str] = None, rt_error_analysis: Dict[str, Any] = None):
     n_res = len(results)
     avg_param_f1 = round(sum(r["metrics"]["param_f1"] for r in results) / n_res, 4) if n_res else 0
@@ -798,11 +803,13 @@ def write_markdown_report(md_path: str, library: str, mode: str, results: List[D
     else:
         avg_judge_a = avg_judge_b = avg_judge_comb = 0.0
 
-    avg_bleurt = round(sum(r["metrics"]["bleurt_score"] for r in results) / n_res, 4) if n_res else 0
     avg_meteor = round(sum(r["metrics"].get("meteor_score", 0.0) for r in results) / n_res, 4) if n_res else 0
     avg_checklist = round(sum(r["metrics"].get("concept_checklist_score", 0.0) for r in results) / n_res, 4) if n_res else 0
-    avg_edr = round(sum(r["metrics"].get("error_documentation_score", 0.0) for r in results) / n_res * 100, 1) if n_res else 0.0
-    avg_ecc = round(sum(r["metrics"].get("edge_case_coverage", 0.0) for r in results) / n_res * 100, 1) if n_res else 0.0
+    # EDR ed ECC: media solo sulle funzioni in cui la metrica e' applicabile (valore non None)
+    edr_vals = [r["metrics"]["error_documentation_score"] for r in results if r["metrics"].get("error_documentation_score") is not None]
+    ecc_vals = [r["metrics"]["edge_case_coverage"] for r in results if r["metrics"].get("edge_case_coverage") is not None]
+    avg_edr = round(sum(edr_vals) / len(edr_vals) * 100, 1) if edr_vals else 0.0
+    avg_ecc = round(sum(ecc_vals) / len(ecc_vals) * 100, 1) if ecc_vals else 0.0
     avg_actionability = round(sum(r["metrics"].get("actionability_score", 0.0) for r in results) / n_res, 4) if n_res else 0.0
     avg_hallucination = round(sum(r["metrics"].get("hallucination_rate", 0.0) for r in results) / n_res, 2) if n_res else 0.0
     avg_tfidf = round(sum(r["metrics"]["tfidf_similarity"] for r in results) / n_res, 4) if n_res else 0
@@ -840,8 +847,8 @@ def write_markdown_report(md_path: str, library: str, mode: str, results: List[D
         f.write(f"- **Parameter F1-Score Medio (vs AST)**: `{avg_param_f1}`\n")
         f.write(f"- **Return Contract Match Medio**: `{avg_return_match}`\n")
         f.write(f"- **Actionability Score (AS)**: `{avg_actionability}` / 1.0\n")
-        f.write(f"- **Error Documentation Rate (EDR)**: `{avg_edr}%`\n")
-        f.write(f"- **Edge Case Coverage (ECC)**: `{avg_ecc}%`\n")
+        f.write(f"- **Error Documentation Rate (EDR)**: `{avg_edr}%` (su {len(edr_vals)}/{n_res} funzioni con un ramo di errore nel sorgente)\n")
+        f.write(f"- **Edge Case Coverage (ECC)**: `{avg_ecc}%` (su {len(ecc_vals)}/{n_res} funzioni con almeno una guardia nel sorgente)\n")
         if has_judge:
             f.write(f"- **LLM-Judge Faithfulness (Code+GT vs Doc) [1-5]**: `{avg_judge_a}/5.0`\n")
             f.write(f"- **LLM-Judge Alignment (GT vs Doc) [1-5]**: `{avg_judge_b}/5.0`\n")
@@ -855,7 +862,6 @@ def write_markdown_report(md_path: str, library: str, mode: str, results: List[D
         f.write(f"- **BERTScore F1-Score Medio**: `{avg_bert_f1}`\n")
         f.write(f"- **CodeBERTScore F1-Score Medio**: `{avg_codebert_f1}`\n")
         f.write(f"- **METEOR Score Medio (Synonyms & Stems)**: `{avg_meteor}`\n")
-        f.write(f"- **BLEURT Quality Score Medio**: `{avg_bleurt}`\n")
         f.write(f"- **Concept Checklist Score (Semantic Facts)**: `{avg_checklist}`\n")
         f.write(f"- **Fréchet Embedding Distance (FID / W2)**: `{fid_distance}`\n")
         f.write(f"- **TF-IDF Cosine Similarity Media**: `{avg_tfidf}`\n")
@@ -953,7 +959,7 @@ def write_markdown_report(md_path: str, library: str, mode: str, results: List[D
             f.write(f"### `{r['function_name']}`\n")
             f.write(f"- **Firma**: `{r['signature']}`\n")
             f.write(f"- **Metriche Contratti AST**: Param F1: `{r['metrics']['param_f1']}` (Precision: `{r['metrics']['param_precision']}`, Recall: `{r['metrics']['param_recall']}`) | Return Match: `{r['metrics']['return_match']}`\n")
-            f.write(f"- **Qualità Software & Actionability**: Actionability Score: `{r['metrics'].get('actionability_score', 'N/A')}` | Error Doc Rate: `{r['metrics'].get('error_documentation_score', 'N/A')}` | Edge Case Cov: `{r['metrics'].get('edge_case_coverage', 'N/A')}` | Hallucination Rate: `{r['metrics'].get('hallucination_rate', 0.0)}%`\n")
+            f.write(f"- **Qualità Software & Actionability**: Actionability Score: `{r['metrics'].get('actionability_score', 'N/A')}` | Error Doc Rate: `{_fmt_na(r['metrics'].get('error_documentation_score'))}` | Edge Case Cov: `{_fmt_na(r['metrics'].get('edge_case_coverage'))}` | Hallucination Rate: `{r['metrics'].get('hallucination_rate', 0.0)}%`\n")
             if has_judge and "judge_details" in r:
                 jd = r["judge_details"]
                 f.write(f"- **LLM Judge Faithfulness (Code+GT)**: `{r['metrics']['judge_score_a']} ± {r['metrics']['judge_std_a']}` / 5.0\n")
@@ -967,7 +973,7 @@ def write_markdown_report(md_path: str, library: str, mode: str, results: List[D
                 rt_diff = rt_exec.get("differential", {})
                 diff_text = f" | Dual Agreement: {rt_diff.get('differential_agreement_rate', 'N/A')}% (Ref Pass: {rt_diff.get('reference_pass_rate', 'N/A')}%)" if rt_diff else ""
                 f.write(f"- **Round-Trip Test**: Pass Rate Doc: `{rt_exec['pass_rate']}%` ({rt_exec['passed']}/{rt_exec['total_tests']} passati){diff_text}\n")
-            f.write(f"- **Metriche Semantiche & Lessicali**: SBERT Sim: `{r['metrics']['sbert_similarity']}` | METEOR: `{r['metrics'].get('meteor_score', 'N/A')}` | Concept Checklist: `{r['metrics'].get('concept_checklist_score', 'N/A')}` | BERTScore F1: `{r['metrics']['bert_score_f1']}` | BLEURT: `{r['metrics']['bleurt_score']}` | ROUGE-L: `{r['metrics']['rouge_l']}`\n\n")
+            f.write(f"- **Metriche Semantiche & Lessicali**: SBERT Sim: `{r['metrics']['sbert_similarity']}` | METEOR: `{r['metrics'].get('meteor_score', 'N/A')}` | Concept Checklist: `{r['metrics'].get('concept_checklist_score', 'N/A')}` | BERTScore F1: `{r['metrics']['bert_score_f1']}` | ROUGE-L: `{r['metrics']['rouge_l']}`\n\n")
             f.write(f"- **Documentazione Originale (Ground Truth)**:\n> {r['ground_truth'].replace(chr(10), chr(10) + '> ')}\n\n")
             f.write(f"- **Breve Spiegazione LLM**: {r['generated_summary']}\n\n")
             f.write(f"- **Blocco Doxygen Generato**:\n```c\n{r['generated_doxygen']}\n```\n\n")
