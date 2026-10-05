@@ -1038,14 +1038,72 @@ text.
 
 \subsection{Code retrieval: MRR and Hit@K}
 \label{sec:m-retrieval}
-% Use the documentation as a query over the function database; rank of the target function.
-% \[ \mathrm{MRR}=\frac{1}{|Q|}\sum_{i=1}^{|Q|}\frac{1}{\mathrm{rank}_i} \]
-% Hit@K: share of queries whose target is in the top $K$.
-% Inputs: [Doc vs function database]. Range: [0,1].
-% CITE: iyer_summarizing_2016 [Paper/]  (MRR for code retrieval with natural-language queries)
-% CITE: feng_codebert_2020, guo_graphcodebert_2021 [Paper/]  (NL code search evaluated with MRR)
-% CITE: husain_codesearchnet_2019 [added]  (code search benchmark)
-% CITE: voorhees_trec8_1999 [added]  (original MRR definition)
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Measures whether the documentation is good enough to
+	\emph{find} the function it describes. The generated description is used as a natural-language
+	query over the functions of the library, and the metric records at which position the target
+	function appears in the ranking. A documentation that is specific and faithful to the code
+	ranks its own function first, while a generic or wrong one is confused with other functions.
+	This is the usual setting of natural-language code search, where a text query is matched
+	against a collection of functions~\cite{husain_codesearchnet_2019,feng_codebert_2020,guo_graphcodebert_2021}
+	and the ranking is evaluated with the Mean Reciprocal Rank, the measure introduced for
+	question answering in~\cite{voorhees_trec8_1999} and used for code in~\cite{iyer_summarizing_2016}.
+	Here the roles are reversed with respect to the usual task: the query is the generated
+	documentation and the quality of the documentation is what is being measured.
+
+	\item \textbf{Input and pair type}: \textbf{[Doc vs Code]}. The query is the generated
+	description of $f$, that is the \texttt{@brief} followed by the \texttt{@details} of
+	$d_f^{\mathrm{gen}}$ (parameter and return clauses are not included). The corpus
+	$\mathcal{C}$ contains one entry for each function of the library under evaluation, written as
+	the string ``\emph{name}: \emph{signature}''. No reference documentation is needed.
+
+	\item \textbf{Formulation and processing}: The query and the entries of the corpus are encoded
+	with the same Sentence-BERT model used in Sec.~\ref{subsubsec:sbert}, and the entries are
+	sorted by decreasing cosine similarity with the query. Let $\mathrm{rank}(f)\in\{1,\dots,|\mathcal{C}|\}$
+	be the position of $f$ in this ranking. The per-function scores are
+	\begin{equation}
+		\mathrm{RR}(f)=\frac{1}{\mathrm{rank}(f)},
+		\qquad
+		\mathrm{Hit@}K(f)=\mathbb{1}\bigl[\mathrm{rank}(f)\le K\bigr],
+		\label{eq:rr_hit}
+	\end{equation}
+	and the corpus scores, computed over the set $\mathcal{F}$ of evaluated functions, are
+	\begin{equation}
+		\mathrm{MRR}=\frac{1}{|\mathcal{F}|}\sum_{f\in\mathcal{F}}\frac{1}{\mathrm{rank}(f)},
+		\qquad
+		\mathrm{Hit@}K=\frac{1}{|\mathcal{F}|}\sum_{f\in\mathcal{F}}\mathbb{1}\bigl[\mathrm{rank}(f)\le K\bigr].
+		\label{eq:mrr}
+	\end{equation}
+	The values $K\in\{1,3,5\}$ are computed. The target is identified by the function name, and the corpus is the set of distinct functions of the
+	library (or of all libraries, if the whole benchmark is evaluated together). If the query vector has
+	zero norm, or the target is not found, the position is set to the last one; if the query is empty,
+	the model is not available or an exception occurs, the position is set to $1$ (see the limits).
+
+	\item \textbf{Output range and interpretation}: $\mathrm{RR}\in(0,1]$ per function and
+	$\mathrm{MRR}\in(0,1]$ on average; $\mathrm{Hit@}K\in[0,1]$. $\mathrm{MRR}=1$ means that every
+	description retrieves its own function at the first position. Hit@1 is the strictest reading,
+	because it counts only the exact first position, whereas Hit@5 tolerates a few similar
+	functions ahead of the target. The MRR is more sensitive to the top positions: moving from rank
+	$1$ to $2$ costs $0.5$, from rank $9$ to $10$ only about $0.01$.
+
+	\item \textbf{Why it is complementary}: It uses the documentation as a \emph{discriminating}
+	text, whereas the metrics of the previous levels measure its similarity to a reference or its
+	compliance with the code. Two descriptions equally similar to the reference can behave
+	differently here: the one that mentions the distinctive aspects of the function is retrieved
+	better. It also needs no reference text, so it can be applied to the output of any system.
+
+	\item \textbf{Limits}: (i) the score depends on the corpus: it is not comparable between
+	libraries of different size, and a small corpus makes Hit@5 easy to saturate; (ii) the corpus
+	entries contain the function name, so a description that repeats the name, or words contained in
+	it, is favoured regardless of its content; (iii) the corpus does not contain the body of the
+	functions, only name and signature, so the metric tests the match with the interface and not
+	with the behaviour; (iv) the encoder is the same used for the SBERT similarity and inherits its
+	limits, in particular the cut of the input at $256$ word pieces and the little exposure to C
+	and C++ (Sec.~\ref{subsubsec:sbert}); (v) near-duplicate functions, for example overloads or
+	wrappers, are penalised even when the description is correct; (vi) if the model cannot be
+	loaded, or an exception occurs, the implementation returns rank $1$ without warning, which
+	inflates the scores.
+\end{itemize}
 
 \subsection{Round-trip differential testing}
 \label{sec:m-roundtrip}
