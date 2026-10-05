@@ -142,12 +142,6 @@ Per garantire una valutazione scientifica rigorosa, il framework scompone l'anal
 
 ---
 
-### 🔹 BLEURT Quality Score
-* **Descrizione Tecnica**: Estimatore neurale di qualità basato su un transformer pre-addestrato specificamente su giudizi umani di coerenza e naturalezza del testo.
-* **Come Interpretare**: Valori $\ge 0.60$ indicano testo fluente, naturale, grammaticalmente impeccabile e altamente leggibile per un ingegnere software.
-
----
-
 ### 🔹 Concept Checklist Score (Semantic Facts)
 * **Descrizione Tecnica**: Verifica l'avvenuta estrazione dei fatti tecnici fondamentali categorizzati in 5 macro-aree semantiche:
   1. *Ownership & Memory*: `alloc`, `free`, `delete`, `leak`, `heap`.

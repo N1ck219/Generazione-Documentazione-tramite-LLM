@@ -76,7 +76,7 @@ Il framework articola la misurazione della qualità su **4 Livelli Gerarchici e 
 [1. Formale & AST]   [2. Qualità & Action]  [3. Neurale & Judge]   [4. Round-Trip Testing]
 • Verifier Pass Rate • Hallucination Rate   • Sentence-BERT        • Code Synthesis
 • Parameter F1       • Actionability Score  • BERTScore / CodeBERT • Black-Box Test Gen
-• Return Match       • Error Doc Rate (EDR) • METEOR / BLEURT      • Dual Agreement Rate
+• Return Match       • Error Doc Rate (EDR) • METEOR      • Dual Agreement Rate
 • Existence Ratio    • Edge Case Cov (ECC)  • Monte Carlo Judge    • Error Diagnostics
 ```
 

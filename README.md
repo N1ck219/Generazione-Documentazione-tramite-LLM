@@ -1,437 +1,389 @@
-# 🧠 Sistema Multi-Agente ed Analisi Statica AST per Documentazione Automatica C / C++
-> *Framework ibrido per la reverse-engineering, l'estrazione statica formale AST, l'ordinamento topologico bottom-up e la generazione certificata di documentazione tecnica tramite Large Language Models (LLM) ed Agenti Autonomi.*
+# Documentazione automatica di codice C / C++ con analisi statica AST e agenti LLM
+
+> Pipeline che estrae i fatti del codice con il compilatore (libclang), ordina le funzioni dalle foglie del call graph verso l'alto, fa scrivere la documentazione Doxygen a un LLM e la controlla con un verificatore deterministico. Include un framework di benchmark contro Ground Truth e un confronto con CodeWiki.
 
 ---
 
-## 📌 Panoramica del Progetto
+## 1. Panoramica
 
-Il progetto implementa un framework innovativo in grado di analizzare codebase complesse in **C e C++** (anche eterogenee, con classi, struct, template, costruttori e file makefile), superando i limiti dei tool tradizionali (come Doxygen statico o semplici wrapper LLM isolati).
+Il progetto ha due parti che condividono i moduli di base:
 
-L'architettura combina:
-1. **Analisi Statica Deterministica (libclang AST Parser)**: estrazione a livello compilatore di firme, parametri, chiamate tra funzioni (Call Graph), complessità Big-O e modelli di memoria.
-2. **Algoritmo di Tarjan & Ordinamento Topologico (Bottom-Up DAG)**: risoluzione di cicli di ricorsione mutua (Strongly Connected Components - SCC) e garanzia del principio *Dependencies-First* (le callee vengono documentate prima dei caller, propagando il contesto informativo verso l'alto).
-3. **Pipeline Multi-Agente Gerarchica**: agenti specializzati (*Reader, Searcher, Writer, Module Storyteller e Lead Architect*) che cooperano con memoria persistente SQLite.
-4. **Verifier Deterministico Formale (Anti-Hallucination & Consistency Audit)**: controlli formali a guardie logiche e calcolo dell'Existence Ratio ($\ge 0.80$) per azzerare le allucinazioni e garantire veridicità assoluta dei contratti software (`@param`, `@return`, `@pre`, `@post`, `@complexity`).
+| Parte | Cosa fa | Entry point |
+| :--- | :--- | :--- |
+| **Pipeline di documentazione** | Prende un progetto C/C++ da `Test_code/`, ne estrae i metadati dall'AST, costruisce il call graph, genera e verifica la documentazione funzione per funzione e produce un report Markdown/HTML. | `main.py` |
+| **Benchmark e valutazione** | Genera la documentazione per funzioni di librerie reali (cJSON, TinyXML-2, sds, miniz, http-parser, fmt, OpenCV) che hanno già una documentazione d'autore (Ground Truth) e la misura con metriche lessicali, neurali, strutturali e comportamentali. | `utils/benchmark_eval.py` |
+| **Confronto con CodeWiki** | Mappa la documentazione prodotta da CodeWiki sulle stesse funzioni del benchmark e la confronta con quella della pipeline. | `compare_codewiki.py` |
+
+Il principio di fondo è separare ciò che si può **calcolare in modo deterministico** (firme, parametri, chiamate, complessità, esistenza dei simboli) da ciò che richiede un **LLM** (descrivere lo scopo, i casi limite, il flusso d'uso). Il primo gruppo non viene mai delegato al modello: o lo si passa al modello come dato, o lo si usa per respingerne l'output.
 
 ---
 
-## 🏗️ Architettura della Pipeline di Elaborazione
+## 2. Pipeline di documentazione (`main.py`)
 
-La pipeline si articola in **5 Fasi Operative Sequenziali**:
+`process_project()` esegue quattro passi per un progetto e salva tutto in `results/<progetto>/run_<timestamp>_<mode>/`:
 
 ```
- ┌─────────────────────────────────────────────────────────────────────────────┐
- │ FASE 1: Estrazione Metadati AST Clang (libclang CIndex)                     │
- │ - Parsing C/C++ AST, firme, puntatori, classi, struct, enum e #include     │
- │ - Calcolo Deterministico Big-O (Loop Depth, passaggi vector, allocazioni)   │
- └──────────────────────────────────────┬──────────────────────────────────────┘
-                                        │
-                                        ▼
- ┌─────────────────────────────────────────────────────────────────────────────┐
- │ FASE 2: Grafo delle Dipendenze & Tarjan Bottom-Up (DAG)                     │
- │ - Costruzione Call Graph globale e File Include Map                         │
- │ - Isolamento SCC (Componenti Fortemente Connesse) con Algoritmo di Tarjan   │
- │ - Generazione grafici di complessità (Token distribution & LOC histogram)   │
- └──────────────────────────────────────┬──────────────────────────────────────┘
-                                        │
-                                        ▼
- ┌─────────────────────────────────────────────────────────────────────────────┐
- │ FASE 3: Orchestrazione Agenti LLM (Dependencies-First)                      │
- │ - Generazione bottom-up con iniezione del contesto delle callee già note    │
- │ - Modalità Ibrida Standard o Multi-Agente (Reader->Searcher->Writer)        │
- └──────────────────────────────────────┬──────────────────────────────────────┘
-                                        │
-                                        ▼
- ┌─────────────────────────────────────────────────────────────────────────────┐
- │ FASE 4: Validazione Rigida a 3 Tentativi (Deterministic Verifier)           │
- │ - Match esatto parametri AST vs @param                                      │
- │ - Validazione simboli @return contro whitelist POSIX/errno e simboli reali  │
- │ - Verifica contratti logici @pre/@post e iniezione Big-O certificata        │
- └──────────────────────────────────────┬──────────────────────────────────────┘
-                                        │
-                                        ▼
- ┌─────────────────────────────────────────────────────────────────────────────┐
- │ FASE 5: Global Consistency Review, Lead Architect & Export                  │
- │ - Sintesi gerarchica moduli (Module Storytellers -> Lead Architect Agent)   │
- │ - Generazione automatica: DOCUMENTATION.md, FULL_DOCUMENTATION.html,        │
- │   Call Graph Interattivo Cytoscape.js e Diagrammi Mermaid UML/File/Calls    │
- └─────────────────────────────────────────────────────────────────────────────┘
+ Test_code/<progetto>/*.c|.cpp|.h|.hpp
+        │
+        ▼
+ [1] extract_metadata.py ──► extracted_metadata.json  (+ diagrammi AST in mmd_diagrams/)
+        │
+        ▼
+ [2] dependency_graph.py ──► call graph, grafo degli #include (.mmd)
+        │
+        ▼
+ [3] Tarjan + Kahn ────────► topological_execution_order.json  (callee prima dei caller)
+        │
+        ▼
+ [4] doc_orchestrator.py ──► SQLite (documentation.db) ──► DOCUMENTATION.md / FULL_DOCUMENTATION.html
+                              ▲                                   interactive_call_graph.html
+                 llm_provider + agents + verifier
 ```
 
----
+### 2.1 Scoperta dei file
 
-## 🛡️ Controlli di Qualità: Deterministici vs LLM
+`discover_projects()` elenca le sottocartelle di `Test_code/`. `find_c_source_files()` scorre il progetto ricorsivamente e separa i sorgenti (`.c .cpp .cc .cxx .c++`) dagli header (`.h .hpp .hh .hxx .h++`); la cartella di ogni file diventa una directory di include (`-I`) per il parsing.
 
-Il cuore metodologico del progetto è la netta separazione tra **garanzie formali matematiche (non negoziabili)** e **capacità di astrazione semantica dell'AI**:
+### 2.2 Estrazione dei metadati (`src/extract_metadata.py`)
 
-### 1. Controlli Deterministici (Codice Python & libclang AST)
-* **Complessità Computazionale Big-O**:
-  - Nessuna allucinazione LLM: la complessità temporale e spaziale è calcolata visitando l'AST Clang (profondità di annidamento cicli `for`/`while`/`do`, chiamate STL lineari `max_element`/`find`/`erase`, passaggio di `vector` per valore e copie profonde $O(W \cdot H)$).
-  - Il tag `@complexity` viene sovrascritto/iniettato forzatamente dal Verifier (`enforce_deterministic_complexity`).
-* **Verifica Parametri Formali (`@param`)**:
-  - Confronto 1-a-1 tra i parametri dell'AST e quelli documentati. Se un parametro è omesso, rinominato o allucinato, la documentazione viene rigettata.
-* **Verifica Tipo di Ritorno (`@return`)**:
-  - Se la funzione è `void`, è vietata la clausola `@return`. Se restituisce un tipo non-void (`int`, `void *`, puntatori), `@return` è obbligatorio.
-* **Whitelist Simboli e Costanti di Ritorno**:
-  - Verifica che gli identificatori citati in `@return` esistano fisicamente tra le `enum` del progetto o nella whitelist standard POSIX/C (`EINVAL`, `ENOMEM`, `NULL`, `EOF`, `ERANGE`, ecc.).
-* **Controlli di Logica Booleana su Puntatori**:
-  - Intercettazione di cortocircuiti AST `(ptr != NULL) && ...` per impedire all'AI di dichiarare che la funzione *"restituisce true se il puntatore è NULL"*.
-* **Rilevamento Dead Code & Nodi Orfani**:
-  - Analisi di raggiungibilità statica sul grafo per identificare funzioni con $\text{in-degree} = 0$ non invocate nel flusso operativo.
+`CCodeExtractor` usa `libclang` (su Windows cerca `C:\Program Files\LLVM\bin`) e parsa **ogni file separatamente**.
 
-### 2. Controlli e Ragionamento LLM (Agenti Intelligenti)
-* **Lead Architect Agent**:
-  - Ispezione combinata dei report modulari, dei file di build reali (`makefile` / `CMakeLists.txt`) e dell'AST per descrivere il dominio del problema, le istruzioni di build esatte, le specifiche di I/O e il modello di memoria.
-* **Module Storytellers**:
-  - Spiegazione ad alto livello dello scopo del file sorgente, diagramma del ciclo di vita e generazione di esempi d'uso minimi funzionanti (Quickstart Snippets).
-* **Global Refiner**:
-  - Audit di coerenza globale tra moduli: rimozione di false affermazioni di "thread-safety" o scambio di variabili membro d'istanza per "variabili globali".
+**Scelta del linguaggio.** Il file è trattato come C++ se l'estensione è C++, oppure se è un `.h` che nei primi 40 KB contiene `namespace`, `class`, `template<`, `public:`, `private:` o `protected:`. Argomenti di parsing: C++ → `-x c++ -std=c++17 -DCV_EXPORTS=`; C → `-x c -std=c11`. Il parsing usa `PARSE_DETAILED_PROCESSING_RECORD` per vedere anche le macro e gli `#include`.
 
----
+**Cosa viene estratto** (solo da cursori che appartengono al file target, così gli header di sistema vengono ignorati):
 
-## 🚀 Guida all'Uso e Comandi CLI
+| Elemento | Campi salvati |
+| :--- | :--- |
+| `includes` | file incluso, riga |
+| `typedefs` | nome, tipo sottostante (anche `using X = Y`) |
+| `enums` | nome, costanti con valore |
+| `structs` / `classes` | nome, campi (nome e tipo), commento grezzo (solo se è una definizione) |
+| `macros` | nome (le macro che iniziano con `__` sono scartate) |
+| `functions` | nome, tipo di ritorno, parametri, `is_definition`, `callees`, riga, commento grezzo, codice sorgente, complessità temporale e spaziale |
 
-Il programma principale si avvia tramite `main.py` e supporta sia l'interfaccia interattiva da terminale che l'esecuzione diretta con flag da riga di comando.
+Per le funzioni vengono riconosciuti `FUNCTION_DECL`, `CXX_METHOD`, `CONSTRUCTOR`, `DESTRUCTOR` e `FUNCTION_TEMPLATE`. I metodi di classe vengono qualificati (`Classe::metodo`); costruttori e distruttori hanno tipo di ritorno vuoto. La visita entra ricorsivamente in namespace, classi e struct.
 
-### Sintassi dei Comandi
+**Callees.** Se la funzione è una definizione, l'AST del corpo viene percorso cercando i nodi `CALL_EXPR`. Il nome della chiamata viene qualificato con la classe del metodo referenziato, quando c'è, e le chiamate duplicate vengono scartate.
 
-Il programma principale si avvia tramite `main.py` e supporta sia l'interfaccia guidata interattiva sia l'esecuzione diretta con argomenti standard da riga di comando (`argparse`).
+**Codice sorgente.** Il testo esatto della funzione è ritagliato dal file con l'`extent` del cursore (righe di inizio e fine).
+
+**Complessità Big-O deterministica.** Una seconda visita dell'AST calcola:
+
+- la profondità massima di annidamento di `for` / `while` / `do`;
+- la presenza di allocazione dinamica (`malloc`, `calloc`, `realloc`, `aligned_alloc`, `new`);
+- la chiamata a operazioni lineari della STL (`max_element`, `min_element`, `find`, `count`, `erase`, `remove`) oppure a funzioni il cui nome contiene `Trova`, `Ordina` o `Suddivisione` (euristica pensata per i progetti didattici in italiano di `Test_code/`).
+
+Una chiamata lineare porta la profondità effettiva a 1 (se 0) oppure la incrementa di 1. Un parametro `vector` passato per valore e un ritorno per valore di un container contano come allocazione e come passata lineare; un ritorno `vector<vector<…>>` forza `O(N^2)` con la nota «copia profonda matrice». Il risultato è una stringa tipo `O(1)`, `O(N)`, `O(N^k)` per il tempo e `O(1)` oppure `O(N)` (allocazione/copia dinamica) per lo spazio. È un'**euristica sintattica**, non una dimostrazione di complessità.
+
+Per ogni file viene anche generato un diagramma AST in Mermaid (`utils/generate_ast_diagram.py`, profondità massima 3) in `mmd_diagrams/ast_<file>.mmd`.
+
+### 2.3 Grafo delle dipendenze e ordine bottom-up (`src/dependency_graph.py`)
+
+`DependencyGraph` tiene la lista di adiacenza caller → callee, il grafo inverso e i metadati dei nodi.
+
+1. **Costruzione.** Prima si registrano tutte le funzioni, poi si aggiungono gli archi leggendo i `callees` (anche quelli verso funzioni esterne al progetto, che diventano nodi senza metadati).
+2. **Tarjan.** `tarjan_scc()` trova le componenti fortemente connesse. Una SCC con più nodi è un gruppo di funzioni mutuamente ricorsive.
+3. **Ordinamento topologico.** `get_topological_order_bottom_up()` costruisce il DAG condensato delle SCC, ne inverte gli archi e applica l'algoritmo di Kahn. Il risultato è una lista di SCC ordinata in modo che **le funzioni chiamate vengano prima di quelle chiamanti**: al momento di documentare un caller, i riassunti delle sue callee sono già nel database.
+4. **Dead code.** `get_dead_code_nodes()` elenca le funzioni senza chiamanti (in-degree 0), escludendo `main`, `app_main`, `DllMain`, `WinMain`, i nomi che iniziano per `test_` o `Unity` e i `::main`.
+5. **Esportazioni Mermaid.**
+   - `export_mermaid()` → call graph globale, raggruppato in sottografi per file; esclude le funzioni della libreria standard (`malloc`, `printf`, `std::…`, …) e i simboli che iniziano per `__`; i simboli C++ come gli operatori sono sostituiti da identificatori sicuri (`operator<<` → `op_lshift`, …).
+   - `export_module_call_graph()` → sottografo di un solo modulo, con funzioni interne, dipendenze esterne e libreria standard in tre sottografi distinti.
+   - `export_file_dependency_mermaid()` → grafo degli `#include` tra i file del progetto (gli include di sistema `<...>` sono ignorati).
+
+### 2.4 Generazione della documentazione (`src/doc_orchestrator.py`)
+
+`DocOrchestrator.run_documentation_pipeline()` legge `extracted_metadata.json` e `topological_execution_order.json`, tiene solo le funzioni che sono definizioni e le visita **nell'ordine topologico**.
+
+Per ogni funzione:
+
+1. **Misure di dimensione** (righe non vuote, caratteri, token stimati ≈ caratteri/3.8 + 180) raccolte per i grafici di distribuzione (`utils/generate_size_charts.py` → `analytics_charts/`).
+2. **Cache.** Se la documentazione esiste già in SQLite, la funzione viene saltata: questo permette di riprendere un'esecuzione interrotta.
+3. **Firma.** Ricostruita da tipo di ritorno, nome e parametri (`void` se non ci sono parametri; per costruttori e distruttori non c'è tipo di ritorno).
+4. **Ciclo di generazione e verifica, fino a 3 tentativi:**
+   - *Modalità `single`* — una sola chiamata `generate_documentation()` con firma, sorgente, commento originale e riassunti delle callee prese da SQLite.
+   - *Modalità `multiagent`* — Reader → Searcher → Writer (vedi §2.5), poi Verifier e, se il Verifier passa, Judge.
+   - Il **Verifier** (§2.6) controlla il risultato. Se fallisce, gli errori vengono concatenati e passati al tentativo successivo come `validation_feedback`.
+   - In modalità `multiagent` il **Judge** assegna un voto da 1 a 5. Con voto < 4 (e tentativi residui) la bozza è respinta e la critica del Judge viene passata al Writer.
+   - Ogni tentativo (feedback ricevuto, testo generato, errori, voto del Judge) viene scritto in `verifier_debug_log.json`.
+5. **Salvataggio.** Solo se la documentazione supera la verifica:
+   - il tag `@complexity` viene **sovrascritto o iniettato** con i valori dell'AST (`enforce_deterministic_complexity`), qualunque cosa abbia scritto il modello;
+   - un'ulteriore chiamata LLM assegna la funzione a una categoria funzionale (`classify_function`), riusando le categorie già create (categorizzazione incrementale);
+   - il tutto è salvato in SQLite.
+   Se dopo 3 tentativi la verifica non passa, la funzione **non viene salvata** (nessuna documentazione è meglio di una documentazione falsa).
+
+Terminato il ciclo sulle funzioni:
+
+- **Struct/class ed enum**: una chiamata LLM per tipo (`generate_struct_documentation`, `generate_enum_documentation`) per descrivere il tipo e i singoli campi/costanti.
+- **Riassunto per modulo**: `generate_module_summary()` produce ruolo del file, flusso operativo e un esempio d'uso (quickstart). Il prompt vieta di dichiarare «thread-safe» o «atomico» senza prove di primitive di sincronizzazione.
+- **Revisione di coerenza globale**: `verify_global_consistency()` (§2.6).
+- **Log delle interazioni**: tutti i prompt e le risposte sono salvati in `llm_prompts_and_responses.json` e `LLM_INTERACTIONS_LOG.md`.
+- **Esportazione** in `DOCUMENTATION.md` (§2.7).
+
+### 2.5 Gli agenti (`src/agents/`)
+
+| Agente | Cosa fa nel codice |
+| :--- | :--- |
+| `ReaderAgent` | Prepara un «fact sheet» della funzione (precondizioni, operazioni, casi limite, condizioni di errore, valore di successo). *Nota: il prompt JSON viene costruito ma la chiamata effettiva passa da `generate_documentation()` e il `brief_summary` risultante è usato come fact sheet.* |
+| `SearcherAgent` | Non usa l'LLM: aggiunge al fact sheet i riassunti delle callee letti da SQLite (`get_callees_summaries`). Nel benchmark riceve un DB vuoto (`MockMemoryDB`), perché le funzioni sono valutate in isolamento. |
+| `WriterAgent` | Compone il blocco Doxygen: unisce il fact sheet (passato come commento originale) con il feedback del Verifier (`[VERIFIER AST FEEDBACK]`) e quello del Judge (`[JUDGE AGENT CRITIQUE…]`) e chiama il provider. |
+| `JudgeAgent` | Chiede al provider un voto 1–5 (rubrica: 5 impeccabile, 4 solido, 3 lacunoso, 2 generico, 1 errato o con allucinazioni) con critica e suggerimenti. Se il provider non implementa la valutazione risponde 5. |
+
+Il **Verifier** non è un agente LLM: è codice Python (§2.6).
+
+### 2.6 Il Verifier deterministico (`src/verifier.py`)
+
+`DocumentationVerifier` costruisce l'insieme dei **simboli validi** del progetto (funzioni, struct, enum con le loro costanti, macro, typedef) e poi applica queste regole a ogni documentazione generata:
+
+| # | Controllo | Come funziona |
+| :--- | :--- | :--- |
+| 1 | **Parametri** | Ogni parametro formale dell'AST deve comparire in un tag `@param[...] nome`. Parametri mancanti → rifiuto. |
+| 2 | **Simboli in `@return`** | Se il primo token dopo `@return` è un identificatore MAIUSCOLO (stile enum/costante) deve esistere tra i simboli del progetto, oppure far parte di una whitelist standard (`NULL`, `EOF`, `INT_MAX`, `EINVAL`, `ENOMEM`, `ERANGE`, …). |
+| 3 | **Tipo di ritorno** | Se la funzione è `void`, `@return` è vietato; se non è `void`, `@return` è obbligatorio. |
+| 4 | **Booleani su puntatori** | Se il sorgente contiene `(ptr != NULL) && …` e la documentazione afferma «`@return true` se il puntatore è NULL», viene rifiutata. |
+| 5 | **`@pre` contro `@return`** | Se `@return` documenta la gestione difensiva di NULL ma `@pre` impone «non NULL» come precondizione bloccante, c'è un'incongruenza. |
+| 6 | **Existence Ratio** | Raccoglie le entità citate in `@see` e come `nome()` nel testo; quelle che non esistono tra i simboli del progetto né nella libreria standard note sono segnalate come allucinazioni. Se la frazione di entità esistenti è < 0.80 la documentazione è rifiutata. |
+| 7 | **Linguaggio speculativo** | Rifiuta frasi come «dipende dall'implementazione», «si assume che», «generalmente». |
+
+`enforce_deterministic_complexity()` inserisce `@complexity Temporale: … | Spaziale: …` con i valori dell'AST.
+
+`verify_global_consistency()` è la revisione finale, anch'essa deterministica (espressioni regolari, nessuna chiamata LLM):
+- sostituisce «thread-safe» / «atomica» con «monothread» nei riassunti dei moduli;
+- corregge «variabili globali» in «campi membro di istanza» nei metodi C++;
+- elimina un `@return` spurio dai costruttori;
+- per la struct `RingBuffer` (progetto di esempio) corregge le affermazioni di thread-safety.
+
+### 2.7 Persistenza ed export
+
+**SQLite** (`src/doc_database.py`, file `documentation.db`) con cinque tabelle: `function_docs` (firma, tipo di ritorno, brief, Doxygen completo, complessità, categoria), `module_docs` (riassunto, flusso, esempio), `project_overview`, `struct_docs`, `enum_docs`. `clean_invalid_docs()` ripulisce record non validi all'avvio; `clear_database()` azzera tutto con `--force`.
+
+**`DOCUMENTATION.md`** viene assemblato da `_export_markdown_documentation()` con queste sezioni:
+
+0. **Panoramica del progetto** (dominio, funzionalità, build, formati di I/O, modello di memoria): una chiamata LLM, `generate_project_overview()`, riceve i riassunti dei moduli, i file di build trovati nel repository (`makefile`, `Makefile`, `CMakeLists.txt`, `meson.build`) e un riepilogo AST (puntatori grezzi, smart pointer, container STL).
+1. **Mappe architetturali**: link al call graph interattivo Cytoscape.js (`utils/generate_interactive_graph.py`), diagramma UML delle classi in Mermaid, mappa degli `#include`, call graph globale (solo se ≤ 35 funzioni), **verifica degli `#include`** (ogni include è classificato come file interno, header standard C/C++/POSIX oppure dipendenza esterna non trovata), analisi del dead code, modello di memoria e concorrenza.
+2. **Indice dei moduli** con ruolo, flusso operativo, quickstart e indice delle funzioni con categoria.
+3. **Tipi di dato**: tabelle di campi di struct/class e costanti di enum.
+4. **Dettaglio delle funzioni**: per ogni modulo un call graph locale, poi per ogni funzione firma, complessità AST, callee e caller come link incrociati ricavati dal grafo, e il blocco Doxygen.
+
+Un passaggio finale normalizza i backtick spuri. Poi `utils/generate_full_doc_html.py` produce `FULL_DOCUMENTATION.html`, un portale autonomo con barra laterale.
+
+### 2.8 Modalità e opzioni
 
 ```bash
-# Modalità guidata con menu a selezione:
-python main.py
-
-# Esecuzione diretta con opzioni da terminale:
-python main.py -p <PROGETTO> [-m {single,multiagent}] [-f] [-e] [--lang {en,it}]
+python main.py                                   # menu interattivo (numero progetto + opzioni 'm', 'f', 'e')
+python main.py -p "Easy C"                       # modalità single
+python main.py -p "Easy C" -m multiagent -f      # multi-agente, rigenerazione da zero
+python main.py -p "Easy C" -e                    # solo export da SQLite, senza LLM
 ```
 
-### Tabella dei Parametri Disponibili
+| Opzione | Effetto |
+| :--- | :--- |
+| `-p` / `--project` | Nome o numero del progetto in `Test_code/`. |
+| `-m` / `--mode` | `single` (un solo prompt + Verifier) o `multiagent` (Reader→Searcher→Writer→Verifier→Judge). |
+| `-f` / `--force` | Svuota il database e rigenera tutto. Senza `-f` il database dell'esecuzione precedente (`results/<progetto>/documentation.db`) viene copiato nella nuova cartella e le funzioni già documentate sono saltate. |
+| `-e` / `--export` | Rigenera solo Markdown, HTML e grafo dai dati già in SQLite. |
+| `--lang` | `en` o `it`. Viene salvata in `execution_config.json`; nella pipeline di `main.py` il provider usa il default inglese, mentre `benchmark_eval.py` la inoltra davvero al prompt. |
 
-| Parametro Lungo | Parametro Breve | Valori Ammessi | Descrizione |
-| :--- | :--- | :--- | :--- |
-| `--project` | `-p` | Nome (es: `"Easy C"`) o Numero | Specifica direttamente il progetto da documentare saltando il menu interattivo. |
-| `--mode` | `-m` | `single`, `multiagent` | Seleziona la pipeline di generazione: `single` (Ibrido Standard) o `multiagent` (Pipeline a 5 agenti: *Reader $\rightarrow$ Searcher $\rightarrow$ Writer $\rightarrow$ Verifier $\rightarrow$ Judge*). |
-| `--force` | `-f` | *(flag booleano)* | **Rigenerazione Forzata (Clear DB)**: svuota il database SQLite (`documentation.db`) forzando la ri-generazione completa da zero di tutte le funzioni, struct e sintesi. |
-| `--export` | `-e` | *(flag booleano)* | **Export Rapido**: rigenera istantaneamente il file `DOCUMENTATION.md`, il portale HTML ed il grafo interattivo Cytoscape.js leggendo i dati già presenti in SQLite **senza effettuare chiamate LLM** (~1 secondo). |
-| `--lang` | | `en`, `it` | Lingua della documentazione tecnica e dei commenti Doxygen (default: `en`). |
+Ogni esecuzione crea `results/<progetto>/run_<timestamp>_<mode>/` con `DOCUMENTATION.md`, `FULL_DOCUMENTATION.html`, `interactive_call_graph.html`, `extracted_metadata.json`, `topological_execution_order.json`, `execution_config.json`, `mmd_diagrams/` e `documentation.db`. I file principali sono copiati anche in `results/<progetto>/latest/`.
 
----
+### 2.9 Il provider LLM (`src/llm_provider.py`)
 
-### 🗂️ Storicizzazione Automatica delle Esecuzioni (`run_<timestamp>_<mode>`)
-
-Per consentire audit scientifici, tracciamento storico e analisi comparative delle differenze nel tempo:
-1. Ogni esecuzione genera una cartella dedicata con timestamp in `results/<progetto>/run_YYYYMMDD_HHMMSS_<mode>/` contenente:
-   - `DOCUMENTATION.md`: Documentazione completa generata.
-   - `interactive_call_graph.html`: Applicazione Cytoscape.js per la navigazione interattiva del grafo.
-   - `extracted_metadata.json`: Metadati AST estratti dal codice C/C++.
-   - `topological_execution_order.json`: Ordine bottom-up di visita.
-   - `mmd_diagrams/`: Diagrammi AST e delle chiamate in sintassi Mermaid.
-   - `execution_config.json`: File contenente tutte le impostazioni, i parametri e i flag passati da riga di comando.
-2. Per comodità di consultazione rapida, una copia dell'ultima esecuzione è sempre disponibile e sincronizzata in `results/<progetto>/latest/`.
+- `GeminiLLMProvider`: modello `gemini-3.5-flash-lite`, **15 richieste al minuto** (pausa minima 60/15 s tra le chiamate), tre tentativi con attesa crescente su errori 429/503. `GEMINI_API_KEY` può contenere più chiavi separate da virgola: quando una esaurisce la quota giornaliera il provider passa alla successiva; finite tutte, solleva `QuotaDailyExceededError` e i progressi restano in SQLite.
+- `MockLLMProvider`: usato in assenza di chiave, restituisce testo fittizio per prove offline.
+- Il prompt di `generate_documentation()` contiene un esempio one-shot di blocco Doxygen e regole tassative: nomi di parametro esatti, nessun `@return` per `void`, nessun simbolo inventato, `NULL` → `false` nei booleani con cortocircuito, campi di classe ≠ variabili globali, `@pre`/`@post`, casi limite in `@details`, niente linguaggio speculativo. In caso di rifiuto, il testo del Verifier viene inserito nel prompt come «istruzioni di correzione».
+- Ogni interazione è registrata (tipo, target, prompt, risposta grezza, risposta parsata).
 
 ---
 
-### 💡 Esempi Pratici di Utilizzo
+## 3. Dataset e Ground Truth (`utils/build_dataset.py`)
 
-#### 1. Esecuzione Interattiva (Menu da Terminale)
+Scarica da GitHub i sorgenti di sette librerie (cJSON, OpenCV `fast_math/cvstd/saturate`, TinyXML-2, sds, fmt, miniz, http-parser) in `dataset/sources/`, estrae le funzioni con `CCodeExtractor` e le associa alla **documentazione d'autore** letta dai commenti nei sorgenti.
+
+- Il commento Doxygen/di blocco viene ripulito (`clean_doxygen_comment`) e deve superare `is_valid_ground_truth`.
+- `doc_origin = "own"`: la funzione ha un commento proprio adiacente.
+- `doc_origin = "group"`: la funzione fa parte di un blocco di dichiarazioni contigue che condividono un commento (ad es. «These calls create a cJSON item…» sopra `cJSON_CreateNull/True/False/…`). Il commento viene esteso ai membri e si aggiunge in coda `Variant: <parte variabile del nome>`. Il gruppo è accettato solo se i nomi formano una *famiglia* (`is_name_family`), per non attribuire a una funzione il commento di un'altra.
+- Risultato: `dataset/benchmark.db` (tabella `benchmark_functions`: libreria, linguaggio, file, nome, firma, tipo di ritorno, parametri, sorgente, commento grezzo, `cleaned_doc`, complessità) e `dataset/ground_truth.jsonl`.
+
+`python utils/build_dataset.py` riscrive il dataset; `--no-group-comments` usa solo i commenti propri, `--output-dir` scrive altrove.
+
+---
+
+## 4. Benchmark: documentazione generata contro Ground Truth (`utils/benchmark_eval.py`)
+
+### 4.1 Selezione delle funzioni (`get_benchmark_candidates`)
+
+Legge da `benchmark.db` le funzioni con Ground Truth non vuoto. Strategie di campionamento:
+
+- `sequential`: le prime N per id;
+- `random`: campione uniforme (con `--seed`);
+- `stratified`: ordina per LOC, divide l'intervallo in N classi con **limiti logaritmici** e sceglie una funzione a caso per classe, così da coprire funzioni brevi, medie e lunghe.
+
+Filtri: `--min-loc`, oppure `--functions <file>` con un elenco esplicito di nomi (usato dal confronto con CodeWiki; se una funzione compare sia in `.h` sia in `.cpp` si tiene la versione di implementazione).
+
+### 4.2 Generazione
+
+Per ogni funzione si usa lo stesso ciclo della pipeline (fino a 3 tentativi con Verifier e, in `multiagent`, Judge), ma in isolamento: nessuna callee nel contesto. Il Verifier riceve i simboli reali estratti dagli header della libreria (enum, struct, macro, typedef) e le funzioni del DB.
+
+### 4.3 Metriche calcolate per ogni funzione (`utils/benchmark_metrics.py`)
+
+Il testo confrontato col Ground Truth è `brief_summary + @brief + @details` (senza i tag), dopo il parsing strutturato del Doxygen (`parse_doxygen_block`: brief, details, `@param` con direzione, `@return`, `@warning`).
+
+**Similarità con il Ground Truth**
+
+| Metrica | Implementazione |
+| :--- | :--- |
+| SBERT | Coseno tra embedding `all-MiniLM-L6-v2`, troncato a [0,1]. |
+| BERTScore F1 | `bert_score` con `bert-base-uncased`, su CPU, in batch. |
+| CodeBERTScore F1 | Stesso calcolo con `microsoft/codebert-base` (layer 10). |
+| ROUGE-L | LCS implementata a mano su token senza stopword. |
+| TF-IDF coseno | Coseno tra vettori di frequenza dei termini. |
+| METEOR | NLTK con stemmer e WordNet. |
+| Jaccard, token recall, length ratio, brevity penalty | Sovrapposizione di token e rapporto di lunghezza (penalità stile BLEU). |
+| Concept checklist | Presenza dei concetti attivi nel Ground Truth (ownership, null-safety, errori, mutazione, limiti) anche nel testo generato. |
+| Distanza di Fréchet | Distanza tra le distribuzioni di embedding GT e generate (solo a livello di corpus). |
+
+**Contratti rispetto all'AST**
+
+| Metrica | Implementazione |
+| :--- | :--- |
+| Param Precision/Recall/F1 | Confronto tra i nomi dei `@param` e quelli dell'AST; gestisce i parametri anonimi dei prototipi. |
+| Return match | `void` ⇒ nessun `@return`; non-`void` ⇒ almeno un `@return`. |
+| Hallucination rate | Errori del Verifier che parlano di allucinazione, rapportati ai simboli documentati. |
+
+**Qualità intrinseca** (non richiede il Ground Truth)
+
+| Metrica | Implementazione |
+| :--- | :--- |
+| EDR (error documentation) | Se il sorgente ha rami di errore (`return NULL/-1/0/false`, `return …ERR`), la documentazione deve nominare l'errore. |
+| ECC (edge-case coverage) | Guardie rilevate nel sorgente (NULL, zero/negativo, stringa vuota) e quante sono citate nel testo. |
+| Actionability | Punteggio pesato: direzione dei parametri (35%), `@brief` chiaro (20%), `@return` dettagliato (25%), precondizioni/avvertenze (20%). |
+
+**Task a valle**
+
+- **Code retrieval (MRR, Hit@1/3/5).** La documentazione generata fa da query; il corpus è l'insieme delle funzioni della libreria rappresentate come `nome: firma`. Si ordinano per similarità SBERT e si misura la posizione della funzione corretta (reciprocal rank).
+- **LLM-as-a-Judge (`utils/llm_judge.py`).** Gemini con temperatura 0.4 e risposta JSON, **5 round per prospettiva**, con «reasoning» prima del voto. Prospettiva A (*Faithfulness*, codice + GT contro documentazione) cerca i difetti `DEF-1…5` (errori non documentati, ownership ambigua, descrizione tautologica, direzioni errate, invenzioni). Prospettiva B (*Alignment*, GT contro documentazione) cerca `ALIGN-1…4` (avvertenze perse, intento distorto, rumore, superficialità). Si riportano media e deviazione standard per prospettiva e la media delle due medie come punteggio combinato.
+- **Round-Trip Differential Testing** (§4.4).
+
+### 4.4 Round-Trip Differential Testing (`utils/roundtrip_eval.py`)
+
+Misura se la documentazione basta a ricostruire il comportamento della funzione. Per ogni funzione:
+
+1. **Scaffold di contesto** (`src/context_scaffold.py`): la libreria viene inferita dal nome/firma; dall'header principale si estraggono con libclang enum, struct e macro da passare ai prompt, e si prepara un *runtime* Python con mock (funzioni C di libreria, classi di cJSON, TinyXML-2, http-parser, sds, miniz e utility OpenCV, tutte derivate da `TolerantBaseMock`, che restituisce un mock a qualunque attributo mancante).
+2. **Sintesi dalla documentazione** ($f_{doc}$): il «Coder» scrive la funzione in Python vedendo **solo** la documentazione, la firma e lo scaffold (metodi C++ → classe con costruttore tollerante; puntatori di output → liste mutabili; `ctypes` vietato).
+3. **Sintesi dal sorgente** ($f_{ref}$): lo stesso modello traspone il codice C/C++ reale in Python.
+4. **Suite di test** (pytest) scritta dal «Tester» a partire dalla sola documentazione: numero adattivo di test `test_semantic_*` (tipicamente 4–10) più 1–2 test `test_auto_property_*` con **Hypothesis** (`max_examples=50`). Regole del prompt: black-box, nessuna `pytest.raises` se la documentazione non dichiara eccezioni, nessuna fixture.
+5. **Esecuzione**: i test girano in un file temporaneo con timeout di 25 s, prima su $f_{doc}$ e poi su $f_{ref}$. Le sintesi sono controllate con `ast.parse` e, in caso di errore di sintassi, il modello è richiamato una volta per correggerle.
+6. **Metriche**: *pass rate* di $f_{doc}$ (self-consistency), *reference pass rate* di $f_{ref}$ e *dual agreement* (frazione di test con lo stesso esito, passato su entrambe, sul totale).
+7. **Classificazione della funzione** (`classify_function_type`): *Stateful / Object-Graph* (metodi C++, nodi cJSON/XML), *Pointer / Buffer-Driven* (puntatori, buffer, `size_t`), *Stateless / Primitive*.
+
+`utils/roundtrip_error_analysis.py` classifica i test falliti in una tassonomia: simbolo/ambiente mancante, mismatch di interfaccia, fallimento di contratto comportamentale, bug del test harness, errore di sintassi, timeout, altro. Questo separa gli errori attribuibili alla documentazione da quelli causati dalla catena di valutazione.
+
+### 4.5 Output di un run
+
+`results/benchmark_<libreria>/run_<timestamp>_<mode>/` (copiato in `latest/`):
+
+- `execution_config.json` con il comando esatto per riprodurre il run;
+- `eval_report_<mode>.json` (dati grezzi) e `.md` (report);
+- `eval_charts_<mode>.png` e i grafici avanzati (tabella sotto);
+- se il round-trip è attivo: `roundtrip_results.json`, `eval_chart_roundtrip.png`, `roundtrip_error_report.md`, `eval_chart_roundtrip_errors.png`.
+
+| Grafico (`utils/plot_advanced_benchmark.py`) | Cosa mostra |
+| :--- | :--- |
+| Radar | Sei dimensioni: contratti AST, semantica neurale, actionability, copertura di errori/edge case, affidabilità formale (1 − hallucination rate), utilità a valle (retrieval + round-trip). |
+| Semantica vs round-trip | Scatter SBERT / pass rate con retta OLS e correlazione di Pearson: dice se «suona bene» e «funziona» vanno insieme. |
+| Distribuzioni | Violin plot con punti sovrapposti e mediana, per ogni metrica. |
+| Heatmap | Funzione × metrica, valori in [0,1]. |
+| Cause di scarto del Verifier | Quante funzioni passano al primo tentativo e quante cadono per parametri, ritorno, simboli o Judge. |
+| Correlazione tra metriche | Matrice di Pearson per individuare metriche ridondanti. |
+| Residui | Differenza tra SBERT e pass rate: separa le «allucinazioni plausibili» (testo fluente ma codice sbagliato) dalle «parafrasi robuste». |
+| Complessità | LOC contro prestazioni, per vedere se la qualità degrada sulle funzioni lunghe. |
+| Imbuto di validazione | Bozza → Verifier → Judge → Round-Trip. |
+
+### 4.6 Comandi
+
 ```bash
-python main.py
+python utils/benchmark_eval.py                                        # guidato
+python utils/benchmark_eval.py -l cJSON -n 10 --roundtrip
+python utils/benchmark_eval.py -l all -n 10 --sampling stratified --seed 42 -m multiagent --roundtrip
+python utils/benchmark_eval.py -l miniz -n 5 --mock --no-roundtrip     # offline
 ```
 
-#### 2. Esecuzione Diretta da Terminale
-* **Analisi standard del progetto "Easy C"**:
-  ```bash
-  python main.py -p "Easy C"
-  ```
-* **Esecuzione Multi-Agente con Giudice e rigenerazione forzata da zero**:
-  ```bash
-  python main.py -p "Easy C" -m multiagent -f
-  ```
-* **Export rapido di grafici e Markdown senza chiamate API (da dati SQLite)**:
-  ```bash
-  python main.py -p "Easy C" -e
-  ```
-  ```
+| Flag | Default | Significato |
+| :--- | :--- | :--- |
+| `-l` / `--library` | `cJSON` | `cJSON`, `OpenCV`, `TinyXML-2`, `sds`, `fmt`, `miniz`, `http-parser`, `all`. |
+| `-n` / `--limit` | `5` | Numero di funzioni. |
+| `-s` / `--sampling` | `sequential` | `sequential`, `random`, `stratified` (scorciatoie `--random`, `--stratified`). |
+| `--seed`, `--min-loc`, `--functions` | – | Riproducibilità e filtri (§4.1). |
+| `-m` / `--mode` | `single` | `single` o `multiagent`. |
+| `--roundtrip` / `--no-roundtrip` | attivo | Esegue o salta il round-trip. |
+| `--lang` | `en` | Lingua della documentazione. |
+| `--mock` | off | `MockLLMProvider`, nessun costo API. |
 
 ---
 
-## 📂 Struttura delle Cartelle del Repository
+## 5. Confronto con CodeWiki (`compare_codewiki.py`)
+
+Per ogni libreria in `compare_CodeWiki/<Libreria>/` che esista anche in `benchmark.db`, cinque passi in sequenza:
+
+| Passo | Modulo | Cosa fa |
+| :--- | :--- | :--- |
+| `parse` | `utils/parse_codewiki_to_benchmark.py` | Legge i Markdown di CodeWiki (due stili: per classe e per funzione), estrae le descrizioni dei metodi e le **associa alle funzioni del DB**; produce il mapping e un rapporto di copertura. |
+| `metrics` | `utils/evaluate_codewiki_metrics.py` | Calcola le metriche NLP/statiche (SBERT, BERTScore, METEOR, EDR, ECC…) della documentazione CodeWiki contro il Ground Truth. |
+| `pipeline` | `utils/benchmark_eval.py` | Documenta con la pipeline le funzioni della libreria (tutte con Ground Truth, oppure solo quelle di CodeWiki con `--pipeline-scope codewiki`) in batch da 12; riprende dalle funzioni già presenti in `results/`. Se un run contiene punteggi di ripiego del Judge (quota esaurita), i punteggi dei record toccati sono rimossi, oppure il report intero è scartato (`.invalid`) se i record toccati superano il 60%. |
+| `advanced` | `utils/evaluate_codewiki_advanced.py` | Applica a CodeWiki le stesse metriche avanzate della pipeline (retrieval, CodeBERTScore, Judge a 5 round, round-trip) con la stessa configurazione, con cache incrementale. |
+| `compare` | `utils/plot_codewiki_comparison.py`, `plot_codewiki_extra.py`, `plot_codewiki_overall.py` | Grafici e report del confronto sulle funzioni in comune, test di Wilcoxon, vittorie/pareggi/sconfitte per metrica, riepilogo tra librerie. |
+
+```bash
+python compare_codewiki.py                                  # tutte le librerie, tutti i passi
+python compare_codewiki.py -l cJSON sds                     # solo alcune librerie
+python compare_codewiki.py --list                           # librerie disponibili
+python compare_codewiki.py --dry-run                        # piano senza eseguire
+python compare_codewiki.py --steps parse,metrics,compare    # solo la parte offline
+python compare_codewiki.py --pipeline-scope codewiki
+```
+
+Output: `compare_CodeWiki/<Libreria>/` (mapping, metriche, `charts/`, `codewiki_vs_pipeline_report.md`), `compare_CodeWiki/SUMMARY.md` e `compare_CodeWiki/overall/` (`OVERALL_REPORT.md` e grafici complessivi). I passi `pipeline` e `advanced` richiedono l'API Gemini; con `--mock` il primo è saltato (per non inquinare `results/`) e il secondo scrive su un file `_mock`.
+
+---
+
+## 6. Validazione delle metriche
+
+Gli script in `utils/` che iniziano per `verify_`, `evaluate_nlp_`, `evaluate_stress_` e `evaluate_judge_` non valutano la pipeline: valutano **le metriche stesse**, su casi controllati, per capire che cosa misurano davvero.
+
+| Script | Domanda a cui risponde |
+| :--- | :--- |
+| `verify_metric_sensitivity.py`, `evaluate_nlp_5classes_crossdomain.py` | Come reagiscono SBERT, BERTScore, CodeBERTScore, ROUGE-L, TF-IDF a coppie *equivalenti*, *avversarie* (stessa sintassi, logica opposta), *dello stesso dominio*, *ortogonali*, *prolisse*; in C-C, Python-Python e C-Python. Il «paradosso avversario» è il caso in cui un bug riceve un punteggio più alto del codice equivalente. |
+| `verify_doc_metrics.py` | SBERT contro BERTScore su parafrasi, negazioni critiche, scambio di ruoli tra parametri, verbosità. |
+| `verify_judge_and_roundtrip.py`, `evaluate_judge_roundtrip_5classes.py` | Judge e round-trip sugli stessi casi controllati (30 casi: 6 domini × 5 classi). |
+| `verify_token_truncation.py`, `evaluate_nlp_token_length_sensitivity.py` | Limiti di lunghezza dei modelli (SBERT 256 token, BERT/CodeBERT 512) e «cecità» alle differenze oltre la soglia. |
+| `evaluate_stress_test_limits.py` | Inversione min/max, negazione di un carattere, off-by-one, ridenominazione dei simboli, allucinazioni mascherate da testo forbito. |
+| `verify_canonical_representation.py` | Se confrontare pseudocodice o diagrammi di flusso invece del codice grezzo migliora le metriche cross-language. |
+| `explain_metric_internals.py` | Ispezione interna: allineamento token-a-token di BERTScore, contributo dei token in SBERT, pesi di attenzione sulle negazioni. |
+| `generate_*_plots.py`, `generate_metrics_validation_pdf.py`, `generate_case_study_report.py` | Grafici a 300 DPI, PDF di sintesi e studio qualitativo di casi massimi/mediani/minimi (output in `results/metrics_validation/`). |
+
+---
+
+## 7. Struttura del repository
 
 ```text
 TESI_Nicola_Flego/
-├── main.py                        # Entry point CLI con menu e routing progetti
-├── requirements.txt               # Dipendenze Python (libclang, tqdm, google-genai, matplotlib)
-├── .env                           # Configurazione API Keys (GEMINI_API_KEY)
-├── dataset/                       # Dataset di Benchmark & Ground Truth per C/C++
-│   ├── ground_truth.jsonl         # Dataset riga per riga (firme, codice e doc originale)
-│   ├── benchmark.db               # Database SQLite indicizzato con tutte le funzioni estratte
-│   └── sources/                   # Sorgenti ufficiali (cJSON.h, cJSON.c, OpenCV fast_math, ecc.)
+├── main.py                          # CLI della pipeline di documentazione
+├── compare_codewiki.py              # confronto CodeWiki vs pipeline
 ├── src/
-│   ├── extract_metadata.py        # Parser AST Clang e Calcolo Deterministico Big-O
-│   ├── dependency_graph.py        # Grafo Dipendenze, Tarjan SCC e Reachability Dead Code
-│   ├── doc_database.py            # Layer di persistenza SQLite (tabelle docs, struct, moduli, overview)
-│   ├── doc_orchestrator.py        # Orchestratore Pipeline, Assemblaggio Documento & Export
-│   ├── llm_provider.py            # Client Gemini / Mock con Rate Limiting, Key Rotation e supporto EN/IT
-│   ├── verifier.py                # Verifier Formale, Anti-Hallucination & Existence Ratio
-│   └── agents/                    # Pipeline Multi-Agente Specialistica (Reader, Searcher, Writer)
-├── utils/
-│   ├── build_dataset.py           # Downloader sorgenti ufficiali e costruttore dataset Ground Truth
-│   ├── benchmark_eval.py          # Esecutore Benchmark con confronto LLM vs Ground Truth
-│   ├── benchmark_metrics.py       # Parser Doxygen, metriche locali (TF-IDF, ROUGE-L, Slot F1) e grafici
-│   ├── generate_interactive_graph.py  # Generatore Visualizzatore Web Cytoscape.js
-│   ├── generate_full_doc_html.py      # Generatore Portale Web HTML con sidebar e CSS scuro
-│   ├── generate_size_charts.py        # Generatore grafici di token e distribuzione LOC
-│   └── generate_ast_diagram.py        # Generatore diagrammi AST Mermaid
-├── Test_code/                     # Cartella dei progetti sorgente C/C++ da analizzare
-│   ├── Easy C/
-│   ├── Medium C/
-│   ├── Hard C/
-│   ├── ring_buffer/
-│   └── tesi triennale C++/
-└── results/                       # Risultati generati per ciascun progetto e benchmark
-    ├── benchmark_cjson/           # Report comparativi, grafici PNG e metriche per cJSON
-    └── <Nome_Progetto>/
-        ├── DOCUMENTATION.md           # Relazione tecnica completa Markdown
-        ├── FULL_DOCUMENTATION.html    # Portale Web autonomo consultabile da browser
-        ├── interactive_call_graph.html# Call Graph interattivo (zoom, filtri STL, ricerca)
-        ├── documentation.db           # Database SQLite con metadati e documentazione cache
-        ├── extracted_metadata.json    # Metadati estratti dall'AST Clang
-        ├── LLM_INTERACTIONS_LOG.md    # Traccia trasparente di tutti i prompt/risposte LLM
-        ├── mmd_diagrams/              # Diagrammi Mermaid (Call Graph, File include, UML)
-        └── analytics_charts/          # Grafici PNG (Distribuzione LOC e Consumo Token)
+│   ├── extract_metadata.py          # parser AST libclang + complessità Big-O
+│   ├── dependency_graph.py          # call graph, Tarjan, Kahn, dead code, export Mermaid
+│   ├── doc_orchestrator.py          # ciclo di generazione/verifica + assemblaggio documento
+│   ├── doc_database.py              # persistenza SQLite
+│   ├── llm_provider.py              # Gemini / Mock, rate limit, rotazione chiavi, prompt
+│   ├── verifier.py                  # verificatore deterministico
+│   ├── context_scaffold.py          # tipi e mock di libreria per il round-trip
+│   ├── parse_ast.py                 # utilità di stampa dell'AST
+│   └── agents/                      # Reader, Searcher, Writer, Judge
+├── utils/                           # benchmark, metriche, round-trip, judge, CodeWiki, grafici, validazione
+├── dataset/                         # benchmark.db, ground_truth.jsonl, sources/ (sorgenti delle librerie)
+├── Test_code/                       # progetti C/C++ da documentare con main.py
+├── compare_CodeWiki/                # documentazione CodeWiki e risultati del confronto, per libreria
+├── results/                         # output: <progetto>/, benchmark_<libreria>/, metrics_validation/
+├── tests/                           # test_extraction.py, test_judge_agent.py
+├── thesis/                          # sorgenti LaTeX della tesi
+└── Paper/                           # materiale bibliografico
 ```
-
----
-
-## 📊 Benchmark & Framework di Valutazione (Ground Truth)
-
-Il framework integra un'architettura scientifica di **benchmark automatizzato** strutturata su **3 Livelli Metodologici** per confrontare la documentazione generata con il *Ground Truth* (GT) delle librerie ufficiali C/C++ (`cJSON` per C puro e `OpenCV` per C++):
-
-```
-                               ┌──────────────────────────────────────────────────┐
-                               │       Framework di Valutazione Multi-Livello     │
-                               └────────────────────────┬─────────────────────────┘
-                                                        │
-         ┌──────────────────────────────────────────────┼──────────────────────────────────────────────┐
-         ▼                                              ▼                                              ▼
-[1. Semantica & Embedding Dense]            [2. Contratti Sintattici AST]                [3. Task a Valle & Utility]
-• Sentence-BERT (Cosine Sim)                • Parameter Slot-Filling (P / R / F1)        • Downstream Code Retrieval (MRR / Hit@K)
-• BERTScore F1 (bert-base-uncased)          • Return Contract Match                      • LLM-as-a-Judge (Monte Carlo T=0.4)
-• CodeBERTScore F1 (microsoft/codebert-base)• Deterministic Verifier (Zero Allucinazioni)• Round-Trip Differential Testing (Pytest)
-• BLEURT Quality Score & ROUGE-L
-```
-
----
-
-### 1. Dettaglio dei 3 Livelli di Metriche
-
-#### 🔹 Livello 1: Semantica Continua ed Embedding
-- **Sentence-BERT (`all-MiniLM-L6-v2`)**: Similarità coseno semantica nello spazio vettoriale continuo tra la descrizione generata (`@brief` + `@details`) e il Ground Truth.
-- **BERTScore & CodeBERTScore F1**: Valutazione token-level pesata, pre-addestrata su codice e testo tecnico per catturare la nomenclatura di programmazione.
-- **BLEURT Quality Score & ROUGE-L**: Misura euristica della qualità e sovrapposizione delle sequenze lessicali con *Brevity Penalty*.
-
-#### 🔹 Livello 2: Contratti Sintattici ed Estrazione di Fatti (AST Clang)
-- **Parameter Slot-Filling (Precision, Recall, F1)**: Estrazione dei tag `@param` e confronto 1-a-1 con i parametri reali dell'AST.
-- **Return Contract Match**: Conformità stringente tra il tipo restituito (`void` vs tipi con valore) e i tag `@return`.
-- **Deterministic Verifier**: Controllo matematico per prevenire allucinazioni su tipi, simboli o costanti.
-
-#### 🔹 Livello 3: Task a Valle e Validazione Comportamentale (Downstream Utility)
-- **Docstring-to-Code Retrieval (MRR & Hit@K)**:
-  - Usa la documentazione generata dall'LLM come query per ricercare la funzione corretta all'interno dell'intero corpus di funzioni del database.
-  - Calcola il **Reciprocal Rank (RR)**, l'**MRR globale**, **Hit@1** e **Hit@5**.
-- **LLM-as-a-Judge (Monte Carlo Sampling)**:
-  - Giudice basato su Gemini con campionamento a temperatura controllata ($T=0.4$) su 5 iterazioni per funzione ($\mu \pm \sigma$).
-  - **Prospettiva A (Faithfulness - Code+GT vs Doc)**: Aderenza alla logica del codice sorgente C/C++ ed assenza di difetti (`DEF-1`..`DEF-5`).
-  - **Prospettiva B (Alignment - GT vs Doc)**: Conservazione dell'intento dell'autore originario e avvertenze (`ALIGN-1`..`ALIGN-4`).
-- **Round-Trip Dual Differential Testing (Doc-to-Code Synthesis & Dual Pytest Execution)**:
-  - **Sintesi Duale Parallela**:
-    1. *Implementazione Doc-Driven ($f_{\text{doc}}$)*: Gemini ricostruisce il codice Python basandosi **esclusivamente sulla documentazione generata** (senza vedere il sorgente originale C/C++).
-    2. *Implementazione Reference Code-Driven ($f_{\text{ref}}$)*: Gemini traspila fedelmente il codice sorgente C/C++ reale in Python (Ground Truth comportamentale).
-  - **Generazione Suite di Test Adattiva & Fuzzing (Hypothesis)**:
-    - *Test Semantici Adattivi (Gemini)*: libertà autonoma di dimensionamento dei test in base alla complessità della funzione (casi nominali, edge cases, valori nulli/negativi, codici di ritorno ed enum).
-    - *Test Automatici di Robustezza Property-Based (Hypothesis)*: generazione automatica di oltre 50 combinazioni di input casuali ed estremi (`@given(...)`) per stress-testare invarianti e prevenire crash non gestiti.
-  - **Metriche Differenziali**:
-    - **Self-Consistency Pass Rate %**: percentuale di test superati dal codice sintetizzato da docstring.
-    - **Reference Pass Rate %**: percentuale di test superati dall'implementazione di riferimento originale.
-    - **Dual Agreement Rate %**: tasso di equivalenza comportamentale diretta tra il codice derivato dalla documentazione e il codice reale C/C++ ($f_{\text{doc}}(x) \equiv f_{\text{ref}}(x)$).
-
----
-
-### 2. Comandi CLI per l'Esecuzione del Benchmark
-
-Il benchmark può essere eseguito in modalità **guidata interattiva** oppure direttamente tramite **parametri da terminale**, integrando sia le metriche quantitative sia il Round-Trip Differential Testing in un unico comando:
-
-```bash
-# Modalità guidata con menu a selezione (libreria, numero funzioni, pipeline, strategia campionamento e Round-Trip):
-python utils/benchmark_eval.py
-
-# Esecuzione diretta completa con Round-Trip integrato (default abilitato):
-python utils/benchmark_eval.py -l cJSON -n 10 --roundtrip
-
-# Campionamento Stratificato con vincoli di complessità (copertura da 1 a 100+ LOC, riproducibile al 100%):
-python utils/benchmark_eval.py -l all -n 10 --sampling stratified --seed 42 -m multiagent --roundtrip
-
-# Campionamento Stratificato con filtro su funzioni complesse (es. almeno 15 LOC):
-python utils/benchmark_eval.py -l all -n 8 --sampling stratified --min-loc 15 --seed 42 --roundtrip
-
-# Esecuzione casuale pura con seed:
-python utils/benchmark_eval.py -l http-parser -n 5 --sampling random --seed 123 --no-roundtrip
-
-# Esecuzione offline con MockLLM (senza consumo token API):
-python utils/benchmark_eval.py -l miniz -n 5 --mock --no-roundtrip
-```
-
-#### Tabella Parametri CLI del Benchmark
-
-| Flag Lungo | Flag Breve | Default | Descrizione |
-| :--- | :--- | :--- | :--- |
-| `--library` | `-l` | `cJSON` | Libreria target (`cJSON`, `OpenCV`, `TinyXML-2`, `sds`, `fmt`, `miniz`, `http-parser`, `all`). |
-| `--limit` | `-n` | `5` | Numero massimo di funzioni da documentare e confrontare. |
-| `--sampling` | `-s` | `sequential` | **Strategia di selezione**: `sequential` (prime N per ID), `random` (casuale puro uniforme), `stratified` (casuale con vincoli: partizioni di quantili LOC logaritmici per coprire funzioni brevi, medie ed estese). |
-| `--stratified` | | `False` | Scorciatoia per `--sampling stratified`. |
-| `--random` | `-r` | `False` | Scorciatoia per `--sampling random`. |
-| `--seed` | | `None` | Seed numerico per rendere riproducibile al 100% il campionamento casuale o stratificato. |
-| `--min-loc` | | `None` | Filtro opzionale di complessità: considera solo funzioni con almeno $N$ righe di codice sorgente C/C++. |
-| `--mode` | `-m` | `single` | Pipeline: `single` (Ibrido Standard) o `multiagent` (Pipeline Multi-Agente con Judge). |
-| `--roundtrip` / `--no-roundtrip` | | `True` | Esegue o salta la validazione automatica Round-Trip a valle della generazione. |
-| `--lang` | | `en` | Lingua della documentazione generata (`en` o `it`). |
-| `--mock` | | `False` | Utilizza il MockLLM per collaudi rapidi senza consumo quote API. |
-
----
-
-### 3. Storicizzazione Automatica ed Output Prodotti
-
-Tutti gli artefatti di ciascuna esecuzione vengono salvati in una directory storicizzata con timestamp:
-`results/benchmark_<libreria>/run_YYYYMMDD_HHMMSS_<mode>/` (e specchiati nella cartella `results/benchmark_<libreria>/latest/`):
-
-- `execution_config.json`: File contenente tutte le impostazioni e i parametri passati da riga di comando o selezionati da menu (incluso il comando CLI completo per la riproducibilità esatta).
-- `eval_report_<mode>.md`: Report Markdown scientifico con riepilogo globale, tabella comparativa, metriche AST/neurali, galleria completa di grafici e resoconto del Round-Trip.
-- `eval_report_<mode>.json`: Archivio JSON strutturato con tutti i risultati grezzi e le metriche calcolate.
-- `eval_charts_<mode>.png`: Dashboard visiva a barre ad alta risoluzione delle metriche globali del benchmark.
-- `roundtrip_results.json`: *(Se attivo il Round-Trip)* Risultati dettagliati per-funzione della sintesi duale e delle asserzioni `pytest`.
-- `eval_chart_roundtrip.png`: *(Se attivo il Round-Trip)* Dashboard a 3 pannelli per la validazione comportamentale (Pass Rate Doc, Dual Agreement, medie per categoria tassonomica e sintesi globale).
-
----
-
-### 4. 🔬 Suite Completa di Grafici Diagnostici e Guida all'Interpretazione
-
-Per ogni esecuzione del benchmark, la pipeline genera automaticamente una **suite di 9 grafici scientifici ad alta risoluzione (DPI 200)** studiata per l'analisi accademica comparativa, l'audit di affidabilità formale e la validazione empirica:
-
-```
-┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                      SUITE SCIENTIFICA DI GRAFICI DIAGNOSTICI (9 ARTEFATTI)                     │
-├────────────────────────────────┬────────────────────────────────┬───────────────────────────────┤
-│ 1. Profilo di Qualità (Radar)  │ 2. Semantica vs Round-Trip     │ 3. Dispersione & Varianza     │
-│    (6 Dimensioni Normalizzate) │    (Scatter con Pearson r)     │    (Violin Plot + Jitter)     │
-├────────────────────────────────┼────────────────────────────────┼───────────────────────────────┤
-│ 4. Matrice di Confidenza       │ 5. Cause di Scarto Verifier    │ 6. Cross-Correlation Matrice  │
-│    (Heatmap Funzione x Metrica)│    (Breakdown Omissioni & AST) │    (Pearson N x N Heatmap)    │
-├────────────────────────────────┼────────────────────────────────┼───────────────────────────────┤
-│ 7. Residui & Allucinazioni     │ 8. Pareto Complessità (LOC)    │ 9. Imbuto di Validazione      │
-│    (Delta SBERT vs Round-Trip) │    (LOC vs Performance Rate)   │    (Pipeline Stage Flow)      │
-└────────────────────────────────┴────────────────────────────────┴───────────────────────────────┘
-```
-
-#### 🕸️ 1. Profilo Multi-Dimensionale di Qualità (`eval_chart_radar.png`)
-* **Cosa rappresenta**: Sintetizza le prestazioni dell'approccio lungo i **6 macro-pilastri** della documentazione tecnica:
-  1. *Aderenza Contratti AST* (Media armonica Param F1 e Return Match).
-  2. *Semantica Neurale Continua* (Ensemble normalizzato SBERT, BERTScore, CodeBERT).
-  3. *Actionability* (Presenza di esempi di compilazione, comandi CLI, tipi ed enum d'uso pratico).
-  4. *Copertura Eccezioni & Edge Cases* (EDR ed ECC su casi limite e codici di errore).
-  5. *Affidabilità Formale* ($1.0 - \text{Hallucination Rate}$, garanzia anti-allucinazione AST).
-  6. *Downstream Utility* (Doc-to-Code Retrieval MRR e Pass Rate Round-Trip).
-* **Come leggerlo**: Un'area estesa e bilanciata verso l'esterno ($1.0$) denota un modello a tutto tondo. Asimmetrie evidenti evidenziano immediatamente se un modello è solo "eloquente" (alta semantica neurale) ma debole sui contratti software formali.
-
-#### 🔀 2. Correlazione Semantica vs Round-Trip Pass Rate (`eval_chart_semantic_vs_roundtrip.png`)
-* **Cosa rappresenta**: Scatter plot bidimensionale che mette in relazione la **Similarità Semantica Neurale** (asse X, SBERT Cosine Similarity $[0.0 - 1.0]$) con l'**Efficacia Comportamentale Reale** (asse Y, Round-Trip Pass Rate $\%$ su test `pytest`). Include la retta dei minimi quadrati (OLS) e l'indice di correlazione di Pearson ($r$).
-* **Come leggerlo e interpretarlo**:
-  - **$r > 0.70$ (Forte Correlazione Positiva)**: La qualità semantica percepita dai modelli linguistici riflette fedelmente la correttezza logica del codice rigenerato.
-  - **$r \approx 0.00$ (Ortogonalità / Indipendenza)**: Dimostra empiricamente che le metriche NLP classiche non sono sufficienti per valutare il codice software: una documentazione apparentemente perfetta in linguaggio naturale può contenere sottili errori logici che causano il fallimento dei test funzionali.
-  - **Quadrante Alto a Sinistra (Bassa SBERT, Alto Pass Rate)**: *"Parafrasi Sintetica Robusta"*. Il modello ha usato parole diverse dal Ground Truth originario, ma la semantica tecnica è ineccepibile.
-  - **Quadrante Basso a Destra (Alta SBERT, Basso Pass Rate)**: *"Allucinazione Plausibile"*. Testo fluente e accademico che inganna gli embedding neurali ma nasconde difetti algoritmici.
-
-#### 🎻 3. Distribuzione Statistica & Varianza delle Metriche (`eval_chart_distributions.png`)
-* **Cosa rappresenta**: Diagramma combinato a violino (Kernel Density Estimation) e strip plot con jittering che illustra la dispersione di ciascuna metrica sull'intero corpus di funzioni valutate.
-* **Legenda Scientifica Incorporata**:
-  - **Area Colorata (Violino)**: Stima della densità di probabilità (forma della distribuzione).
-  - **Linea Rossa Orizzontale**: Valore mediano della metrica ($50^\circ$ percentile), robusto agli outlier.
-  - **Pallini Scuri (Jitter Points)**: Singole funzioni campionate. Permette di rilevare bimodalità o raggruppamenti anomali.
-
-#### 🎯 4. Matrice di Confidenza Funzione $\times$ Metriche (`eval_chart_heatmap.png`)
-* **Cosa rappresenta**: Heatmap rettangolare con griglia netta e palette divergente/continua ad alto contrasto (`YlGnBu`):
-  - Ogni riga rappresenta una funzione esaminata.
-  - Ogni colonna rappresenta una metrica specifica (Verifier, Param F1, Return Match, SBERT, METEOR, Actionability, Judge, RoundTrip).
-  - Ogni cella riporta il punteggio numerico normalizzato $[0.0 - 1.0]$ stampato al centro con contrasto dinamico.
-* **Come leggerlo**: Permette di individuare a colpo d'occhio i singoli punti deboli della codebase: righe dominate da sfumature chiare/gialle denotano funzioni critiche complesse che necessitano di maggiore attenzione o scomposizione modulare.
-
-#### 🛡️ 5. Breakdown Cause di Scarto Verifier & Rigetti Giudice (`eval_chart_verifier_breakdown.png`)
-* **Cosa rappresenta**: Istogramma orizzontale categorizzato che quantifica l'incidenza di ciascuna regola di violazione formale rilevata durante la pipeline:
-  - *Superato al 1° Tentativo* (Generazione perfetta immediata).
-  - *Parametri Mancanti / Discrepanti* (Disallineamento con l'AST Clang).
-  - *Tipo di Ritorno Errato / Mancante* (`@return` su void o omesso su non-void).
-  - *Simboli Non Validi o Allucinati* (Citazione di variabili o costanti inesistenti).
-  - *Rigetto Giudice LLM* (Punteggio di fedeltà $< 4.0/5.0$).
-* **Come leggerlo**: Valuta l'efficacia del *Deterministic Verifier* come scudo protettivo contro le allucinazioni prima del deployment della documentazione.
-
-#### 🔗 6. Matrice di Cross-Correlazione delle Metriche (`eval_chart_cross_correlation.png`)
-* **Cosa rappresenta**: Matrice simmetrica $N \times N$ dei coefficienti di correlazione lineare di Pearson ($r \in [-1.0, +1.0]$) tra tutte le coppie di metriche valutate (con mappa termica divergente `coolwarm`).
-* **Valore per la Tesi**:
-  - Individua le metriche ridondanti o collinearie (es. SBERT vs BERTScore se $r > 0.90$).
-  - Dimostra l'indipendenza e la complementarietà tra metriche puramente sintattiche (Param F1), semantiche (SBERT/CodeBERT) e funzionali (Round-Trip / Giudice).
-
-#### ⚖️ 7. Analisi dei Residui: Allucinazione Plausibile vs Parafrasi Robusta (`eval_chart_discrepancy_residuals.png`)
-* **Cosa rappresenta**: Grafico a barre orizzontali divergenti incentrato sullo scostamento differenziale:
-  $$\Delta = \mathrm{SBERT} - \left(\frac{\mathrm{RoundTrip\ Pass\ Rate}}{100}\right)$$
-* **Classificazione dei Casi**:
-  - **Barra Rossa ($\Delta > +0.05$) - Sovrastima Semantica / Allucinazione Plausibile**: Il testo della documentazione sembra eccellente agli occhi dei modelli di embedding, ma l'implementazione derivata fallisce i test esecutivi.
-  - **Barra Verde ($|\Delta| \le 0.05$) - Coerenza Ideale**: Perfetta corrispondenza tra leggibilità testuale ed esecuzione algoritmica.
-  - **Barra Blu ($\Delta < -0.05$) - Sottostima Semantica / Parafrasi Robusta**: Il modello ha usato termini e stili differenti dal Ground Truth (penalizzato da SBERT), ma il significato tecnico è così rigoroso che il codice derivato supera il $100\%$ dei test funzionali.
-
-#### 📈 8. Scalabilità e Complessità del Codice sorgente (`eval_chart_complexity_pareto.png`)
-* **Cosa rappresenta**: Scatter plot con linea di tendenza (OLS) che correla la complessità strutturale della funzione (Linee di Codice Sorgente C/C++ - LOC) con la performance a valle (Round-Trip Pass Rate o Similarità Semantica).
-* **Valore per la Tesi**: Consente di verificare se la qualità della documentazione degrada all'aumentare delle dimensioni e della complessità della logica C/C++, comprovando la robustezza del contesto bottom-up (*Dependencies-First*).
-
-#### ⏳ 9. Imbuto di Validazione e Transizioni della Pipeline (`eval_chart_pipeline_flow.png`)
-* **Cosa rappresenta**: Diagramma a barre dell'imbuto di filtraggio progressivo a più stadi:
-  $$\text{Draft LLM Generato} \longrightarrow \text{Superamento Verifier AST} \longrightarrow \text{Approvazione Giudice LLM} \longrightarrow \text{Certificazione Round-Trip}$$
-* **Come leggerlo**: Illustra quantitativamente la capacità del sistema di filtrare e correggere le imperfezioni ad ogni livello, garantendo che solo la documentazione che supera l'intero percorso di certificazione formale ed empirica venga inclusa nel report finale.
-
-
----
-
-## 🆚 Confronto con CodeWiki (`compare_codewiki.py`)
-
-Script unico che confronta la documentazione generata da CodeWiki con quella della pipeline, libreria per libreria
-(cartelle `compare_CodeWiki/<Libreria>/`; una libreria e' confrontabile se esiste anche in `dataset/benchmark.db`).
-Per ogni libreria esegue: `parse` (mapping CodeWiki -> DB) → `metrics` (NLP CodeWiki vs GT) → `pipeline`
-(documentazione + benchmark completi della pipeline, con ripresa dalle funzioni gia' presenti in `results/`) →
-`advanced` (judge, round-trip, retrieval, CodeBERTScore su CodeWiki) → `compare` (grafici e report).
-
-```bash
-python compare_codewiki.py                      # tutte le librerie, tutti gli step
-python compare_codewiki.py -l cJSON sds         # solo alcune librerie
-python compare_codewiki.py --list               # librerie disponibili
-python compare_codewiki.py --dry-run            # piano di esecuzione senza eseguire nulla
-python compare_codewiki.py --steps parse,metrics,compare   # solo la parte offline (niente API)
-python compare_codewiki.py --pipeline-scope codewiki       # pipeline solo sulle funzioni documentate da CodeWiki
-```
-
-Output: `compare_CodeWiki/<Libreria>/` (mapping, metriche, `charts/`, `codewiki_vs_pipeline_report.md`) e
-`compare_CodeWiki/SUMMARY.md` (riepilogo tra librerie). Gli step `pipeline` e `advanced` usano l'API Gemini.
-
----
-
-## 📋 Requisiti di Sistema e Installazione
-
-1. **Python 3.10+**
-2. **LLVM / Clang**: librerie `libclang` configurate per il parsing C/C++.
-3. **Installazione dipendenze**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. **Configurazione API Key**:
-   Creare un file `.env` nella root del repository:
-   ```env
-   GEMINI_API_KEY="la_tua_api_key_gemini"
-   ```
-   *(Nota: in assenza di API key valida, il sistema utilizzerà automaticamente il `MockLLMProvider` locale per test offline senza connessione).*

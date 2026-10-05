@@ -1,4 +1,4 @@
-\chapter{Validation metrics}
+\chapter{Metrics}
 \label{ch:metrics}
 
 % =============================================================================
@@ -10,8 +10,21 @@
 %   - "% TODO:" comments mark what to fill in with project data.
 % =============================================================================
 
-\section{Introduction and motivation}
-\label{sec:metrics-intro}
+\section{Introduction and Motivation} 
+\label{sec:metrics-intro} 
+Evaluating automated documentation generation driven by Large Language Models (LLMs) represents one of the most critical yet challenging steps in the software documentation pipeline. For small-scale projects, manual code review by domain experts remains feasible and effective. However, as the target codebase scales in size and structural complexity, manual inspection quickly becomes inefficient, unscalable, and prohibitively expensive. Given the inherently probabilistic nature of LLMs and their susceptibility to generating plausible yet ungrounded hallucinations, establishing objective and quantitative judgment metrics is crucial. Such metrics are necessary to determine whether the generated documentation meets high-quality standards, to identify areas for remediation, and to prevent subtle errors from reaching production. 
+
+A major obstacle in evaluating generated documentation is the absence of a single ``ground truth". Because documentation is expressed in natural language, an infinite number of syntactically distinct paraphrases can convey the exact same semantic intent. This inherent variability complicates automated assessment, particularly when evaluating non-deterministic LLMs where minor adjustments in sampling temperature or prompt formulation can yield structurally dissimilar outputs for the exact same input. Conversely, surface-level lexical similarity can be deceptively misleading: two sentences may appear nearly identical syntactically, yet a minor variation, such as replacing a relational operator (\textless{} vs \textgreater{}) or altering a modal verb (``must" vs. ``must not"), completely inverts the software contract, rendering the documentation erroneous and potentially hazardous. 
+
+To systematically characterize documentation quality, prior literature has established core quality attributes for source code documentation~\cite{rai_review_2022}. Traditionally, automatic code summarization research has relied heavily on machine translation metrics such as BLEU and ROUGE, as highlighted in comprehensive literature surveys~\cite{zhang_survey_2022, zhu_automatic_2019}. However, recent studies demonstrate that such surface-level n-gram overlap metrics fail to capture genuine semantic correctness, completeness, and architectural quality~\cite{hoang_codewiki_2026}. Consequently, establishing easily interpretable and semantically aligned metrics remains paramount to guaranteeing the reliability of automated documentation systems. 
+
+This chapter addresses these evaluation challenges by answering the following overarching research question: 
+
+\begin{description} 
+	\item[\textbf{RQ:}] \textit{How can we quantitatively and qualitatively evaluate the quality of LLM-generated code documentation beyond superficial lexical similarity?} 
+\end{description} 
+
+The remainder of this chapter formally details the evaluation metrics and paradigms employed in this work, laying the theoretical foundation for the empirical validation presented in Chapter~\ref{ch:validation}.
 % Why evaluating generated documentation is hard: no single ground truth,
 % many valid paraphrases, but small wording changes ("must" vs "must not")
 % can invert the contract.
@@ -20,8 +33,29 @@
 % CITE: hoang_codewiki_2026 [Paper/]  (BLEU/ROUGE fail to capture documentation quality)
 % TODO: state the research question answered by this chapter and by Chapter~\ref{ch:validation}.
 
-\section{Evaluation setting and notation}
-\label{sec:metrics-setting}
+\section{Evaluation Setting and Mathematical Notation} \label{sec:metrics-setting} 
+To quantitatively and qualitatively assess the generated documentation, the evaluation framework operates at the granular level of individual software functions and their corresponding documentation outputs. Formally, let $\mathcal{F}$ denote the evaluation benchmark dataset comprising a curated set of target functions. For each function $f \in \mathcal{F}$, we define the following formal representation tuple: 
+
+\begin{itemize} 
+\item $c_f$: the raw source code implementation of function $f$; 
+\item $\mathcal{A}(f)$: the structural metadata deterministically extracted from the Abstract Syntax Tree (AST) of $f$ (e.g., function identifier, argument names, type annotations, exceptions raised, and return signatures); 
+\item $d_f^{\mathrm{gen}}$: the candidate documentation generated for $f$ by the LLM-based pipeline under evaluation; 
+\item $d_f^{\mathrm{ref}}$: the reference ground-truth documentation extracted from the original, verified software repository (see Chapter~\ref{ch:dataset}). 
+\end{itemize} 
+
+Depending on the specific quality dimension under examination, the proposed evaluation metrics evaluate distinct pairs of inputs. We categorize these metrics into three fundamental evaluation paradigms: 
+
+\begin{enumerate}
+	\item \textbf{AST vs. Generated Documentation ($\mathcal{A}(f) \text{ vs. } d_f^{\mathrm{gen}}$):} A reference-free, deterministic evaluation paradigm. It verifies whether structural software artifacts (such as argument names, default values, and parameter types) extracted directly from $\mathcal{A}(f)$ are faithfully and explicitly documented in $d_f^{\mathrm{gen}}$, requiring no human-annotated reference text. 
+
+	\item \textbf{Reference vs. Generated Documentation ($d_f^{\mathrm{ref}} \text{ vs. } d_f^{\mathrm{gen}}$):} A comparative paradigm that quantifies lexical overlap, syntactic similarity, and semantic alignment between the model-generated documentation $d_f^{\mathrm{gen}}$ and the human-written reference $d_f^{\mathrm{ref}}$. 
+
+	\item \textbf{Generated Documentation vs. Code/Behavior ($d_f^{\mathrm{gen}} \text{ vs. } c_f$):} A functional and execution-grounded paradigm evaluating factual correctness, behavioral accuracy, and operational utility. This paradigm measures whether the generated text accurately reflects the runtime behavior and logic of source code $c_f$ without introducing hallucinated or misleading constraints. 
+\end{enumerate} 
+
+\paragraph{Benchmark Dataset Overview.} 
+The evaluation set $\mathcal{F}$ encompasses a diverse suite of functions harvested across multiple real-world, open-source software libraries. As thoroughly detailed in Chapter~\ref{ch:dataset}, each function $f \in \mathcal{F}$ is paired with its original docstring $d_f^{\mathrm{ref}}$ (stored in \texttt{dataset/ground\_truth.jsonl}), serving as the baseline for empirical comparisons across varying codebase scales and complexity levels. The subsequent sections detail the specific metrics belonging to each of these three comparative paradigms.
+
 % Define: function $f$, AST metadata $\mathcal{A}(f)$, generated documentation $d_{\mathrm{gen}}$,
 % reference documentation $d_{\mathrm{ref}}$ (ground truth, dataset/ground_truth.jsonl),
 % source code $c$.
@@ -29,182 +63,973 @@
 %   [AST vs Doc], [Doc vs Doc], [Doc vs Code / behaviour].
 % TODO: short description of the benchmark dataset (libraries, number of functions).
 
-\section{Metric taxonomy}
-\label{sec:metrics-taxonomy}
-% Overview figure/table: 4 levels, input pair, needs reference?, needs LLM?, deterministic?
-% CITE: yang_docagent_2025 [Paper/]  (Completeness / Helpfulness / Truthfulness axes)
-% CITE: zhang_survey_2022, zhu_automatic_2019 [Paper/]  (classic evaluation families)
-\begin{table}[ht]
-	\centering
-	\caption{Metric levels used in this thesis.}
-	\label{tab:metric-taxonomy}
-	\begin{tabular}{lll}
-		\hline
-		\textbf{Level} & \textbf{What it measures} & \textbf{Reference needed?} \\
-		\hline
-		I\ \ Formal / AST        & Contract consistency with the compiler AST  & No (AST is the oracle) \\
-		II\ Software quality     & Actionability, error and edge-case coverage & No (source code is the oracle) \\
-		III Semantic similarity  & Closeness to reference documentation       & Yes \\
-		III-b LLM-as-a-judge     & Faithfulness and alignment, graded 1--5    & Optional \\
-		IV\ Downstream           & Retrieval utility and behavioural fidelity & No / tests \\
-		\hline
-	\end{tabular}
-\end{table}
+\section{Metric Taxonomy} \label{sec:metrics-taxonomy} 
+As highlighted in the previous sections, evaluating LLM-generated code documentation requires a multi-faceted strategy operating across diverse operational perspectives. To systematically structure these evaluation mechanisms, we categorize the metrics adopted in this project into four primary tiers based on their underlying algorithms, computational complexity, and reference dependencies. Table~\ref{tab:metric-taxonomy} provides a high-level overview of this taxonomy, which is detailed below: 
 
+\begin{enumerate}[label=\Roman*.] 
+	\item \textbf{Formal / AST Level} (Sec.~\ref{sec:metrics-level1}): Metrics in this foundational category compare generated outputs directly against structural features deterministically extracted via Abstract Syntax Tree (AST) parsing. These metrics are computationally lightweight, deterministic, and immediately interpretable. They require no human-written reference documentation, as the source code AST serves as the exact ground-truth oracle to verify contract consistency (e.g., function signatures, parameter names, default values, and explicit exception declarations). 
+	
+	\item \textbf{Software Quality Level} (Sec.~\ref{sec:metrics-level2}): This tier evaluates the practical utility and actionability of the generated documentation from a software engineering standpoint, independently of textual similarity to a reference text~\cite{rai_review_2022}. Metrics measure how effectively the documentation enables developers, or automated AI agents, to correctly invoke and integrate the function, while assessing coverage of critical execution aspects such as error handling, parameter constraints, and edge cases~\cite{yang_docagent_2025}. Similar to Tier I, no reference documentation is needed: the source code implementation acts as the primary oracle from which expected documentation coverage is derived. 
+	
+	\item \textbf{Semantic, NLP, and LLM-as-a-Judge Level} (Sec.~\ref{sec:metrics-level3}): 
+	\begin{enumerate}[label=\alph*.] 
+		\item \textit{Semantic and Classical NLP Metrics}: This sub-category leverages conventional machine translation and text similarity measures (e.g., ROUGE, METEOR, and BERTScore) to quantify lexical and semantic similarity between candidate documentation, original code, and reference docstrings~\cite{zhang_survey_2022, zhu_automatic_2019}. Applying these metrics strictly requires a human-annotated ground-truth reference. 
+		
+		\item \textit{LLM-as-a-Judge Evaluation}: This paradigm employs an advanced secondary LLM as an automated evaluator to assess generated documentation on a standardized rating scale (e.g., $1$--$5$)~\cite{wu_can_2024}. Capitalizing on the natural language reasoning capabilities of LLMs, reference docstrings are optional, enabling reference-free evaluation directly grounded in source code behavior. 
+	\end{enumerate} 
+	
+	\item \textbf{Downstream Utility Level} (Sec.~\ref{sec:metrics-level4}): This category applies principles from Information Retrieval (IR) and Software Testing to determine documentation efficacy in real-world developer workflows. It measures whether the generated documentation enhances natural language code search and retrieval accuracy~\cite{husain_codesearchnet_2019} or supports automated execution-based verification and unit test generation~\cite{chen_evaluating_2021}. No prior reference documentation is required, as evaluation relies on code execution, test suites, and retrieval benchmarks. 
+\end{enumerate} 
+
+\begin{table}[ht] 
+	\centering 
+	\caption{Taxonomy of evaluation metric tiers adopted in this work.} 
+	\label{tab:metric-taxonomy} 
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{lllll} 
+			\hline 
+			\textbf{Level} & \textbf{Category} & \textbf{Target Dimension} & \textbf{What it measures} & \textbf{Reference needed?} \\ 
+			\hline 
+			I & Formal / AST & Syntax \& Contract & Contract consistency with compiler AST & No (AST is oracle) \\ 
+			II & Software Quality & Operational Utility & Actionability, error and edge-case coverage & No (Code is oracle) \\ 
+			III-a & Semantic NLP & Textual Alignment & Lexical/semantic similarity to reference & Yes \\ 
+			III-b & LLM-as-a-Judge & Qualitative Alignment & Faithfulness and coherence (1--5 scale) & Optional \\ 
+			IV & Downstream & Practical Application & Retrieval utility and execution fidelity & No / Test suite \\ 
+			\hline 
+		\end{tabular}%
+	}
+\end{table}
 % -----------------------------------------------------------------------------
-\section{Level I: Formal and AST-based metrics}
-\label{sec:metrics-level1}
-% Common idea: libclang AST is a deterministic oracle for signature and contract.
-% CITE (whole level): pomian_together_2024 [Paper/]  (static analysis as a guard on LLM output)
-% CITE (whole level): lomshakov_proconsul_2024 [Paper/]  (compiler-provided structure for summarization)
+\section{Level I: Formal and AST-based Metrics} \label{sec:metrics-level1} 
+Metrics in this tier evaluate objective, deterministic structural attributes extracted directly from the source code Abstract Syntax Tree (AST) using compiler-grade infrastructure, specifically \textit{libclang}. Formally, from the function metadata tuple $\mathcal{A}(f)$, the AST parser deterministically extracts explicit contract signatures, including the function identifier, input parameters alongside their declared data types, the return type, explicit error/exception handling branches, and outgoing function call dependencies. 
+
+To assess compliance, candidate elements are parsed from the generated documentation $d_f^{\mathrm{gen}}$ by targeting standard documentation markup directives (e.g., Doxygen tags such as \texttt{@param}, \texttt{@return}). The evaluation process thus simplifies to a set-theoretic comparison (e.g., verifying parameter set completeness and type match) without relying on natural language understanding. 
+
+A distinguishing characteristic of Level I metrics is their dual operational role: beyond serving as offline evaluation criteria, static AST constraints are increasingly integrated into LLM generation pipelines as real-time verifiers and guardrails~\cite{pomian_together_2024}. In such self-correcting architectures, if an automated AST verifier detects a mismatch between the generated docstring $d_f^{\mathrm{gen}}$ and the ground-truth contract $\mathcal{A}(f)$, it triggers a feedback-driven regeneration loop, instructing the model to rectify the specific structural omission or hallucination. 
+
+Leveraging compiler-provided structural context is well-established as an effective technique to anchor code summarization models to formal program structures~\cite{lomshakov_proconsul_2024}. Although these metrics may appear partially redundant in pipelines where AST verifiers are actively enforced during generation, they remain indispensable when benchmarking against unconstrained LLM baselines to immediately detect structural hallucinations and interface mismatches. 
+
+Nevertheless, the intrinsic limitation of Level I metrics lies in their purely syntactic scope: they rigorously enforce contract completeness and formal alignment, but remain completely blind to the semantic fidelity and textual quality of the underlying natural language explanations.
 
 \subsection{Verifier Pass Rate}
-\label{sec:m-verifier}
+\label{sec:m-verifier_pass_rate}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Measures the percentage of functions whose generated
+	documentation passes, without any violation, the set of deterministic checks implemented by the
+	formal verifier. The verifier acts as an automatic gate on the contract-level consistency between
+	the documentation and the structural metadata extracted from the Clang AST, in the spirit of
+	deterministic verification of generated documentation~\cite{yang_docagent_2025} and of using
+	static analysis as a guard on LLM output~\cite{pomian_together_2024}. Passing is a necessary but
+	not sufficient condition for a documentation to be correct: the checks inspect the
+	\emph{form} of the contract, not the accuracy of each description.
+	
+	\item \textbf{Input and pair type}: \textbf{[AST vs Doc]}. For each function $f_i$ the verifier
+	receives (i) the AST metadata $\mathcal{A}(f_i)$, namely the formal parameter names
+	$P_{\mathrm{AST}}=\{p_1,\dots,p_n\}$ and the static return type $T_{\mathrm{ret}}$, (ii) the set of
+	valid project symbols $\Sigma$ (functions, structs, enums and their constants, macros, typedefs)
+	collected from the whole codebase, and (iii) the generated Doxygen block, which is inspected as raw
+	text through pattern matching. The order of the parameters is not checked; only their presence is.
+	The compiler-derived structure used as oracle follows the idea of providing precise program-analysis
+	information to the LLM and to its evaluation~\cite{lomshakov_proconsul_2024}.
+	
+	\item \textbf{Formulation and processing}: Given a corpus of $N$ functions, let
+	$V(f_i)\in\{0,1\}$ be the indicator
+	\begin{equation}
+		V(f_i) =
+		\begin{cases}
+			1 & \text{if } |\mathcal{E}(f_i)| = 0 \\
+			0 & \text{if } |\mathcal{E}(f_i)| > 0
+		\end{cases}
+		\label{eq:verifier_bool}
+	\end{equation}
+	where $\mathcal{E}(f_i)$ is the set of errors raised by the verifier. A response that is empty or
+	not a valid structured object yields an error by definition. The checks contributing to
+	$\mathcal{E}(f_i)$ are:
+	\begin{enumerate}[label=(\alph*)]
+		\item every parameter in $P_{\mathrm{AST}}$ appears in a \texttt{@param} tag;
+		\item \texttt{void} functions contain no \texttt{@return} tag, while non-void functions
+		contain at least one;
+		\item uppercase symbols returned in \texttt{@return} (enum values, constants) exist in
+		$\Sigma$, or belong to a whitelist of standard tokens (e.g.\ \texttt{NULL},
+		\texttt{ENOMEM});
+		\item every entity cited via \texttt{@see} or as \texttt{name()} exists in $\Sigma$ or in the
+		C standard library, and the resulting Existence Ratio is at least $0.80$
+		(see Sec.~\ref{sec:m-hallucination});
+		\item no contradiction on NULL handling, namely between \texttt{@pre} and \texttt{@return},
+		and between a short-circuit \texttt{(ptr != NULL) \&\& \ldots} in the source and a
+		\texttt{@return true} clause claiming success on a NULL pointer;
+		\item absence of speculative language (fixed list of phrases).
+	\end{enumerate}
+	The aggregate metric is
+	\begin{equation}
+		\text{Verifier Pass Rate} = \frac{1}{N}\sum_{i=1}^{N} V(f_i)\times 100\%
+		\label{eq:verifier_pass_rate}
+	\end{equation}
+	In the pipeline, failed checks are returned to the Writer as feedback and the function is
+	regenerated, up to three attempts. The reported pass rate is therefore computed on the
+	\emph{final} documentation after this correction loop, not on the first generation.
+	
+	\item \textbf{Output range and interpretation}: $[0\%, 100\%]$. A value of $100\%$ means that
+	every final docstring satisfies all the checks above; it does not mean that the documentation is
+	free of hallucinations or factual errors.
+	
+	\item \textbf{Limits}: (i) the checks are heuristic pattern matching on text; (ii) extra or
+	invented \texttt{@param} tags are not penalised (this is captured by Parameter Precision,
+	Sec.~\ref{sec:m-param-f1}); (iii) symbol existence is tested leniently, accepting substring
+	matches against $\Sigma$ and only for uppercase \texttt{@return} symbols and for entities cited
+	via \texttt{@see} or \texttt{name()}; (iv) the speculative-language and NULL-handling patterns are
+	language-specific and tied to the language of the generated documentation.
+\end{itemize}
 % Fraction of functions whose documentation passes all formal checks of the Verifier
 % (existence ratio $\ge 0.80$, tags consistent with the AST, mandatory tags present).
 % Inputs: [AST vs Doc]. Range: [0,100]\%. Limit: checks form, not semantics.
 % CITE: yang_docagent_2025 [Paper/]  (deterministic verifier + Truthfulness)
 % CITE: pomian_together_2024 [Paper/]
 
+
 \subsection{Parameter Precision, Recall and F1}
 \label{sec:m-param-f1}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Measures how faithfully the \texttt{@param} tags of the
+	generated documentation reproduce the formal parameters of the function, in the sense of a
+	slot-filling problem: each formal parameter is a slot that the documentation must fill exactly once
+	with the correct name. Recall penalises omitted parameters, precision penalises invented or
+	misspelled ones. This is the quantitative counterpart of the structural completeness checks based
+	on AST analysis and regular expressions used in~\cite{yang_docagent_2025}, extended to also
+	penalise spurious entries.
+	
+	\item \textbf{Input and pair type}: \textbf{[AST vs Doc]}. Let $P_{\mathrm{AST}}$ be the set of
+	formal parameter names of $f$ extracted by Clang, and $P_{\mathrm{doc}}$ the set of names
+	appearing in the \texttt{@param} tags of $d_f^{\mathrm{gen}}$ (optionally with a direction
+	qualifier such as \texttt{[in]} or \texttt{[out]}). Only names are compared: types, directions
+	and descriptions are ignored. The tags are extracted from the raw text with a regular expression.
+	
+	\item \textbf{Formulation and processing}:
+	\begin{equation}
+		\mathrm{P}_{\mathrm{par}} = \frac{|P_{\mathrm{AST}} \cap P_{\mathrm{doc}}|}{|P_{\mathrm{doc}}|},
+		\qquad
+		\mathrm{R}_{\mathrm{par}} = \frac{|P_{\mathrm{AST}} \cap P_{\mathrm{doc}}|}{|P_{\mathrm{AST}}|},
+		\qquad
+		\mathrm{F1}_{\mathrm{par}} = \frac{2\,\mathrm{P}_{\mathrm{par}}\,\mathrm{R}_{\mathrm{par}}}
+		{\mathrm{P}_{\mathrm{par}}+\mathrm{R}_{\mathrm{par}}}
+		\label{eq:param_f1}
+	\end{equation}
+	with $\mathrm{F1}_{\mathrm{par}}=0$ when the denominator is zero. Three special cases are handled
+	explicitly. (i) If $f$ has no parameters, the scores are $(1,1,1)$ when no \texttt{@param} is
+	documented, and $(0,1,0)$ otherwise. (ii) If $P_{\mathrm{doc}}$ is empty while $f$ has parameters,
+	all scores are $0$. (iii) If some AST parameters are anonymous (typical of prototypes in header
+	files, e.g.\ \texttt{LoadFile(FILE*)}), the anonymous slots are matched by count against the
+	documented tags that do not correspond to a named AST parameter. The corpus score is the mean over
+	functions.
+	
+	\item \textbf{Output range and interpretation}: $[0,1]$ for each of the three scores. A value of
+	$1$ means that the set of documented parameter names coincides with the formal parameters of the
+	AST.
+	
+	\item \textbf{Relation with the Verifier}: The verifier of Sec.~\ref{sec:m-verifier_pass_rate}
+	enforces only the recall condition (all AST parameters must be documented). Parameter Precision
+	adds the missing half: extra or invented \texttt{@param} tags do not make the verifier fail, but
+	they lower $\mathrm{P}_{\mathrm{par}}$. Since the metric is computed on the final documentation,
+	$\mathrm{R}_{\mathrm{par}}$ is expected to be close to $1$ for systems equipped with the
+	verifier, while it remains informative for systems that have none.
+	
+	\item \textbf{Limits}: (i) names are compared as a \emph{set}, so order and duplicate tags are not
+	considered; (ii) the content of the description is not evaluated, hence a parameter documented
+	with a wrong explanation still counts as correct; (iii) for anonymous parameters the match is
+	based on counts and not on names, which is a lenient approximation.
+\end{itemize}
+
+\subsection{Return Contract Match}
+\label{sec:m-return_match}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Checks that the documentation declares a return value if and
+	only if the function returns one. It captures a very common failure mode of LLM-generated
+	docstrings, namely documenting a return value for a \texttt{void} function or forgetting it for a
+	function with a non-void type, and complements the parameter check above for the output side of
+	the contract. As for parameters, this is a structural completeness criterion that can be verified
+	through AST analysis and regular expressions~\cite{yang_docagent_2025}.
+	
+	\item \textbf{Input and pair type}: \textbf{[AST vs Doc]}. The static return type $T_{\mathrm{ret}}$
+	of $f$ from the AST, and the list $R_{\mathrm{doc}}$ of \texttt{@return} clauses found in
+	$d_f^{\mathrm{gen}}$. Only the presence of the tag is considered.
+	
+	\item \textbf{Formulation and processing}: Let $\mathrm{void}(f)=1$ if $T_{\mathrm{ret}}$ is
+	\texttt{void} (or empty), and $0$ otherwise.
+	\begin{equation}
+		\mathrm{RM}(f) =
+		\begin{cases}
+			1 & \text{if } \mathrm{void}(f)=1 \ \wedge\ |R_{\mathrm{doc}}|=0 \\
+			1 & \text{if } \mathrm{void}(f)=0 \ \wedge\ |R_{\mathrm{doc}}|\ge 1 \\
+			0 & \text{otherwise}
+		\end{cases}
+		\label{eq:return_match}
+	\end{equation}
+	The corpus score is the mean of $\mathrm{RM}(f)$ over all functions.
+	
+	\item \textbf{Output range and interpretation}: $\{0,1\}$ per function, $[0,1]$ on average. A value
+	of $1$ means that no function violates the presence/absence rule of the return clause.
+	
+	\item \textbf{Relation with the Verifier}: The rule coincides with check (b) of the verifier, so on
+	the final documentation the average Return Match tracks the verifier's pass rate on that single
+	check. Its added value is that it isolates this specific failure from the other verifier errors and
+	can be applied to documentation produced by systems without a verifier.
+	
+	\item \textbf{Limits}: (i) only the presence of \texttt{@return} is checked, not whether the
+	description is correct or whether it lists the right error codes; (ii) an empty return type (for
+	instance constructors) is treated as \texttt{void}, whereas the verifier skips the check in that
+	case, so the two measures may differ slightly on C++ constructors; (iii) the metric is binary and
+	thus coarse.
+\end{itemize}
 % Compares the set of \texttt{@param} names with the formal parameters of the AST
 % (slot filling). Precision penalises invented parameters, recall penalises omitted ones.
 % Inputs: [AST vs Doc]. Range: [0,1]. Limit: says nothing about the quality of each description.
 % CITE: yang_docagent_2025 [Paper/]  (Completeness: documented parameters vs. code)
 % CITE: rai_review_2022 [Paper/]  (completeness as a documentation-quality attribute)
 
-\subsection{Return Contract Match}
-\label{sec:m-return}
-% Binary check: \texttt{void} functions must not document \texttt{@return};
-% non-void functions must.
-% Inputs: [AST vs Doc]. Range: \{0,1\}. Limit: presence only, not correctness of the description.
-% CITE: yang_docagent_2025 [Paper/]
-
 \subsection{Existence Ratio and Hallucination Rate}
 \label{sec:m-hallucination}
-% Existence Ratio: share of code entities named in the documentation that exist in the
-% call graph / standard library. Hallucination Rate: complementary count of invented symbols.
-% Inputs: [AST/call graph vs Doc]. Range: [0,1] and [0,100]\%.
-% Limit: detects invented names, not wrong claims about real entities.
-% CITE: yang_docagent_2025 [Paper/]  (introduces Existence Ratio for Truthfulness)
-% CITE: ji_survey_2023 [added]  (definition and taxonomy of hallucination in NLG)
-% CITE: lomshakov_proconsul_2024 [Paper/]  (hallucinations reduced with project context)
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Quantifies how many code entities named in the documentation
+	do not exist in the project. Following the definition adopted in~\cite{lomshakov_proconsul_2024},
+	a summary contains a hallucination when it mentions non-existing code entities (functions,
+	variables, constants); the Existence Ratio, introduced as part of the Truthfulness dimension
+	in~\cite{yang_docagent_2025}, is the proportion of mentioned entities that actually exist. For the
+	general notion of hallucination in text generation see~\cite{ji_survey_2023}. The two quantities
+	differ in what they report: the Existence Ratio is a per-function proportion computed inside the
+	verifier, while the Hallucination Rate counts the hallucination errors it raised.
+
+	\item \textbf{Input and pair type}: \textbf{[AST vs Doc]}. The generated Doxygen block and the set
+	$\Sigma$ of valid symbols of the project (functions, structs, enums and their constants, macros,
+	typedefs, collected from the whole codebase), plus a short list of standard-library functions
+	($\Sigma_{\mathrm{std}}$, e.g.\ \texttt{malloc}, \texttt{memcpy}). Entities are detected by pattern
+	matching, not by an LLM as in~\cite{yang_docagent_2025}.
+
+	\item \textbf{Formulation and processing}: Let $M(f)$ be the set of entities mentioned in
+	$d_f^{\mathrm{gen}}$, either as a target of an \texttt{@see} tag or as a call-like reference
+	\texttt{name()}, excluding language keywords (\texttt{if}, \texttt{for}, \texttt{sizeof}, \ldots).
+	An entity $e$ is considered existing if $e\in\Sigma\cup\Sigma_{\mathrm{std}}$ or if $e$ is a
+	substring of some symbol in $\Sigma$. Then
+	\begin{equation}
+		\mathrm{ER}(f) = \frac{|\{e\in M(f) : e \text{ exists}\}|}{|M(f)|},
+		\qquad \mathrm{ER}(f)=1 \text{ if } M(f)=\emptyset .
+		\label{eq:existence_ratio}
+	\end{equation}
+	Besides the entities in $M(f)$, the verifier also checks that uppercase symbols returned in
+	\texttt{@return} (enum values, constants) exist in $\Sigma$ or in a whitelist of standard tokens.
+	Let $h(f)$ be the number of verifier errors that report a non-existing entity or return symbol. The
+	Hallucination Rate is
+	\begin{equation}
+		\mathrm{HR}(f) = \min\!\left(100,\ 100\cdot
+		\frac{h(f)}{|P_{\mathrm{doc}}| + \max(1,|R_{\mathrm{doc}}|)}\right)\%,
+		\label{eq:hallucination_rate}
+	\end{equation}
+	where $|P_{\mathrm{doc}}|$ and $|R_{\mathrm{doc}}|$ are the numbers of \texttt{@param} and
+	\texttt{@return} tags. Both scores are averaged over the corpus.
+
+	\item \textbf{Output range and interpretation}: $\mathrm{ER}\in[0,1]$ (higher is better) and
+	$\mathrm{HR}\in[0,100]\%$ (lower is better). $\mathrm{HR}=0$ means that no hallucination was
+	flagged, not that the documentation is free of factual errors.
+
+	\item \textbf{Relation with the Verifier}: $\mathrm{ER}$ is an internal quantity of the verifier
+	(Sec.~\ref{sec:m-verifier_pass_rate}, check~(d)) and is not stored separately. Since $\mathrm{HR}$ is
+	derived from the errors of the \emph{final} documentation, in a pipeline equipped with the
+	regeneration loop it is zero by construction whenever the verifier passes. It is therefore
+	informative mainly for unconstrained baselines, or when measured on the first generation.
+
+	\item \textbf{Limits}: (i) only entities named in two syntactic forms are inspected; claims
+	about the behaviour of real entities are not checked; (ii) the existence test is lenient,
+	because a fabricated name that is a substring of a real symbol, or a whitelisted token, is
+	accepted; (iii) the denominator of $\mathrm{HR}$ is a proxy for the amount of documented items
+	(parameters and returns) and not the number of mentioned entities, so $\mathrm{HR}$ is a
+	normalised count rather than a true proportion; (iv) errors are classified by the text of
+	their message, which ties the metric to the current implementation of the verifier.
+\end{itemize}
+% TODO: mention the first-attempt hallucination rate if the attempts_log of the pipeline is analysed.
 
 % -----------------------------------------------------------------------------
-\section{Level II: Software-quality metrics}
+\section{Level II: Software Quality Metrics}
 \label{sec:metrics-level2}
-% Metrics designed in this thesis; they have no direct counterpart in the literature, so
-% the justification is the quality attributes of documentation and the DocAgent axes.
-% CITE (whole level): rai_review_2022 [Paper/]  (accuracy, completeness, ... of documentation)
-% CITE (whole level): yang_docagent_2025 [Paper/]  (Helpfulness axis)
+Metrics in this tier assess whether the documentation gives a developer what is needed to use the
+function correctly, rather than whether it matches a reference text or the AST signature. Quality
+attributes of source code documentation such as accuracy and completeness are discussed
+in~\cite{rai_review_2022}; in the multi-dimensional evaluation of~\cite{yang_docagent_2025},
+completeness is checked by deterministic rules that derive the required sections from the code (for
+instance the presence of parameters, return statements and raise statements), while helpfulness,
+that is guidance on usage, constraints and edge cases, is assessed by an LLM judge. The metrics
+below are deterministic proxies for these aspects, designed for C/C++ documentation in Doxygen
+format.
+
+Unlike Level I, the oracle is not the AST but lexical patterns searched in the source code and in
+the documentation text. They are therefore cheaper and fully reproducible, but weaker: they
+indicate whether a topic is addressed, not whether it is addressed correctly. The Actionability
+Score, the Error Documentation Rate and the Edge Case Coverage are designed in this work and have no
+direct counterpart in the literature; the weights and keyword lists are heuristic choices. The
+Concept Checklist Score is the exception to the reference-free character of the tier, since it
+compares the generated text with the reference documentation, and it is placed here because it
+checks software concepts rather than textual overlap.
 
 \subsection{Actionability Score}
 \label{sec:m-actionability}
-% Weighted sum of four binary/continuous signals:
-% \[ \mathrm{AS} = 0.35\,S_{\mathrm{dir}} + 0.20\,S_{\mathrm{brief}} + 0.25\,S_{\mathrm{ret}} + 0.20\,S_{\mathrm{mem}} \]
-% directionality of parameters ([in]/[out]/[in,out]), quality of the brief, return clause,
-% memory-safety clauses (ownership, \texttt{@pre}, \texttt{@warning}).
-% Inputs: [Doc (+AST)]. Range: [0,1]. Limit: weights are heuristic -> justify with ablation.
-% CITE: yang_docagent_2025 [Paper/]  (Helpfulness)
-% CITE: rai_review_2022 [Paper/]
-% CITE: khan_automatic_2023 [Paper/]  (structured docstring templates with @param/@return)
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Estimates whether a developer finds in the documentation the
+	minimum information to call the function correctly: the direction of the parameters, a clear
+	summary, a described return value and the preconditions or safety notes. It is a deterministic
+	proxy for the usage guidance and parameter utility that~\cite{yang_docagent_2025} assess with an
+	LLM judge, and for the completeness attribute discussed in~\cite{rai_review_2022}.
+
+	\item \textbf{Input and pair type}: \textbf{[Doc (+AST)]}. The documentation parsed into its
+	Doxygen components (\texttt{@brief}, details, \texttt{@param}, \texttt{@return}, \texttt{@pre},
+		\texttt{@warning}), the list $P_{\mathrm{AST}}$ of the formal parameters and the static return
+		type $T_{\mathrm{ret}}$ from the AST. No reference text is needed.
+
+	\item \textbf{Formulation and processing}: The score is a weighted sum of four components
+	\begin{equation}
+		\mathrm{AS}(f) = 0.35\,S_{\mathrm{dir}} + 0.20\,S_{\mathrm{brief}}
+		+ 0.25\,S_{\mathrm{ret}} + 0.20\,S_{\mathrm{safe}}
+		\label{eq:actionability}
+	\end{equation}
+	with the following definitions, where $L(\cdot)$ is the length in characters.
+	\begin{itemize}
+		\item $S_{\mathrm{dir}}$: equal to $1$ if $f$ has no formal parameters; otherwise
+		$\min\bigl(1,\ n_{\mathrm{dir}}/|P_{\mathrm{AST}}|\bigr)$, where $n_{\mathrm{dir}}$ is the number
+		of \texttt{@param} tags carrying an explicit direction qualifier (\texttt{[in]},
+		\texttt{[out]} or \texttt{[in,out]}). A tag without qualifier does not count.
+		\item $S_{\mathrm{brief}}$: $1$ if $L(\texttt{@brief})\ge 15$, $0.5$ if the brief is
+		non-empty but shorter, $0$ otherwise.
+		\item $S_{\mathrm{ret}}$: depends on $T_{\mathrm{ret}}$, with an empty type treated as
+		\texttt{void} as in the Return Contract Match (Sec.~\ref{sec:m-return_match}). If $f$ is
+		\texttt{void}: $1$ if there is no \texttt{@return}, $0$ otherwise. If $f$ is not
+		\texttt{void}: $1$ if the \texttt{@return} text has at least $10$ characters, $0.6$ if it is
+		shorter, $0$ if the tag is missing.
+		\item $S_{\mathrm{safe}}$: $1$ if the documentation contains a \texttt{@pre} or a
+		\texttt{@warning}, or the details contain one of the words \emph{must}, \emph{ensure},
+		\emph{caller}, \emph{ownership}, \emph{valid}; $0.25$ otherwise.
+	\end{itemize}
+	The corpus score is the mean over functions.
+
+	\item \textbf{Output range and interpretation}: $[0,1]$; the minimum attainable value for a
+	function with parameters is $0.05$ because of the baseline of $S_{\mathrm{safe}}$. Higher values
+	mean that more of the four kinds of information are present.
+
+	\item \textbf{Limits}: (i) weights and thresholds are heuristic and have no empirical calibration;
+	(ii) all components test the presence of content, not its correctness; (iii) $S_{\mathrm{dir}}$
+	requires explicit direction qualifiers, so documentation that describes the parameters without
+	them scores $0$ on this component; (iv) when applied to documentation that does not follow the
+	Doxygen format, the whole text is read as the brief, which penalises the missing tags and makes
+	the score format dependent.
+\end{itemize}
 
 \subsection{Error Documentation Rate}
 \label{sec:m-edr}
-% Share of error branches present in the source (early returns, error codes, NULL returns)
-% that are described in the documentation.
-% Inputs: [Code/AST vs Doc]. Range: [0,100]\%.
-% CITE: rai_review_2022 [Paper/]  (completeness)
-% CITE: yang_docagent_2025 [Paper/]
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Checks whether the documentation tells the caller that the
+	function can fail, when the source code contains a failure path. The idea follows the principle
+	that the sections a docstring must contain depend on what the code does, for instance on the
+	presence of raise statements in the completeness checks of~\cite{yang_docagent_2025}, and the
+	completeness attribute discussed in~\cite{rai_review_2022}. In C/C++ errors are usually signalled
+	through return values, so the check is based on return patterns.
+
+	\item \textbf{Input and pair type}: \textbf{[Code vs Doc]}. The source code $c_f$ and the text of
+	the \texttt{@return} clauses together with the details of $d_f^{\mathrm{gen}}$.
+
+	\item \textbf{Formulation and processing}: Let $\mathrm{err}(f)=1$ if $c_f$ matches at least one
+	error-return pattern among \texttt{return NULL}, \texttt{return nullptr}, \texttt{return 0},
+	\texttt{return -1}, \texttt{return false}, and \texttt{return} followed by a constant ending in
+	\texttt{ERROR}, \texttt{ERR}, \texttt{FAIL} or \texttt{INVALID}. Let $\mathrm{doc}(f)=1$ if the
+	documentation text contains a failure keyword (\emph{null}, \emph{error}, \emph{fail},
+	\emph{failure}, \emph{invalid}, \emph{false if}, \emph{-1}). Let $\mathcal{F}_{\mathrm{err}}$ be the
+	functions with $\mathrm{err}(f)=1$. Then
+	\begin{equation}
+		\mathrm{EDR} = \frac{1}{|\mathcal{F}_{\mathrm{err}}|}
+		\sum_{f\in\mathcal{F}_{\mathrm{err}}} \mathrm{doc}(f)\times 100\%
+		\label{eq:edr}
+	\end{equation}
+	Functions without a failure path are excluded: otherwise they would count as trivially
+	compliant and inflate the average.
+
+	\item \textbf{Output range and interpretation}: $[0\%,100\%]$. A value of $100\%$ means that every
+	function with a failure path mentions failure in its return clause or details.
+
+	\item \textbf{Limits}: (i) the check is binary per function, so it does not tell how many of the
+	failure branches are documented; (ii) \texttt{return 0} is also the usual success value in C, so
+	it can generate false positives in the detection of error branches; (iii) the keywords are
+	generic, and a documentation mentioning \emph{null} for another reason is counted as compliant;
+	(iv) the failure path is searched with regular expressions on the text of the code, not on the
+	control flow graph.
+\end{itemize}
 
 \subsection{Edge Case Coverage}
 \label{sec:m-ecc}
-% Coverage of the guards found in the code (null, zero/negative, empty/boundary)
-% by the corresponding statements in the documentation.
-% Inputs: [Code/AST vs Doc]. Range: [0,100]\%.
-% CITE: rai_review_2022 [Paper/]
-% CITE: claessen_quickcheck_2000 [added]  (boundary values motivate property-based testing, see \ref{sec:m-roundtrip})
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Measures whether the documentation mentions the kinds of
+	boundary conditions that the code explicitly guards against: NULL pointers, zero or negative
+	values, and empty strings or buffers. It is a proxy for the descriptive depth of the
+	documentation, which in~\cite{yang_docagent_2025} includes the mention of relevant scenarios and
+	edge cases.
+
+	\item \textbf{Input and pair type}: \textbf{[Code vs Doc]}. The source code $c_f$ and the whole
+	Doxygen block of $d_f^{\mathrm{gen}}$.
+
+	\item \textbf{Formulation and processing}: Let $G(f)\subseteq\{\mathrm{null},\ \mathrm{zero},\
+	\mathrm{empty}\}$ be the guard categories detected in $c_f$ by pattern matching:
+	\emph{null} for \texttt{== NULL}, \texttt{!ptr} or any occurrence of \texttt{NULL};
+	\emph{zero} for \texttt{<= 0}, \texttt{< 0} or \texttt{== 0}; \emph{empty} for the terminator
+	\texttt{\textbackslash 0}, the word \emph{empty} or \texttt{len == 0}. A category is covered if
+	the documentation contains a corresponding term (for example \emph{null}/\emph{nullptr},
+	\emph{zero}/\emph{negative}, \emph{empty}/\emph{boundary}/\emph{null-terminated}). With
+	$C(f)\subseteq G(f)$ the covered categories,
+	\begin{equation}
+		\mathrm{ECC}(f) = \frac{|C(f)|}{|G(f)|}, \qquad
+		\mathrm{ECC} = \frac{1}{|\mathcal{F}_{G}|}\sum_{f\in\mathcal{F}_{G}} \mathrm{ECC}(f)
+		\label{eq:ecc}
+	\end{equation}
+	where $\mathcal{F}_{G}$ is the set of functions with $G(f)\neq\emptyset$. As for the EDR, functions
+	without guards are excluded from the average.
+
+	\item \textbf{Output range and interpretation}: $[0,1]$ per function, reported as a percentage
+	on average. A higher value means that more of the guarded conditions are mentioned.
+
+	\item \textbf{Limits}: (i) the coverage is computed over three coarse categories and not over
+	individual guards; (ii) detection in the code is permissive: \texttt{!x} matches any logical
+	negation and \texttt{NULL} matches any occurrence of the word, so $G(f)$ can contain categories
+	for which no real guard exists; (iii) the matching in the documentation is lexical, and for the
+	zero category the token \emph{0} matches any text containing that digit; (iv) it does not verify
+	that the documented behaviour on the edge case is the correct one.
+\end{itemize}
 
 \subsection{Concept Checklist Score}
 \label{sec:m-checklist}
-% Share of critical facts (ownership, bounds, error behaviour, side effects) extracted from the
-% code that are preserved by the documentation.
-% Inputs: [Code facts vs Doc]. Range: [0,1].
-% CITE: hoang_codewiki_2026 [Paper/]  (rubric-based evaluation derived from reference material)
-% CITE: patel_assetopsbench_2026 [Paper/]  (rubric / characteristic form as soft ground truth)
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Checks whether the generated description preserves the
+	technical concepts that the reference documentation considers relevant, independently of the
+	words used. The idea of deriving the requirements from the reference documentation and then
+	checking them on the generated text is analogous to the rubrics generated from official
+	documentation in~\cite{hoang_codewiki_2026}, and to the characteristic form used as soft ground
+	truth in~\cite{patel_assetopsbench_2026}. Here the checklist is a fixed, deterministic list.
+
+	\item \textbf{Input and pair type}: \textbf{[Doc vs Doc]}. The reference documentation
+	$d_f^{\mathrm{ref}}$ and the generated description (summary and details, without the parameter and
+	return tags). It is the only metric of this tier that needs a reference.
+
+	\item \textbf{Formulation and processing}: Five concept classes $K$ are defined, each by a list of
+	keyword patterns: \emph{ownership and memory} (allocate, free, delete, ownership, leak, heap),
+	\emph{null safety} (null, nullptr, null-terminated, valid pointer), \emph{error contract} (error,
+	fail, success, status, return code), \emph{mutation and constness} (modify, mutate, const,
+	read-only, in-place, append, insert) and \emph{bounds and range} (bound, range, limit, capacity,
+	size, length, overflow). Let $K_{\mathrm{ref}}\subseteq K$ be the classes with at least one match in
+	the reference, and $K_{\mathrm{gen}}\subseteq K_{\mathrm{ref}}$ those that also have a match in the
+	generated text. Then
+	\begin{equation}
+		\mathrm{CC}(f) = \frac{|K_{\mathrm{gen}}|}{|K_{\mathrm{ref}}|},
+		\qquad \mathrm{CC}(f)=1 \text{ if } K_{\mathrm{ref}}=\emptyset .
+		\label{eq:checklist}
+	\end{equation}
+	The corpus score is the mean over functions.
+
+	\item \textbf{Output range and interpretation}: $[0,1]$. A value of $1$ means that every concept
+	class present in the reference is also present in the generated text. The metric is recall
+	oriented: concepts that appear only in the generated text are not penalised.
+
+	\item \textbf{Limits}: (i) the matching is lexical, so a concept expressed with other words is
+	missed and a keyword used in another sense is counted; (ii) some keywords are very generic (for
+	example \emph{code}, \emph{size}); (iii) the patterns are in English; (iv) when the reference
+	contains none of the concepts the score is $1$ by convention, which does not mean that the
+	generated text is accurate; (v) only the presence of a concept is checked, not whether the
+	statement about it is true.
+\end{itemize}
 
 % -----------------------------------------------------------------------------
 \section{Level III: Semantic and NLP metrics}
 \label{sec:metrics-level3}
+Metrics in this tier compare two texts, normally the generated documentation $d_f^{\mathrm{gen}}$
+and the reference $d_f^{\mathrm{ref}}$, and therefore need a reference. They are of two kinds: lexical
+metrics, which count the words and word sequences that the two texts share, and embedding-based
+metrics, which compare vectors computed by pre-trained neural networks. For each metric this section
+states how the score is computed, what the underlying resource or model was trained on, what kind of
+text it works on, and how it is used in this project. In the benchmark all of them are applied to the
+documentation, that is to doc vs doc pairs. In the validation studies of Chapter~\ref{ch:validation}
+they are also applied to controlled pairs of code and of intermediate representations, to test how
+they behave outside their natural domain. The LLM-as-a-judge evaluation, which is also reference
+optional, is described at the end of the section.
 % Reference-based metrics: compare $d_{\mathrm{gen}}$ with $d_{\mathrm{ref}}$.
 % CITE (whole level): zhang_survey_2022, zhu_deep_2024 [Paper/]  (BLEU/ROUGE/METEOR as standard in code summarization)
 % CITE (whole level): wu_can_2024 [Paper/]  (compares BLEU/ROUGE/METEOR/BERTScore with an LLM evaluator for code summaries)
 
-\subsection{Lexical metrics: BLEU, ROUGE-L, TF-IDF cosine}
+\subsection{Lexical Metrics}
 \label{sec:m-lexical}
-% BLEU: n-gram precision with brevity penalty. ROUGE-L: longest common subsequence.
-% TF-IDF cosine: bag-of-words vectors weighted by term specificity.
-% Inputs: [Doc vs Doc]. Range: [0,1]. Limit: no semantics, fail on paraphrases.
-% CITE: papineni_bleu_2002, lin_rouge_2004 [Paper/ bib]
-% CITE: sparckjones_statistical_1972 [added]  (TF-IDF)
-% CITE: zhu_deep_2024 [Paper/]  (TF-IDF/BM25 in IR-based code summarization)
-% CITE: hoang_codewiki_2026 [Paper/]  (limits of BLEU/ROUGE for documentation)
+Lexical metrics compare the surface form of the generated documentation $d_f^{\mathrm{gen}}$ with
+the reference $d_f^{\mathrm{ref}}$, counting shared words or word sequences. They are the standard
+choice in code summarization~\cite{zhang_survey_2022, zhu_deep_2024, wu_can_2024}, but they are
+known to miss aspects of documentation quality~\cite{hoang_codewiki_2026}. ROUGE-L and the
+term-frequency cosine share the same preprocessing: lowercasing, word tokens made of letters, digits and
+underscores (identifiers are kept whole), removal of a short list of stopwords and of
+single-character tokens. The text of the generated documentation that is compared with the
+reference is the concatenation of the summary, the \texttt{@brief} and the details, so the
+structured tags (\texttt{@param}, \texttt{@return}, \ldots) are excluded.
 
-\subsection{METEOR}
-\label{sec:m-meteor}
-% Unigram alignment with exact, stem and WordNet-synonym matches and a fragmentation penalty.
-% Inputs: [Doc vs Doc]. Range: [0,1].
-% CITE: banerjee_meteor_2005 [bib]
-% CITE: wu_can_2024, xu_prompt_2024, geng_large_2023 [Paper/]  (METEOR used for code summaries)
+BLEU~\cite{papineni_bleu_2002}, the best-known metric of this family, is deliberately not used as a
+score. It is defined on corpora of sentences, and on documentation made of one or two sentences
+compared with a single reference the higher-order $n$-grams rarely match, so the score is zero or
+depends on the smoothing chosen. ROUGE-L, the term-frequency cosine and METEOR already cover the
+lexical aspect. Only the brevity penalty of BLEU is retained, as a length diagnostic
+(Sec.~\ref{subsubsec:length_brevity}).
 
-\subsection{Sentence-BERT cosine similarity}
-\label{sec:m-sbert}
-% Cosine similarity between mean-pooled sentence embeddings (all-MiniLM-L6-v2, 384 dim.).
-% \[ \mathrm{sim}(d_{\mathrm{gen}},d_{\mathrm{ref}}) = \frac{\mathbf{e}_{\mathrm{gen}}\cdot\mathbf{e}_{\mathrm{ref}}}{\|\mathbf{e}_{\mathrm{gen}}\|\,\|\mathbf{e}_{\mathrm{ref}}\|} \]
-% Inputs: [Doc vs Doc]. Limit: 256-token window; blind to negations.
-% CITE: reimers_sentence-bert_2019 [bib]
-% CITE: zhu_reposummary_2025 [Paper/]  (embeddings to compare/cluster repository summaries)
+\subsubsection{ROUGE-L}
+\label{subsubsec:rouge_l}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Measures how much of the word order of the reference is
+	preserved in the generated text, through the longest common subsequence (LCS). Unlike a plain
+	word-overlap count it rewards words that appear in the same relative order, but it tolerates
+	insertions between them, so a longer text can still match the reference. The metric is the
+	LCS-based variant of ROUGE~\cite{lin_rouge_2004}, which is used as a baseline for code
+	summaries in~\cite{wu_can_2024}.
 
-\subsection{BERTScore and CodeBERTScore}
-\label{sec:m-bertscore}
-% Greedy token-to-token matching of contextual embeddings with IDF weights -> P, R, F1.
-% CodeBERTScore uses a code-specific encoder (microsoft/codebert-base).
-% Inputs: [Doc vs Doc] (BERTScore), [Doc vs Doc / Code] (CodeBERTScore). Limit: 512 tokens,
-% score compression, insensitive to polarity.
-% CITE: zhang_bertscore_2020 [bib]
-% CITE: feng_codebert_2020 [Paper/]  (encoder underlying CodeBERTScore)
-% CITE: guo_graphcodebert_2021 [Paper/]  (data-flow-aware variant, optional)
-% CITE: zhou_codebertscore_2023 [added]  (CodeBERTScore definition; also cited in zhang_deep_2024 survey)
-% CITE: wu_can_2024 [Paper/]  (BERTScore on code summarization)
+	\item \textbf{Input and pair type}: \textbf{[Doc vs Doc]}. The token sequences
+	$X=(x_1,\dots,x_m)$ of $d_f^{\mathrm{ref}}$ and $Y=(y_1,\dots,y_n)$ of the generated text,
+	obtained with the preprocessing described above.
 
-\subsection{BLEURT}
-\label{sec:m-bleurt}
-% BERT fine-tuned on human ratings to regress a quality score for a candidate vs a reference.
-% Inputs: [Doc vs Doc]. Limit: trained on general text, not on technical documentation.
-% CITE: sellam_bleurt_2020 [bib]
+	\item \textbf{Formulation and processing}: Let $\mathrm{LCS}(X,Y)$ be the length of the longest
+	common subsequence of $X$ and $Y$, computed by dynamic programming over the whole text taken as a
+	single sequence. Then
+	\begin{equation}
+		R_{\mathrm{lcs}} = \frac{\mathrm{LCS}(X,Y)}{m}, \qquad
+		P_{\mathrm{lcs}} = \frac{\mathrm{LCS}(X,Y)}{n}, \qquad
+		\text{ROUGE-L} = \frac{2\,P_{\mathrm{lcs}}\,R_{\mathrm{lcs}}}{P_{\mathrm{lcs}}+R_{\mathrm{lcs}}}
+		\label{eq:rouge_l}
+	\end{equation}
+	The score is $0$ if one of the two sequences is empty or if they share no token. It is the
+	balanced F-measure, and the corpus value is the mean over functions.
 
-\subsection{Fr\'echet Embedding Distance}
-\label{sec:m-fid}
-% Distance between the Gaussian fits of the embedding sets of generated and reference
-% documentation (distribution level, not per function):
-% \[ d^2 = \|\mu_1-\mu_2\|^2 + \mathrm{tr}\bigl(\Sigma_1+\Sigma_2-2(\Sigma_1\Sigma_2)^{1/2}\bigr) \]
-% CITE: dowson_frechet_1982 [bib]  (closed form of the Fr\'echet distance)
-% CITE: heusel_gans_2017 [added]  (FID: use on embedding distributions)
+	\item \textbf{Output range and interpretation}: $[0,1]$. A value of $1$ means that the two
+	token sequences are identical after preprocessing.
+
+	\item \textbf{Limits}: (i) the match is exact on words, so a paraphrase (``verifies'' instead of
+	``checks'') counts as a miss; (ii) the F-measure is symmetric, so a generated text much longer
+	than a short reference has a low $P_{\mathrm{lcs}}$ and therefore a low score even when it
+	contains the reference content, which penalises detailed documentation; (iii) it does not
+	capture meaning: changing a single word that inverts the contract (for example \emph{not}) leaves
+	the score almost unchanged; (iv) stopword removal and the word-level tokenisation ignore
+	punctuation and the splitting of identifiers.
+\end{itemize}
+
+\subsubsection{Term-Frequency Cosine Similarity (TF-IDF)}
+\label{subsubsec:tf_cosine}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Compares the two texts as bags of words: it measures how
+	similar the distribution of the words used is, regardless of their order. Cosine similarity over
+	bag-of-words vectors is the approach of IR-based code summarization, where the most similar
+	training example is retrieved~\cite{zhu_deep_2024}. In the code and in some figures of this work
+	the metric is named TF-IDF cosine; however, only the term-frequency part is applied, as explained
+	below.
+
+	\item \textbf{Input and pair type}: \textbf{[Doc vs Doc]}. The token multisets of
+	$d_f^{\mathrm{ref}}$ and of the generated text, after preprocessing.
+
+	\item \textbf{Formulation and processing}: Let $V$ be the union of the tokens of the two texts
+	and let $\mathbf{t}^{\mathrm{ref}},\mathbf{t}^{\mathrm{gen}}\in\mathbb{N}^{|V|}$ contain the raw
+	number of occurrences of each token in the two texts. The score is
+	\begin{equation}
+		\mathrm{cos}(d_f^{\mathrm{ref}},d_f^{\mathrm{gen}}) =
+		\frac{\mathbf{t}^{\mathrm{ref}}\cdot\mathbf{t}^{\mathrm{gen}}}
+		     {\|\mathbf{t}^{\mathrm{ref}}\|\,\|\mathbf{t}^{\mathrm{gen}}\|}
+		\label{eq:tf_cosine}
+	\end{equation}
+	and it is $0$ if one of the texts is empty. No inverse document frequency is applied: the
+	pairwise setting involves only two texts and there is no collection from which to estimate how
+	specific a term is. In classic TF-IDF weighting~\cite{sparckjones_statistical_1972} the counts
+	would be multiplied by this specificity factor. The corpus value is the mean over functions.
+
+	\item \textbf{Output range and interpretation}: $[0,1]$, since the counts are non-negative. A
+	value of $1$ means that the two texts use the same words with proportional frequencies.
+
+	\item \textbf{Limits}: (i) it is insensitive to word order, so it cannot distinguish two texts
+	with opposite meaning but the same words; (ii) without inverse document frequency, frequent
+	generic words (for example \emph{function}, \emph{pointer}) weigh as much as the rare technical
+	ones; (iii) it is exact on words, so it does not recognise synonyms; (iv) like ROUGE-L, it
+	rewards the reuse of the words of the reference and not the correctness of what is said.
+\end{itemize}
+
+\subsubsection{METEOR}
+\label{subsubsec:meteor}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Measures the agreement between two texts at the level of
+	single words, like the metrics above, but it matches words also when they are not identical: a
+	word of the generated text counts as matching a word of the reference if the two are equal, share
+	the same stem or are synonyms. It also penalises a match that is scattered in the text, so that
+	words in the right order are preferred to the same words in a different order. It was proposed
+	for machine translation~\cite{banerjee_meteor_2005} and is one of the standard metrics of code
+	summarization~\cite{wu_can_2024, xu_prompt_2024, geng_large_2023}.
+
+	\item \textbf{Input and pair type and what it works on}: \textbf{[Doc vs Doc]}. A reference text
+	and a candidate text in English, lowercased and split into tokens with the word tokenizer of NLTK
+	(punctuation becomes separate tokens; there is no stopword removal). It is designed for natural
+	language, and it is applied only to texts, never to code, in the benchmark.
+
+	\item \textbf{Training and resources}: The metric is not learned. It relies on two fixed
+	linguistic resources: the Porter stemming algorithm, which is rule based, and WordNet, a
+	lexical database of English built by hand, used to find synonyms. Its few parameters, listed
+	below, are those of the original proposal, which were chosen so that the score correlates with
+	human judgments of translation quality.
+
+	\item \textbf{Formulation and processing}: The words of the candidate are aligned one to one with
+	the words of the reference in three successive stages, exact match, match of stems and match of
+	synonyms, so that each word is used at most once. Let $m$ be the number of aligned words, $h$ and
+	$r$ the lengths of the candidate and of the reference. Then
+	\begin{equation}
+		P=\frac{m}{h},\quad R=\frac{m}{r},\quad
+		F_{\mathrm{mean}}=\frac{P\,R}{\alpha P+(1-\alpha)R},\quad
+		\mathrm{pen}=\gamma\left(\frac{c}{m}\right)^{\beta},\quad
+		\text{METEOR}=F_{\mathrm{mean}}\,(1-\mathrm{pen})
+		\label{eq:meteor}
+	\end{equation}
+	where $c$ is the number of chunks, that is of maximal runs of aligned words that are adjacent and
+	in the same order in both texts, and $\alpha=0.9$, $\beta=3$, $\gamma=0.5$ (the default values of
+	the NLTK implementation). With $\alpha=0.9$ the recall counts nine times more than the precision.
+	The score is $0$ if there are no aligned words. The corpus value is the mean over functions.
+
+	\item \textbf{Output range and interpretation}: $[0,1]$. A value of $1$ is attained only by
+	two identical texts in which every word is matched exactly and in the same order.
+
+	\item \textbf{Use in this project}: In the benchmark and in the comparison with CodeWiki it is
+	computed between the reference documentation and the description generated for the same
+	function (doc vs doc). In the validation studies of Chapter~\ref{ch:validation} it is computed
+	between the members of the controlled pairs, which include documentation, code and intermediate
+	representations (Sec.~\ref{sec:m-embedding}).
+
+	\item \textbf{Limits}: (i) the synonymy comes from a general-purpose lexicon, so technical
+	synonyms (for example \emph{release} and \emph{free}) are not recognised and, conversely, general
+	synonyms may be matched in the wrong sense; (ii) the recall-heavy weighting favours long
+	candidates, which is relevant here because generated documentation is generally longer than the
+	reference; (iii) it does not understand negation or the direction of a relation, so a text with
+	the opposite meaning but the same words obtains a high score; (iv) it needs the NLTK tokenizer and
+	WordNet resources, and the implementation of this project replaces the score with the average of
+	the SBERT similarity and of ROUGE-L when they cannot be loaded.
+\end{itemize}
+
+\subsubsection{Length Ratio and Brevity Penalty}
+\label{subsubsec:length_brevity}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Checks whether the generated documentation has a length
+	comparable to the reference. The brevity penalty is the component of BLEU~\cite{papineni_bleu_2002}
+	that penalises candidates shorter than the reference, so that a very short text cannot obtain a
+	high lexical precision. Here it is reported on its own, as a diagnostic that accompanies the
+	lexical scores.
+
+	\item \textbf{Input and pair type}: \textbf{[Doc vs Doc]}. The number of words of the generated
+	text, $c$, and of the reference, $r$, counted on whitespace-separated words without stopword
+	removal, with a minimum of $1$ to avoid divisions by zero.
+
+	\item \textbf{Formulation and processing}:
+	\begin{equation}
+		\mathrm{LR} = \frac{c}{r}, \qquad
+		\mathrm{BP} =
+		\begin{cases}
+			1 & \text{if } c > r \\
+			e^{\,1 - r/c} & \text{if } c \le r
+		\end{cases}
+		\label{eq:brevity_penalty}
+	\end{equation}
+	The corpus values are the means over functions.
+
+	\item \textbf{Output range and interpretation}: $\mathrm{LR}\in(0,\infty)$, where values close to
+	$1$ indicate similar lengths; $\mathrm{BP}\in(0,1]$, with $\mathrm{BP}=1$ when the generated text
+	is longer than the reference.
+
+	\item \textbf{Limits}: (i) the length of the reference is a matter of authors' style, from
+	one-line comments to long descriptions, so a deviation says little about quality; (ii) the
+	brevity penalty ignores texts that are too long, which is why the length ratio is reported
+	alongside it; (iii) when generated texts are generally longer than the references, as for
+	structured documentation compared with short original comments, $\mathrm{BP}$ is almost always
+	$1$ and carries little information.
+\end{itemize}
+% CITE (whole level): zhang_survey_2022, zhu_deep_2024 [Paper/]  (BLEU/ROUGE/METEOR as standard in code summarization)
+
+\subsection{Embedding-Based Metrics}
+\label{sec:m-embedding}
+Embedding-based metrics map the two texts to vectors computed by a neural network and compare the
+vectors, so that texts that use different words can still be close if their meaning is similar. They
+need a pre-trained model, and what the metric can recognise depends on the data on which the model was
+trained. All the models used here are run locally on CPU, without calls to external services, and
+have a limit on the length of the input: the part of a text beyond the limit is cut and is invisible
+to the metric. The embedding-based metrics are applied in two ways in this project. In the
+\emph{benchmark} and in the comparison with CodeWiki, they compare the reference documentation with
+the generated description of the same function (doc vs doc). In the \emph{validation studies}
+(Chapter~\ref{ch:validation}) they compare the members of controlled pairs, grouped in six
+representations: C vs C, Python vs Python, C vs Python, documentation vs documentation, Mermaid
+diagrams and pseudocode, so that their behaviour can be analysed also on code and on structured
+text.
+
+\subsubsection{Sentence-BERT Cosine Similarity}
+\label{subsubsec:sbert}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Compares the two texts as wholes: each text is mapped to a
+	single vector and the similarity is the angle between the two vectors. It recognises paraphrases,
+	because texts with the same meaning are mapped close to each other even if they share no word.
+	The architecture was introduced in~\cite{reimers_sentence-bert_2019}, where BERT is trained in a
+	siamese setting to produce sentence embeddings that can be compared with the cosine.
+
+	\item \textbf{Input and pair type and what it works on}: \textbf{[Doc vs Doc]} in the
+	benchmark. The model works on English text; it is not designed for code, and it also accepts
+	code and other formats in the validation studies, where it is applied as a general text encoder.
+	Each input is lowercased and cut at $256$ word pieces.
+
+	\item \textbf{Training}: The checkpoint is \texttt{all-MiniLM-L6-v2}. It starts from a small
+	BERT-like network with $6$ layers and $384$-dimensional hidden states, pre-trained on text with
+	a masked-language objective, and it was then fine-tuned with a contrastive objective on more than
+	one billion pairs of related sentences collected from the web: question and answer pairs, titles
+	and bodies of forum posts, citation pairs of scientific papers, and about $1.1$ million pairs
+	of code and description from CodeSearchNet. During fine-tuning the model learns to give a
+	higher similarity to the true partner of a sentence than to the other sentences of the batch.
+	(Information on the checkpoint taken from its model card.)
+
+	\item \textbf{Formulation and processing}: The network produces one vector per token; they are
+	averaged (mean pooling) and normalised to unit length, giving $\mathbf{e}\in\mathbb{R}^{384}$.
+	The score is
+	\begin{equation}
+		\mathrm{SBERT}(d^{\mathrm{ref}},d^{\mathrm{gen}}) =
+		\max\Bigl(0,\ \frac{\mathbf{e}_{\mathrm{ref}}\cdot\mathbf{e}_{\mathrm{gen}}}
+		{\|\mathbf{e}_{\mathrm{ref}}\|\,\|\mathbf{e}_{\mathrm{gen}}\|}\Bigr)
+		\label{eq:sbert}
+	\end{equation}
+	that is the cosine similarity with negative values set to $0$. The corpus value is the mean over
+	functions.
+
+	\item \textbf{Output range and interpretation}: $[0,1]$, with $1$ for texts with the same
+	direction in the embedding space.
+
+	\item \textbf{Use in this project}: Besides the doc vs doc comparison above, the same model
+	encodes the query and the functions of the corpus in the code retrieval task
+	(Sec.~\ref{sec:m-retrieval}) and the documents in the Fréchet distance below.
+
+	\item \textbf{Limits}: (i) the input is cut at $256$ word pieces, so a long documentation is
+	compared only on its first part; (ii) the averaging of the tokens dilutes small but critical
+	words: a negation changes the vector very little, and two texts of opposite meaning can be
+	very close; (iii) the model was trained mostly on general text, and the code examples it has seen
+	(CodeSearchNet) do not include C or C++; (iv) if the model cannot be loaded, the implementation falls
+	back on the term-frequency cosine of Sec.~\ref{subsubsec:tf_cosine} without warning the user.
+\end{itemize}
+
+\subsubsection{BERTScore}
+\label{subsubsec:bertscore}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Compares the two texts word by word through their
+	contextual embeddings: each token of one text is matched with the most similar token of the
+	other, and the similarities are averaged. Unlike SBERT, it does not compress the text into one
+	vector, so it keeps track of which parts of the text are covered~\cite{zhang_bertscore_2020}.
+
+	\item \textbf{Input and pair type and what it works on}: \textbf{[Doc vs Doc]} in the benchmark.
+	The model is the uncased English BERT (\texttt{bert-base-uncased}), so it works on English text.
+	Each input is cut at $512$ tokens.
+
+	\item \textbf{Training}: BERT is a $12$-layer Transformer pre-trained on English text, namely a
+	collection of books and the English Wikipedia, with two self-supervised tasks: predicting
+	words that were masked in the input and predicting whether two sentences are consecutive~%
+	\cite{devlin_bert_2019}. It has not seen code or technical documentation in a targeted way, and
+	no fine-tuning is applied by the metric.
+
+	\item \textbf{Formulation and processing}: The contextual embeddings of the layer $9$ (the
+	default of the \texttt{bert\_score} package for this model) are normalised, so that the dot
+	product of two token embeddings is their cosine. Let $\mathbf{x}_i$ be the embeddings of the
+	reference tokens and $\mathbf{y}_j$ those of the generated ones. With greedy matching,
+	\begin{equation}
+		R_{\mathrm{BERT}}=\frac{1}{|x|}\sum_{i}\max_{j}\mathbf{x}_i^{\top}\mathbf{y}_j,\qquad
+		P_{\mathrm{BERT}}=\frac{1}{|y|}\sum_{j}\max_{i}\mathbf{x}_i^{\top}\mathbf{y}_j,\qquad
+		F_{\mathrm{BERT}}=\frac{2\,P_{\mathrm{BERT}}\,R_{\mathrm{BERT}}}{P_{\mathrm{BERT}}+R_{\mathrm{BERT}}}
+		\label{eq:bertscore}
+	\end{equation}
+	No inverse-document-frequency weighting and no rescaling with a baseline are applied, and the
+	values are limited to $[0,1]$. The corpus value is the mean of $F_{\mathrm{BERT}}$ over functions.
+
+	\item \textbf{Output range and interpretation}: $[0,1]$. Without baseline rescaling the scores of
+	this model are compressed in a high band, because even unrelated texts have embeddings with
+	positive cosine, so only differences between scores are meaningful.
+
+	\item \textbf{Use in this project}: Doc vs doc in the benchmark and in the comparison with
+	CodeWiki; in the validation studies, on all six representations, as the reference of the
+	general-purpose model against CodeBERTScore. The precision and the recall are reported next to the
+	F-measure, because a verbose generated text lowers the precision and not the recall.
+
+	\item \textbf{Limits}: (i) it is insensitive to polarity and to the direction of relations, as
+	each token finds its best match independently of the rest of the sentence; (ii) the score
+	compression above makes absolute values hard to interpret; (iii) the input is cut at $512$
+	tokens; (iv) if the package cannot run, the implementation falls back on the SBERT similarity
+	without warning.
+\end{itemize}
+
+\subsubsection{CodeBERTScore}
+\label{subsubsec:codebertscore}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Same computation as BERTScore, with an encoder
+	pre-trained on source code. It was proposed to compare generated code with reference code at the
+	level of tokens, using the contextual representations of CodeBERT~\cite{zhou_codebertscore_2023,
+	zhang_deep_2024}. Here it is used also to compare documentation, whose language is close to
+	the natural language paired with code during the training of the model.
+
+	\item \textbf{Input and pair type and what it works on}: \textbf{[Doc vs Doc]} in the benchmark,
+	and code and text in the validation studies. The model, \texttt{microsoft/codebert-base}, accepts
+	natural language and programming language, up to $512$ tokens.
+
+	\item \textbf{Training}: CodeBERT~\cite{feng_codebert_2020} has the architecture of RoBERTa-base
+	($12$ layers, $768$-dimensional hidden states). It was pre-trained on CodeSearchNet, with pairs of
+	a function and its documentation and with code and text without a partner, for six programming
+	languages: Go, Java, JavaScript, PHP, Python and Ruby. The training combined the prediction of
+	masked tokens with the detection of tokens replaced by a generator. C and C++ are \emph{not}
+	among the training languages, which is important for the C/C++ code of this project.
+
+	\item \textbf{Formulation and processing}: Equation~\eqref{eq:bertscore}, with the embeddings of
+	layer $10$. The layer is set explicitly, because the package has no default for this model; no
+	IDF weighting and no rescaling are applied, and the values are limited to $[0,1]$. The corpus
+	value is the mean of the F-measure over functions.
+
+	\item \textbf{Output range and interpretation}: $[0,1]$, compressed like BERTScore.
+
+	\item \textbf{Use in this project}: Doc vs doc in the benchmark; in the validation studies on all
+	the six representations, to test whether an encoder trained on code behaves differently from the
+	general one on code vs code pairs (C vs C, Python vs Python, C vs Python).
+
+	\item \textbf{Limits}: (i) the same limits of BERTScore on negation and polarity; (ii) the model
+	was not trained on C or C++, so for the code of this project its representations are an
+	approximation; (iii) the implementation relies on the general BERTScore package and does not use
+	the language-specific models of the original proposal, so the values are not comparable with
+	those published for CodeBERTScore; (iv) the input is cut at $512$ tokens; (v) if the package
+	cannot run, the implementation falls back on the SBERT similarity without warning.
+\end{itemize}
+
+\subsubsection{Fr\'echet Embedding Distance}
+\label{subsubsec:frechet}
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Compares the two \emph{sets} of documentation as
+	distributions, not function by function: it measures how far the cloud of embeddings of the
+	generated documentation is from the cloud of the reference documentation, in terms of centre
+	and spread. It answers whether the generated documentation is of the same kind and style as
+	the reference, even if each text is different. The distance between Gaussian distributions
+	is due to Dowson and Landau~\cite{dowson_frechet_1982}, and its use on the embeddings of a
+	neural network to compare generated and real data was popularised as the Fr\'echet Inception
+	Distance~\cite{heusel_gans_2017}.
+
+	\item \textbf{Input and pair type and what it works on}: \textbf{[Doc vs Doc]} at the level of the
+	corpus. The $384$-dimensional SBERT embeddings of the reference documentation and of the generated
+	descriptions of all the functions of a benchmark run.
+
+	\item \textbf{Training}: The distance itself is a statistic and is not trained; the embeddings are
+	those of the SBERT model of Sec.~\ref{subsubsec:sbert}, so the metric inherits its training and
+	its input limit.
+
+	\item \textbf{Formulation and processing}: Let $\boldsymbol{\mu}_1,\boldsymbol{\Sigma}_1$ and
+	$\boldsymbol{\mu}_2,\boldsymbol{\Sigma}_2$ be the mean and the covariance of the embeddings of the
+	reference and of the generated texts. Then
+	\begin{equation}
+		d^2=\|\boldsymbol{\mu}_1-\boldsymbol{\mu}_2\|_2^2
+		+\mathrm{tr}\!\left(\boldsymbol{\Sigma}_1+\boldsymbol{\Sigma}_2
+		-2(\boldsymbol{\Sigma}_1\boldsymbol{\Sigma}_2)^{1/2}\right)
+		\label{eq:frechet}
+	\end{equation}
+	The matrix square root is computed numerically; a small negative result due to rounding is set
+	to $0$. The distance is reported once per run, and it is $0$ by convention if the run has fewer
+	than two functions or if the computation fails.
+
+	\item \textbf{Output range and interpretation}: $[0,\infty)$, not normalised, where a lower value
+	means more similar distributions and $0$ means identical mean and covariance. It is meaningful
+	only when comparing runs with the same number of functions.
+
+	\item \textbf{Use in this project}: Only in the report of the benchmark, as one value per run,
+	computed on the documentation of one library. It is not computed for the comparison with CodeWiki
+	and not in the validation studies.
+
+	\item \textbf{Limits}: (i) the covariance of $384$-dimensional vectors is estimated from the few
+	functions of a run, far fewer than the dimension, so the estimate is singular and the value is
+	biased and unstable; (ii) the Gaussian assumption on the embeddings is not verified; (iii) the
+	value $0$ returned in case of failure cannot be told apart from a perfect match; (iv) it measures
+	the closeness of two distributions, not the correctness of any single documentation.
+\end{itemize}
 
 \subsection{LLM-as-a-Judge}
 \label{sec:m-judge}
-% An LLM grades \emph{Faithfulness} (agreement with the code) and \emph{Alignment}
-% (agreement with the reference/intent) on a 1--5 scale using a rubric with a defect taxonomy
-% (DEF-1\ldots DEF-5, ALIGN-1\ldots ALIGN-4). Monte Carlo sampling: 5 runs, $T=0.4$,
-% report mean $\pm$ std. Judge critique is fed back to the Writer (up to 3 iterations).
-% Inputs: [Doc vs Code], [Doc vs Doc]. Limits: cost, self-preference, fluff camouflage.
-% CITE: liu_g-eval_2023 [Paper/]  (CoT + form-filling rubric; probability-weighted scoring)
-% CITE: zhu_judgelm_2025 [Paper/]  (judges, position/format biases, rubric-based scoring)
-% CITE: bai_mt-bench-101_2024 [Paper/]  (fine-grained, multi-dimensional judging)
-% CITE: wu_can_2024 [Paper/]  (LLM evaluators for code summarization -- closest to our setting)
-% CITE: patel_assetopsbench_2026, hoang_codewiki_2026 [Paper/]  (rubric-based LLM-judge in agent / repository documentation benchmarks)
-% CITE: yang_docagent_2025 [Paper/]  (LLM-as-judge for Completeness and Helpfulness)
+\begin{itemize}[leftmargin=*, label=\textbullet]
+	\item \textbf{Objective and meaning}: Uses a language model as an automatic evaluator, to capture
+	what the previous metrics cannot check: whether the text is coherent with what the code does and
+	whether it conveys what the author intended. The use of an LLM as a grader of generated code
+	summaries has been studied in~\cite{wu_can_2024}, and an LLM judge is used to assess completeness
+	and helpfulness of documentation in~\cite{yang_docagent_2025}. Rubric-based judging against
+	reference or official documentation is also adopted in the benchmarks
+	of~\cite{hoang_codewiki_2026, patel_assetopsbench_2026}. The evaluation is split into two separate
+	judgements, each with its own inputs, and the score of a function is the mean of the two. Judging
+	along separate, fine-grained dimensions rather than with a single overall grade follows the
+	approach of~\cite{bai_mt-bench-101_2024}.
+
+	\item \textbf{Input and pair type}: Two requests, with different inputs.
+	\begin{itemize}[leftmargin=*, label=--]
+		\item \emph{Faithfulness}, \textbf{[Code vs Doc]} with the reference as a support: the name and
+		signature of $f$, the source code $c_f$, the reference documentation $d_f^{\mathrm{ref}}$ and the
+		generated documentation $d_f^{\mathrm{gen}}$ (summary and Doxygen block). It checks whether the
+		generated text is correct and consistent with the actual behaviour of the code.
+		\item \emph{Alignment}, \textbf{[Doc vs Doc]}: the name and signature of $f$, $d_f^{\mathrm{ref}}$
+		and $d_f^{\mathrm{gen}}$, without the code. It checks how much of the intent and of the warnings
+		of the original author is captured by the generated text.
+	\end{itemize}
+	The first judgement can therefore penalise a statement that is plausible but contradicted by the
+	code, while the second can penalise a text that is correct but ignores something the author
+	considered important.
+
+	\item \textbf{Formulation and processing}: In both requests the model is asked for a score on a
+	scale from $1$ to $5$ and for a short justification, with the justification written \emph{before}
+	the score and starting from the list of defects found. Asking for the reasoning first follows the
+	chain-of-thought and form-filling design of~\cite{liu_g-eval_2023}. Where~\cite{liu_g-eval_2023}
+	weights the scores by the probabilities of the output tokens, here the expected value is
+	approximated by repeating the request, as described below.
+
+	The rubric is tied to a checklist of defects, so that the grade depends on what is found and not
+	on a general impression. For faithfulness the defects are five: omitted error handling, ambiguous
+	memory ownership, tautological description, wrong parameter direction or return value, and
+	invented behaviour not present in the code. For alignment they are four: a warning of the
+	reference that is missed, a distortion of the intent, a loss of focus caused by generic
+	boilerplate, and a superficial description. They are listed in the prompt with the identifiers
+	$\mathrm{DEF}$-1 to $5$ and $\mathrm{ALIGN}$-1 to $4$. For faithfulness the score is lowered with the number and
+	severity of the defects: $5$ for no defect, $4$ for one minor defect, $3$ for two, $2$ for three or
+	more or for an inverted logic, $1$ for severe hallucinations or a wrong algorithm. For alignment
+	the levels go from $5$ (every point and warning of the author is captured) to $1$ (unrelated or
+	contradictory), passing through $3$ when a critical caveat is omitted.
+
+	Each judgement is repeated $R=5$ times on every function, with temperature $T=0.4$ and nucleus
+	sampling $p=0.95$, and the answer is constrained to be a JSON object. With $s^{A}_{r}$ and
+	$s^{B}_{r}$ the scores of the two judgements at repetition $r$,
+	\begin{equation}
+		\bar{s}^{X}=\frac{1}{R}\sum_{r=1}^{R}s^{X}_{r},
+		\qquad
+		\sigma^{X}=\sqrt{\frac{1}{R}\sum_{r=1}^{R}\bigl(s^{X}_{r}-\bar{s}^{X}\bigr)^{2}},
+		\qquad
+		\mathrm{J}(f)=\frac{\bar{s}^{A}+\bar{s}^{B}}{2},
+		\label{eq:judge}
+	\end{equation}
+	for $X\in\{A,B\}$. The result for each function is reported as $\bar{s}^{X}\pm\sigma^{X}$ for each
+	judgement, together with the combined score $\mathrm{J}(f)$; the corpus score is the mean over
+	functions. The repetition serves to reduce the effect of occasional outliers, such as a single
+	hallucinated defect or an unexpected answer, and the standard deviation shows how stable the
+	judgement is on that function. The temperature is a compromise: with $T=0$ the five answers would
+	be almost identical and the repetition would add no information, while a high temperature would
+	make the single answers erratic and inflate $\sigma^{X}$. The value $0.4$ was chosen to keep the
+	answers consistent while still allowing a limited variability between repetitions; it was not
+	tuned experimentally.
+
+	\item \textbf{Output range and interpretation}: $[1,5]$ for each judgement and for $\mathrm{J}(f)$.
+	A score of $4$ is the baseline for competent documentation, and $5$ is reserved for documentation
+	without any defect. A high faithfulness with a low alignment indicates a text that is correct but
+	incomplete with respect to the author; the opposite indicates a text that reproduces the author's
+	points but contains something that the code does not support. A large $\sigma^{X}$ means that
+	the model is not stable on that function and the mean should be read with caution.
+
+	\item \textbf{Limits}: (i) the judge is itself a language model: the scores depend on the model and
+	on the wording of the prompt, and LLM judges are known to show biases of position, format and
+	verbosity~\cite{zhu_judgelm_2025}; position bias does not arise here because a single text is
+	graded at a time, but the others remain; (ii) the model that generates the documentation and the
+	model that judges it belong to the same family, so a preference for its own style cannot be
+	excluded; (iii) a fluent text can hide a wrong statement, and the controlled tests of
+	Chapter~\ref{ch:validation} study how far the judge is deceived; (iv) the five repetitions share
+	the same prompt and the same model, so they reduce random noise but not a systematic error;
+	(v) each function needs ten calls to the model, which makes the metric very expensive of the
+	benchmark in cost and in time; (vi) the scale is ordinal, and averaging scores of $1$ to $5$
+	treats the distances between levels as equal.
+\end{itemize}
 
 % -----------------------------------------------------------------------------
 \section{Level IV: Downstream and behavioural metrics}
@@ -244,3 +1069,5 @@
 % One-page table: metric | level | input pair | range | cost | expected weakness.
 % The \emph{measured} reliability of each metric goes in Chapter~\ref{ch:validation}.
 % TODO: build the table once the validation chapter is final.
+
+
