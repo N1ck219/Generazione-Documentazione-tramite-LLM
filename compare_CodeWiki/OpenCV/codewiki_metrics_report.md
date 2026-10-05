@@ -35,10 +35,9 @@ Strategie di matching (per menzione): `exact`=8, `namespace_stripped`=4.
 | BERTScore F1 | 8 | 0.6008 | 0.0459 | 0.5473 | 0.7034 |
 | ROUGE-L | 8 | 0.2799 | 0.0928 | 0.0833 | 0.3793 |
 | TF-IDF Cosine | 8 | 0.3961 | 0.1371 | 0.1406 | 0.6140 |
-| METEOR | 8 | 0.4122 | 0.0808 | 0.2758 | 0.5206 |
-| BLEURT Estimate | 8 | 0.4853 | 0.0833 | 0.3588 | 0.5917 |
+| METEOR | 8 | 0.2067 | 0.0784 | 0.0962 | 0.3699 |
 | Semantic Concept Checklist | 8 | 0.5000 | 0.4330 | 0.0000 | 1.0000 |
-| Actionability Score | 8 | 0.2500 | 0.0000 | 0.2500 | 0.2500 |
+| Actionability Score | 8 | 0.2812 | 0.0827 | 0.2500 | 0.5000 |
 | Error Documentation Rate | 0 | N/A | N/A | N/A | N/A |
 | Edge Case Coverage | 2 | 0.5000 | 0.5000 | 0.0000 | 1.0000 |
 | Length Ratio (CodeWiki/GT) | 8 | 0.7712 | 0.3995 | 0.2680 | 1.7040 |
@@ -51,14 +50,14 @@ Strategie di matching (per menzione): `exact`=8, `namespace_stripped`=4.
 
 | Funzione DB | Menzioni CodeWiki | SBERT | ROUGE-L | METEOR | Actionability |
 |-------------|-------------------|-------|---------|--------|---------------|
-| `cvCeil` | cvCeil, fast_math::cvCeil | 0.6619 | 0.3793 | 0.5206 | 0.2500 |
-| `cvFloor` | cvFloor, fast_math::cvFloor | 0.6349 | 0.3667 | 0.5008 | 0.2500 |
-| `fastMalloc` | fastMalloc | 0.6228 | 0.3636 | 0.4932 | 0.2500 |
-| `cvRound` | cvRound, fast_math::cvRound | 0.5624 | 0.2500 | 0.4062 | 0.2500 |
-| `cvIsInf` | cvIsInf | 0.5238 | 0.2667 | 0.3952 | 0.2500 |
-| `saturate_cast` | saturate_cast, saturate_cast::saturate_cast | 0.5011 | 0.2182 | 0.3597 | 0.2500 |
-| `fastFree` | fastFree | 0.4683 | 0.0833 | 0.2758 | 0.2500 |
-| `cvIsNaN` | cvIsNaN | 0.3814 | 0.3111 | 0.3463 | 0.2500 |
+| `cvCeil` | cvCeil, fast_math::cvCeil | 0.6619 | 0.3793 | 0.2272 | 0.2500 |
+| `cvFloor` | cvFloor, fast_math::cvFloor | 0.6349 | 0.3667 | 0.2176 | 0.2500 |
+| `fastMalloc` | fastMalloc | 0.6228 | 0.3636 | 0.3699 | 0.2500 |
+| `cvRound` | cvRound, fast_math::cvRound | 0.5624 | 0.2500 | 0.2286 | 0.2500 |
+| `cvIsInf` | cvIsInf | 0.5238 | 0.2667 | 0.1474 | 0.2500 |
+| `saturate_cast` | saturate_cast, saturate_cast::saturate_cast | 0.5011 | 0.2182 | 0.1348 | 0.2500 |
+| `fastFree` | fastFree | 0.4683 | 0.0833 | 0.0962 | 0.5000 |
+| `cvIsNaN` | cvIsNaN | 0.3814 | 0.3111 | 0.2322 | 0.2500 |
 
 ---
 

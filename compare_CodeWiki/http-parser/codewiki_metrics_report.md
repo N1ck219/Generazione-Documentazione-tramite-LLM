@@ -35,10 +35,9 @@ Strategie di matching (per menzione): `exact`=9.
 | BERTScore F1 | 9 | 0.6791 | 0.1223 | 0.4519 | 0.8293 |
 | ROUGE-L | 9 | 0.4269 | 0.2135 | 0.1739 | 0.7692 |
 | TF-IDF Cosine | 9 | 0.5096 | 0.1458 | 0.3381 | 0.7715 |
-| METEOR | 9 | 0.5608 | 0.1227 | 0.4255 | 0.7876 |
-| BLEURT Estimate | 9 | 0.6273 | 0.1041 | 0.4837 | 0.8163 |
+| METEOR | 9 | 0.4165 | 0.2020 | 0.0375 | 0.6347 |
 | Semantic Concept Checklist | 9 | 1.0000 | 0.0000 | 1.0000 | 1.0000 |
-| Actionability Score | 9 | 0.3167 | 0.1886 | 0.2500 | 0.8500 |
+| Actionability Score | 9 | 0.3444 | 0.1363 | 0.2500 | 0.6000 |
 | Error Documentation Rate | 1 | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
 | Edge Case Coverage | 1 | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
 | Length Ratio (CodeWiki/GT) | 9 | 0.7792 | 0.3655 | 0.0880 | 1.1250 |
@@ -51,15 +50,15 @@ Strategie di matching (per menzione): `exact`=9.
 
 | Funzione DB | Menzioni CodeWiki | SBERT | ROUGE-L | METEOR | Actionability |
 |-------------|-------------------|-------|---------|--------|---------------|
-| `http_status_str` | http_status_str | 0.8061 | 0.7692 | 0.7876 | 0.2500 |
-| `http_parser_pause` | http_parser_pause | 0.7896 | 0.2222 | 0.5059 | 0.2500 |
-| `http_method_str` | http_method_str | 0.7488 | 0.7273 | 0.7380 | 0.2500 |
-| `http_parser_set_max_header_size` | http_parser_set_max_header_size | 0.6951 | 0.4286 | 0.5618 | 0.2500 |
-| `http_should_keep_alive` | http_should_keep_alive | 0.6867 | 0.1875 | 0.4371 | 0.2500 |
-| `http_parser_version` | http_parser_version | 0.6772 | 0.1739 | 0.4255 | 0.8500 |
-| `http_errno_name` | http_errno_name | 0.6365 | 0.4000 | 0.5182 | 0.2500 |
-| `http_body_is_final` | http_body_is_final | 0.6343 | 0.6000 | 0.6171 | 0.2500 |
-| `http_errno_description` | http_errno_description | 0.5785 | 0.3333 | 0.4559 | 0.2500 |
+| `http_status_str` | http_status_str | 0.8061 | 0.7692 | 0.6250 | 0.2500 |
+| `http_parser_pause` | http_parser_pause | 0.7896 | 0.2222 | 0.3288 | 0.5000 |
+| `http_method_str` | http_method_str | 0.7488 | 0.7273 | 0.5270 | 0.2500 |
+| `http_parser_set_max_header_size` | http_parser_set_max_header_size | 0.6951 | 0.4286 | 0.6347 | 0.5000 |
+| `http_should_keep_alive` | http_should_keep_alive | 0.6867 | 0.1875 | 0.1149 | 0.2500 |
+| `http_parser_version` | http_parser_version | 0.6772 | 0.1739 | 0.0375 | 0.6000 |
+| `http_errno_name` | http_errno_name | 0.6365 | 0.4000 | 0.4593 | 0.2500 |
+| `http_body_is_final` | http_body_is_final | 0.6343 | 0.6000 | 0.4777 | 0.2500 |
+| `http_errno_description` | http_errno_description | 0.5785 | 0.3333 | 0.5439 | 0.2500 |
 
 ---
 

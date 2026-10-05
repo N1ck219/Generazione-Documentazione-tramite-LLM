@@ -23,8 +23,7 @@
     "length_ratio": 0.55,
     "brevity_penalty": 0.4412,
     "sbert_similarity": 0.6228,
-    "meteor_score": 0.4932,
-    "bleurt_estimate": 0.5398,
+    "meteor_score": 0.3699,
     "concept_checklist_score": 1.0,
     "concept_ref_active": [
       "ownership_memory",
@@ -65,8 +64,7 @@
     "length_ratio": 0.478,
     "brevity_penalty": 0.3359,
     "sbert_similarity": 0.4683,
-    "meteor_score": 0.2758,
-    "bleurt_estimate": 0.3588,
+    "meteor_score": 0.0962,
     "concept_checklist_score": 0.5,
     "concept_ref_active": [
       "ownership_memory",
@@ -76,7 +74,7 @@
       "ownership_memory"
     ],
     "bertscore_f1": 0.5473,
-    "actionability_score": 0.25,
+    "actionability_score": 0.5,
     "has_code_error_branch": false,
     "error_doc_rate": null,
     "code_guard_count": 0,
@@ -109,8 +107,7 @@
     "length_ratio": 1.704,
     "brevity_penalty": 1.0,
     "sbert_similarity": 0.5624,
-    "meteor_score": 0.4062,
-    "bleurt_estimate": 0.5281,
+    "meteor_score": 0.2286,
     "concept_checklist_score": 0.0,
     "concept_ref_active": [
       "bounds_range"
@@ -150,8 +147,7 @@
     "length_ratio": 0.756,
     "brevity_penalty": 0.7236,
     "sbert_similarity": 0.6349,
-    "meteor_score": 0.5008,
-    "bleurt_estimate": 0.5767,
+    "meteor_score": 0.2176,
     "concept_checklist_score": 0.0,
     "concept_ref_active": [
       "bounds_range"
@@ -191,8 +187,7 @@
     "length_ratio": 0.711,
     "brevity_penalty": 0.6661,
     "sbert_similarity": 0.6619,
-    "meteor_score": 0.5206,
-    "bleurt_estimate": 0.5917,
+    "meteor_score": 0.2272,
     "concept_checklist_score": 0.0,
     "concept_ref_active": [
       "bounds_range"
@@ -229,8 +224,7 @@
     "length_ratio": 0.879,
     "brevity_penalty": 0.8712,
     "sbert_similarity": 0.3814,
-    "meteor_score": 0.3463,
-    "bleurt_estimate": 0.4128,
+    "meteor_score": 0.2322,
     "concept_checklist_score": 1.0,
     "concept_ref_active": [],
     "concept_matched": [],
@@ -265,8 +259,7 @@
     "length_ratio": 0.824,
     "brevity_penalty": 0.8071,
     "sbert_similarity": 0.5238,
-    "meteor_score": 0.3952,
-    "bleurt_estimate": 0.4879,
+    "meteor_score": 0.1474,
     "concept_checklist_score": 1.0,
     "concept_ref_active": [],
     "concept_matched": [],
@@ -303,8 +296,7 @@
     "length_ratio": 0.268,
     "brevity_penalty": 0.0649,
     "sbert_similarity": 0.5011,
-    "meteor_score": 0.3597,
-    "bleurt_estimate": 0.3868,
+    "meteor_score": 0.1348,
     "concept_checklist_score": 0.5,
     "concept_ref_active": [
       "error_contract",

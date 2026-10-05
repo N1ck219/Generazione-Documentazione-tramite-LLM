@@ -31,24 +31,14 @@
       "p_value": 0.067626953125
     },
     {
-      "metric": "bleurt_estimate",
-      "label": "BLEURT (stima)",
-      "group": "nlp",
-      "n": 14,
-      "codewiki_mean": 0.3535,
-      "pipeline_mean": 0.4093,
-      "delta": 0.0557,
-      "p_value": 0.13525390625
-    },
-    {
       "metric": "meteor_score",
       "label": "METEOR",
       "group": "nlp",
       "n": 14,
-      "codewiki_mean": 0.2414,
-      "pipeline_mean": 0.2648,
-      "delta": 0.0235,
-      "p_value": 0.3575439453125
+      "codewiki_mean": 0.0852,
+      "pipeline_mean": 0.1664,
+      "delta": 0.0811,
+      "p_value": 0.000244140625
     },
     {
       "metric": "tfidf_cosine",
@@ -86,9 +76,9 @@
       "group": "nlp",
       "n": 14,
       "codewiki_mean": 0.25,
-      "pipeline_mean": 0.9143,
-      "delta": 0.6643,
-      "p_value": 0.0006817102933708383
+      "pipeline_mean": 0.925,
+      "delta": 0.675,
+      "p_value": 0.000697329779582932
     },
     {
       "metric": "error_doc_rate",
@@ -556,20 +546,12 @@
         "codewiki_wins": 3
       },
       {
-        "metric": "bleurt_estimate",
-        "label": "BLEURT (stima)",
-        "n": 14,
-        "pipeline_wins": 8,
-        "ties": 1,
-        "codewiki_wins": 5
-      },
-      {
         "metric": "meteor_score",
         "label": "METEOR",
         "n": 14,
-        "pipeline_wins": 7,
-        "ties": 2,
-        "codewiki_wins": 5
+        "pipeline_wins": 13,
+        "ties": 1,
+        "codewiki_wins": 0
       },
       {
         "metric": "tfidf_cosine",

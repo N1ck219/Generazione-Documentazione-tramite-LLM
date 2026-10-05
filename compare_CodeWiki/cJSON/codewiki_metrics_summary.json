@@ -108,18 +108,10 @@
   "meteor_score": {
     "label": "METEOR",
     "n": 20,
-    "mean": 0.2199,
-    "std": 0.125,
-    "min": 0.0344,
-    "max": 0.5233
-  },
-  "bleurt_estimate": {
-    "label": "BLEURT Estimate",
-    "n": 20,
-    "mean": 0.341,
-    "std": 0.1332,
-    "min": 0.1447,
-    "max": 0.7003
+    "mean": 0.1305,
+    "std": 0.0744,
+    "min": 0.0,
+    "max": 0.3074
   },
   "concept_checklist_score": {
     "label": "Semantic Concept Checklist",
@@ -132,10 +124,10 @@
   "actionability_score": {
     "label": "Actionability Score",
     "n": 20,
-    "mean": 0.25,
-    "std": 0.0,
+    "mean": 0.275,
+    "std": 0.075,
     "min": 0.25,
-    "max": 0.25
+    "max": 0.5
   },
   "error_doc_rate": {
     "label": "Error Documentation Rate",

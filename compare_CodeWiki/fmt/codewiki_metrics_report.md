@@ -35,8 +35,7 @@ Strategie di matching (per menzione): `namespace_stripped`=1.
 | BERTScore F1 | 1 | 0.3361 | 0.0000 | 0.3361 | 0.3361 |
 | ROUGE-L | 1 | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
 | TF-IDF Cosine | 1 | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
-| METEOR | 1 | 0.1242 | 0.0000 | 0.1242 | 0.1242 |
-| BLEURT Estimate | 1 | 0.1657 | 0.0000 | 0.1657 | 0.1657 |
+| METEOR | 1 | 0.0322 | 0.0000 | 0.0322 | 0.0322 |
 | Semantic Concept Checklist | 1 | 1.0000 | 0.0000 | 1.0000 | 1.0000 |
 | Actionability Score | 1 | 0.2500 | 0.0000 | 0.2500 | 0.2500 |
 | Error Documentation Rate | 0 | N/A | N/A | N/A | N/A |
@@ -51,7 +50,7 @@ Strategie di matching (per menzione): `namespace_stripped`=1.
 
 | Funzione DB | Menzioni CodeWiki | SBERT | ROUGE-L | METEOR | Actionability |
 |-------------|-------------------|-------|---------|--------|---------------|
-| `format` | fmt::format | 0.2484 | 0.0000 | 0.1242 | 0.2500 |
+| `format` | fmt::format | 0.2484 | 0.0000 | 0.0322 | 0.2500 |
 
 ---
 

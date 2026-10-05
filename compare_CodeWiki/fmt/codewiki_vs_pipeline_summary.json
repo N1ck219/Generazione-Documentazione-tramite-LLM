@@ -28,23 +28,13 @@
       "p_value": null
     },
     {
-      "metric": "bleurt_estimate",
-      "label": "BLEURT (stima)",
-      "group": "nlp",
-      "n": 1,
-      "codewiki_mean": 0.1657,
-      "pipeline_mean": 0.6474,
-      "delta": 0.4817,
-      "p_value": null
-    },
-    {
       "metric": "meteor_score",
       "label": "METEOR",
       "group": "nlp",
       "n": 1,
-      "codewiki_mean": 0.1242,
-      "pipeline_mean": 0.509,
-      "delta": 0.3848,
+      "codewiki_mean": 0.0322,
+      "pipeline_mean": 0.219,
+      "delta": 0.1868,
       "p_value": null
     },
     {
@@ -266,14 +256,6 @@
       {
         "metric": "bertscore_f1",
         "label": "BERTScore F1",
-        "n": 1,
-        "pipeline_wins": 1,
-        "ties": 0,
-        "codewiki_wins": 0
-      },
-      {
-        "metric": "bleurt_estimate",
-        "label": "BLEURT (stima)",
         "n": 1,
         "pipeline_wins": 1,
         "ties": 0,

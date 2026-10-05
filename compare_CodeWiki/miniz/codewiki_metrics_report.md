@@ -35,8 +35,7 @@ Strategie di matching (per menzione): `exact`=22, `none`=3.
 | BERTScore F1 | 14 | 0.4825 | 0.0617 | 0.3870 | 0.5962 |
 | ROUGE-L | 14 | 0.0867 | 0.0745 | 0.0000 | 0.2308 |
 | TF-IDF Cosine | 14 | 0.1208 | 0.0830 | 0.0000 | 0.2425 |
-| METEOR | 14 | 0.2414 | 0.0959 | 0.0447 | 0.3858 |
-| BLEURT Estimate | 14 | 0.3535 | 0.1195 | 0.1582 | 0.5718 |
+| METEOR | 14 | 0.0852 | 0.0448 | 0.0206 | 0.1630 |
 | Semantic Concept Checklist | 14 | 0.7143 | 0.4518 | 0.0000 | 1.0000 |
 | Actionability Score | 14 | 0.2500 | 0.0000 | 0.2500 | 0.2500 |
 | Error Documentation Rate | 8 | 0.1250 | 0.3307 | 0.0000 | 1.0000 |
@@ -51,20 +50,20 @@ Strategie di matching (per menzione): `exact`=22, `none`=3.
 
 | Funzione DB | Menzioni CodeWiki | SBERT | ROUGE-L | METEOR | Actionability |
 |-------------|-------------------|-------|---------|--------|---------------|
-| `mz_inflateReset` | mz_inflateReset | 0.6974 | 0.0741 | 0.3858 | 0.2500 |
-| `mz_compressBound` | mz_compressBound | 0.6693 | 0.0000 | 0.3347 | 0.2500 |
-| `mz_inflateInit2` | mz_inflateInit2 | 0.5474 | 0.0233 | 0.2853 | 0.2500 |
-| `mz_uncompress` | mz_uncompress | 0.5096 | 0.0476 | 0.2786 | 0.2500 |
-| `mz_deflateBound` | mz_deflateBound | 0.4634 | 0.2308 | 0.3471 | 0.2500 |
-| `mz_inflateInit` | mz_inflateInit | 0.4630 | 0.0656 | 0.2643 | 0.2500 |
-| `mz_inflate` | mz_inflate | 0.3994 | 0.0930 | 0.2462 | 0.2500 |
-| `mz_inflateEnd` | mz_inflateEnd | 0.3940 | 0.0308 | 0.2124 | 0.2500 |
-| `mz_deflateReset` | mz_deflateReset | 0.3767 | 0.1905 | 0.2836 | 0.2500 |
-| `mz_deflateEnd` | mz_deflateEnd | 0.3729 | 0.1818 | 0.2773 | 0.2500 |
-| `mz_deflate` | mz_deflate | 0.2744 | 0.1333 | 0.2038 | 0.2500 |
-| `mz_compress` | mz_compress | 0.1670 | 0.1429 | 0.1550 | 0.2500 |
-| `mz_deflateInit` | mz_deflateInit | 0.1209 | 0.0000 | 0.0604 | 0.2500 |
-| `mz_deflateInit2` | mz_deflateInit2 | 0.0895 | 0.0000 | 0.0447 | 0.2500 |
+| `mz_inflateReset` | mz_inflateReset | 0.6974 | 0.0741 | 0.1630 | 0.2500 |
+| `mz_compressBound` | mz_compressBound | 0.6693 | 0.0000 | 0.0206 | 0.2500 |
+| `mz_inflateInit2` | mz_inflateInit2 | 0.5474 | 0.0233 | 0.1101 | 0.2500 |
+| `mz_uncompress` | mz_uncompress | 0.5096 | 0.0476 | 0.0830 | 0.2500 |
+| `mz_deflateBound` | mz_deflateBound | 0.4634 | 0.2308 | 0.1617 | 0.2500 |
+| `mz_inflateInit` | mz_inflateInit | 0.4630 | 0.0656 | 0.0867 | 0.2500 |
+| `mz_inflate` | mz_inflate | 0.3994 | 0.0930 | 0.1060 | 0.2500 |
+| `mz_inflateEnd` | mz_inflateEnd | 0.3940 | 0.0308 | 0.0568 | 0.2500 |
+| `mz_deflateReset` | mz_deflateReset | 0.3767 | 0.1905 | 0.0638 | 0.2500 |
+| `mz_deflateEnd` | mz_deflateEnd | 0.3729 | 0.1818 | 0.1389 | 0.2500 |
+| `mz_deflate` | mz_deflate | 0.2744 | 0.1333 | 0.0645 | 0.2500 |
+| `mz_compress` | mz_compress | 0.1670 | 0.1429 | 0.0296 | 0.2500 |
+| `mz_deflateInit` | mz_deflateInit | 0.1209 | 0.0000 | 0.0806 | 0.2500 |
+| `mz_deflateInit2` | mz_deflateInit2 | 0.0895 | 0.0000 | 0.0276 | 0.2500 |
 
 ---
 

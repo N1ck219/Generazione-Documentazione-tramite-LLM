@@ -58,18 +58,10 @@
   "meteor_score": {
     "label": "METEOR",
     "n": 14,
-    "mean": 0.2414,
-    "std": 0.0959,
-    "min": 0.0447,
-    "max": 0.3858
-  },
-  "bleurt_estimate": {
-    "label": "BLEURT Estimate",
-    "n": 14,
-    "mean": 0.3535,
-    "std": 0.1195,
-    "min": 0.1582,
-    "max": 0.5718
+    "mean": 0.0852,
+    "std": 0.0448,
+    "min": 0.0206,
+    "max": 0.163
   },
   "concept_checklist_score": {
     "label": "Semantic Concept Checklist",
