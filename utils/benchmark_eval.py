@@ -214,7 +214,9 @@ def run_evaluation(
     sampling: str = "sequential",
     seed: Optional[int] = None,
     min_loc: Optional[int] = None,
-    functions_file: Optional[str] = None
+    functions_file: Optional[str] = None,
+    mutation: bool = False,
+    ambiguity: bool = False
 ):
     function_names = None
     if functions_file:
@@ -230,6 +232,10 @@ def run_evaluation(
         print(f"  Filtro Complessita': LOC minime >= {min_loc}")
     if roundtrip:
         print("  Round-Trip Differential Testing (Pytest): ATTIVO")
+        if mutation:
+            print("  Doc Mutation Score (mutanti del reference): ATTIVO")
+        if ambiguity:
+            print("  Specification Ambiguity Index (N sintesi dalla stessa doc): ATTIVO")
     print("=" * 65)
 
     candidates = get_benchmark_candidates(library, limit, sampling=sampling, seed=seed, min_loc=min_loc,
@@ -557,6 +563,8 @@ def run_evaluation(
         print("  AVVIO ROUND-TRIP DIFFERENTIAL TESTING INTEGRATO (Doc-to-Code & Dual Pytest)")
         print("=" * 65)
         from utils.roundtrip_eval import RoundTripEvaluator
+        from utils.doc_mutation_score import aggregate_mutation_results
+        from utils.spec_ambiguity import aggregate_ambiguity_results
         rt_evaluator = RoundTripEvaluator(llm_provider=llm)
         rt_results_list = []
         for idx_rt, r in enumerate(eval_results, 1):
@@ -565,7 +573,13 @@ def run_evaluation(
             doc = f"{r['generated_summary']}\n{r['generated_doxygen']}"
             print(f"\n[{idx_rt}/{len(eval_results)}] Dual Round-Trip test per: {fname}...")
             lib_val = r.get("library") or library
-            rt_res = rt_evaluator.evaluate_function_roundtrip(fname, sig, doc, source_code=r.get("source_code", ""), library=lib_val)
+            rt_res = rt_evaluator.evaluate_function_roundtrip(
+                fname, sig, doc, source_code=r.get("source_code", ""), library=lib_val,
+                mutation=mutation, ground_truth_doc=r.get("ground_truth", ""), ambiguity=ambiguity)
+            if rt_res.get("mutation"):
+                r["metrics"]["doc_mutation_score"] = rt_res["mutation"].get("mutation_score")
+            if rt_res.get("ambiguity"):
+                r["metrics"]["spec_ambiguity_index"] = rt_res["ambiguity"].get("sai")
             r["roundtrip"] = rt_res
             r["metrics"]["roundtrip_pass_rate"] = rt_res["execution"]["pass_rate"]
             diff = rt_res["execution"].get("differential", {})
@@ -581,6 +595,8 @@ def run_evaluation(
         roundtrip_summary = {
             "avg_pass_rate": avg_rt_pass,
             "avg_differential_agreement": avg_diff_agreement,
+            "mutation_summary": aggregate_mutation_results([x["mutation"] for x in rt_results_list if x.get("mutation")]) if mutation else None,
+            "ambiguity_summary": aggregate_ambiguity_results([x["ambiguity"] for x in rt_results_list if x.get("ambiguity")]) if ambiguity else None,
             "results": rt_results_list
         }
         print("\n" + "=" * 65)
@@ -626,6 +642,10 @@ def run_evaluation(
         cmd_parts.append(f"--functions {os.path.relpath(functions_file, ROOT_DIR)}")
     if roundtrip:
         cmd_parts.append("--roundtrip")
+        if mutation:
+            cmd_parts.append("--mutation")
+        if ambiguity:
+            cmd_parts.append("--ambiguity")
     else:
         cmd_parts.append("--no-roundtrip")
     if use_mock:
@@ -645,7 +665,9 @@ def run_evaluation(
         "seed": seed,
         "min_loc": min_loc,
         "functions_file": functions_file,
-        "use_mock": use_mock
+        "use_mock": use_mock,
+        "mutation": mutation,
+        "ambiguity": ambiguity
     }
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(bench_config, f, indent=2, ensure_ascii=False)
@@ -1004,6 +1026,8 @@ def main():
     parser.add_argument("--lang", default="en", choices=["en", "it"], help="Lingua per la documentazione LLM: 'en' (default) o 'it'")
     parser.add_argument("--roundtrip", dest="roundtrip", action="store_true", default=None, help="Esegue anche la validazione Round-Trip (Doc-to-Code Synthesis & Dual Pytest)")
     parser.add_argument("--no-roundtrip", dest="roundtrip", action="store_false", help="Disabilita la validazione Round-Trip a fine benchmark")
+    parser.add_argument("--mutation", action="store_true", help="Con il round-trip: calcola il Doc Mutation Score (mutanti del reference contro la suite derivata dalla doc)")
+    parser.add_argument("--ambiguity", action="store_true", help="Con il round-trip: calcola lo Specification Ambiguity Index (N sintesi indipendenti dalla stessa doc)")
     parser.add_argument("--mock", action="store_true", help="Forza l'uso del MockLLM senza effettuare chiamate API reali")
     parser.add_argument("--functions", default=None, help="File di testo con un nome canonico per riga (es. 'XMLNode::Value'): valuta esattamente quelle funzioni, ignorando -n e il campionamento")
 
@@ -1099,7 +1123,9 @@ def main():
         sampling=sampling_strategy,
         seed=args.seed,
         min_loc=args.min_loc,
-        functions_file=args.functions
+        functions_file=args.functions,
+        mutation=args.mutation,
+        ambiguity=args.ambiguity
     )
 
 

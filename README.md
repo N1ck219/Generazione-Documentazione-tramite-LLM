@@ -275,6 +275,13 @@ Misura se la documentazione basta a ricostruire il comportamento della funzione.
 6. **Metriche**: *pass rate* di $f_{doc}$ (self-consistency), *reference pass rate* di $f_{ref}$ e *dual agreement* (frazione di test con lo stesso esito, passato su entrambe, sul totale).
 7. **Classificazione della funzione** (`classify_function_type`): *Stateful / Object-Graph* (metodi C++, nodi cJSON/XML), *Pointer / Buffer-Driven* (puntatori, buffer, `size_t`), *Stateless / Primitive*.
 
+#### 4.4.1 Metriche sulla forza del contratto (opzionali)
+
+Due metriche aggiuntive, attivabili con `--mutation` e `--ambiguity`, misurano **quanto la documentazione determina il comportamento**, non quanto assomigli al Ground Truth. Definizioni e interpretazione in `METRICHE_BENCHMARK_GUIDA.md`.
+
+- **Doc Mutation Score** (`utils/code_mutator.py`, `utils/doc_mutation_score.py`): dal reference si generano mutanti AST di primo ordine; si misura quanti ne uccide la suite scritta dalla sola documentazione. Una suite *signature-only* (stesso generatore, nessuna doc) isola il contributo della documentazione (*Doc Lift*).
+- **Specification Ambiguity Index** (`utils/spec_ambiguity.py`): N sintesi indipendenti (temperatura 0.8) dalla stessa documentazione eseguite su sonde comuni; il disaccordo tra implementazioni misura l'ambiguità. Con il reference ogni sonda è classificata come *determinata corretta*, *determinata ma divergente* (informazione nascosta) o *ambigua*.
+
 `utils/roundtrip_error_analysis.py` classifica i test falliti in una tassonomia: simbolo/ambiente mancante, mismatch di interfaccia, fallimento di contratto comportamentale, bug del test harness, errore di sintassi, timeout, altro. Questo separa gli errori attribuibili alla documentazione da quelli causati dalla catena di valutazione.
 
 ### 4.5 Output di un run
@@ -315,6 +322,7 @@ python utils/benchmark_eval.py -l miniz -n 5 --mock --no-roundtrip     # offline
 | `--seed`, `--min-loc`, `--functions` | – | Riproducibilità e filtri (§4.1). |
 | `-m` / `--mode` | `single` | `single` o `multiagent`. |
 | `--roundtrip` / `--no-roundtrip` | attivo | Esegue o salta il round-trip. |
+| `--mutation`, `--ambiguity` | off | Con il round-trip: Doc Mutation Score e Specification Ambiguity Index (§4.4.1). |
 | `--lang` | `en` | Lingua della documentazione. |
 | `--mock` | off | `MockLLMProvider`, nessun costo API. |
 
