@@ -222,6 +222,43 @@ Poiché librerie C/C++ diverse presentano paradigmi computazionali eterogenei, i
 
 ---
 
+### 🔹 Doc Mutation Score (DMS): forza del contratto documentato
+* **Descrizione Tecnica**: misura quanto la documentazione *vincola* il comportamento. Dal reference Python (trasposizione del sorgente C/C++) si generano **mutanti di primo ordine** con [`utils/code_mutator.py`](utils/code_mutator.py) (operatori: `relational`, `arithmetic`, `logical`, `negation`, `guard_removal`, `constant`, `return_value`, `stmt_deletion`; solo la funzione target viene mutata, non gli helper dello scaffold). La suite pytest generata **dalla sola documentazione** viene eseguita sul reference e su ogni mutante. Un test è *informativo* se passa sul reference; un mutante è **ucciso** se almeno un test informativo non lo supera più (fallimento, errore o timeout). Una doc che fissa rami d'errore, boundary e valori di ritorno uccide molti mutanti; una doc vaga lascia sopravvivere i mutanti.
+* **Come viene Calcolata** (`utils/doc_mutation_score.py`):
+  $$\text{DMS} = \frac{|\text{mutanti uccisi dalla suite}|}{|\text{mutanti}|}$$
+  Il punteggio dipende anche dal generatore di test, quindi lo stesso generatore viene eseguito anche su una suite **`signature_only`** (nessuna documentazione, solo nome e firma) e, se disponibile, sulla Ground Truth. Da qui:
+  - **Adjusted Score** = uccisi dalla suite / mutanti uccisi da *almeno una* suite (approssimazione dei mutanti non equivalenti, l'equivalenza esatta non è decidibile; richiede ≥ 2 suite);
+  - **Doc Lift** = `adjusted(doc) − adjusted(signature_only)`: il contributo della sola documentazione al netto del generatore di test.
+* **Come Interpretare**:
+  - **Doc Lift > 0 e alto**: la documentazione aggiunge vincoli comportamentali che nome e firma non danno.
+  - **Doc Lift ≈ 0**: la doc è tautologica rispetto alla firma, anche se lessicalmente simile al Ground Truth.
+  - Il profilo `by_operator` mostra *che cosa* la doc non pinza (tipicamente `guard_removal` e `return_value` quando mancano rami d'errore).
+* **Doppio uso**: il DMS della suite sul reference è anche una misura di **sensibilità dello strumento**: se la suite non distingue il reference dai suoi mutanti, un Dual Agreement alto non è informativo.
+* **Limiti**: i mutanti equivalenti gonfiano il denominatore del DMS grezzo (da qui l'Adjusted Score); il punteggio dipende dalla qualità del reference traspilato; costo ≈ (numero di mutanti × suite) esecuzioni pytest.
+* **Attivazione**: `python utils/roundtrip_eval.py --mutation [--max-mutants 20]` oppure `benchmark_eval.py --roundtrip --mutation`.
+
+---
+
+### 🔹 Specification Ambiguity Index (SAI): quanti comportamenti ammette la documentazione
+* **Descrizione Tecnica**: la stessa documentazione viene data **N volte** al Coder (temperatura 0.8, default N=5). Se non è ambigua, le N implementazioni indipendenti si comportano allo stesso modo. Le implementazioni vengono eseguite in subprocess isolati su un insieme comune di **sonde** (`probe_*`: input senza oracolo, scritti dal solo contratto e dalla firma, che restituiscono valore di ritorno e stato finale di parametri di output). Gli esiti sono canonicalizzati (`bool→int`, `2.0→2`, tuple e liste equivalenti; gli oggetti contano solo per tipo, per rispettare il black-box). Le sonde su cui *tutte* le implementazioni sollevano `TypeError`/`NameError` sono scartate (sonda mal formata o scaffold incompleto, non comportamento).
+* **Come viene Calcolata** (`utils/spec_ambiguity.py`), con $N$ implementazioni valide e $c_k$ implementazioni nel cluster di esito $k$ su una sonda:
+  $$\text{SAI} = \underset{\text{sonde}}{\text{media}}\left(1 - \frac{\sum_k \binom{c_k}{2}}{\binom{N}{2}}\right) \in [0,1]$$
+  (0 = tutte concordano, 1 = tutte diverse). Si riportano anche `ambiguous_probe_fraction` e l'entropia comportamentale normalizzata.
+* **Scomposizione diagnostica (richiede il reference).** Ogni sonda cade in uno di 4 casi, che separano due cause di fallimento che il solo Dual Agreement confonde:
+  | Caso | Significato |
+  | :--- | :--- |
+  | `determined_correct` | le N implementazioni concordano e coincidono col reference |
+  | `determined_divergent` | concordano tra loro ma divergono dal reference → **informazione nascosta** (*information hiding*: la doc è non ambigua ma non contiene un dettaglio del codice) |
+  | `ambiguous_covers_ref` | discordano, almeno una coincide col reference → **doc ambigua** |
+  | `ambiguous_divergent` | discordano e nessuna coincide col reference |
+
+  `diagnosis`: `well_specified` se `determined_correct ≥ 0.8`, altrimenti `ambiguous_spec` o `hidden_information` in base alla causa prevalente.
+* **Come Interpretare**: SAI basso con `determined_divergent` alto è il pattern delle funzioni *Stateful / Object-Graph* (contratto pubblico chiaro, dettagli interni nascosti); SAI alto indica che la doc va riscritta, perché ammette comportamenti diversi.
+* **Limiti**: i valori dipendono dalla qualità e dalla copertura delle sonde (generate una sola volta per funzione e condivise); `object_mode="type"` ignora le differenze di stato interno degli oggetti; costo = N sintesi aggiuntive per funzione.
+* **Attivazione**: `python utils/roundtrip_eval.py --ambiguity [--ambiguity-samples 5]` oppure `benchmark_eval.py --roundtrip --ambiguity`.
+
+---
+
 ### 🔹 Judge / Critic Agent Evaluation (Pipeline Multi-Agente Specialistica)
 * **Descrizione Tecnica**: Nella modalità multi-agente (`--multiagent`), dopo che il blocco Doxygen supera la validazione deterministica formale dell'AST Verifier, interviene un agente di audit dedicato (**Judge / Critic Agent**). Il Giudice confronta in modo critico la documentazione generata con l'implementazione C/C++ originale, valutando la completezza dei contratti, la chiarezza sulle pre/post-condizioni, la gestione dei puntatori NULL e dei codici di errore.
 * **Scala di Valutazione (1 - 5)**:

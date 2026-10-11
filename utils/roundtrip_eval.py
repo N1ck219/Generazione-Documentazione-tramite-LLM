@@ -29,6 +29,19 @@ from src.context_scaffold import (
     format_ast_context_for_prompt,
     get_library_runtime_scaffold,
 )
+from utils.pytest_runner import run_pytest_suite
+from utils.doc_mutation_score import (
+    DOC_SUITE,
+    BASELINE_SUITE,
+    evaluate_doc_mutation_score,
+    aggregate_mutation_results,
+)
+from utils.spec_ambiguity import (
+    build_probe_prompt,
+    extract_probes_code,
+    evaluate_spec_ambiguity as compute_spec_ambiguity,
+    aggregate_ambiguity_results,
+)
 from utils.roundtrip_error_analysis import (
     analyze_roundtrip_errors,
     save_roundtrip_error_report,
@@ -101,7 +114,7 @@ class RoundTripEvaluator:
             time.sleep(self.min_delay - elapsed)
         self.last_call_time = time.time()
 
-    def _call_gemini(self, prompt: str) -> str:
+    def _call_gemini(self, prompt: str, temperature: float = 0.2) -> str:
         import time
         max_retries = 3
         for attempt in range(max_retries):
@@ -109,7 +122,7 @@ class RoundTripEvaluator:
                 self._wait_rate_limit()
                 if self.use_new_sdk:
                     from google.genai import types
-                    config = types.GenerateContentConfig(temperature=0.2)
+                    config = types.GenerateContentConfig(temperature=temperature)
                     response = self.client.models.generate_content(
                         model=self.model_name,
                         contents=prompt,
@@ -132,7 +145,7 @@ class RoundTripEvaluator:
                 time.sleep(4)
         return ""
 
-    def synthesize_code_from_doc(self, func_name: str, signature: str, docstring: str, library: str = "", context_scaffold: str = "") -> str:
+    def synthesize_code_from_doc(self, func_name: str, signature: str, docstring: str, library: str = "", context_scaffold: str = "", temperature: float = 0.2) -> str:
         """
         Passaggio 1: Rigenera il codice Python della funzione basandosi sulla documentazione generata
         e sullo Scaffold di Contesto Esterno (definizioni dei tipi, enum e helper della libreria).
@@ -193,7 +206,7 @@ C/C++ Signature: `{signature}`
 - Return ONLY valid Python code inside a single ```python ... ``` block without conversational filler.
 """
         # _call_gemini puo' restituire None (errore API, risposta bloccata): sintesi vuota, non un crash
-        response = self._call_gemini(prompt) or ""
+        response = self._call_gemini(prompt, temperature=temperature) or ""
         match = re.search(r"```python\s*(.*?)\s*```", response, re.DOTALL)
         code = match.group(1).strip() if match else response.strip()
 
@@ -409,92 +422,7 @@ Code:
         sia sul codice di riferimento originale (Dual Differential Execution), calcolando l'accordo differenziale.
         """
         def _exec_suite(code_under_test: str) -> Dict[str, Any]:
-            full_code = f"""# Auto-generated Round-Trip Differential Test
-import pytest
-try:
-    from hypothesis import given, strategies as st, settings
-except ImportError:
-    pass
-
-# --- External Environment & Runtime Scaffold Mocks ---
-{runtime_scaffold}
-
-# --- Code Under Test ---
-{code_under_test}
-
-# --- Test Suite ---
-{test_code}
-"""
-            with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as tmp:
-                tmp_path = tmp.name
-                tmp.write(full_code)
-
-            venv_pytest = os.path.join(ROOT_DIR, ".venv", "Scripts", "pytest.exe")
-            pytest_cmd = venv_pytest if os.path.exists(venv_pytest) else "pytest"
-
-            try:
-                res = subprocess.run(
-                    [pytest_cmd, tmp_path, "-v", "--tb=short"],
-                    capture_output=True,
-                    text=True,
-                    timeout=timeout_sec
-                )
-                stdout = res.stdout
-                passed_match = re.search(r"(\d+)\s+passed", stdout)
-                failed_match = re.search(r"(\d+)\s+failed", stdout)
-                error_match = re.search(r"(\d+)\s+error", stdout)
-
-                passed = int(passed_match.group(1)) if passed_match else 0
-                failed = int(failed_match.group(1)) if failed_match else 0
-                errors = int(error_match.group(1)) if error_match else 0
-                total = passed + failed + errors
-
-                pass_rate = round((passed / total) * 100.0, 1) if total > 0 else 0.0
-
-                semantic_passed = len(re.findall(r"test_semantic[^\s]+ PASSED", stdout))
-                semantic_failed = len(re.findall(r"test_semantic[^\s]+ (FAILED|ERROR)", stdout))
-                auto_passed = len(re.findall(r"test_auto[^\s]+ PASSED", stdout))
-                auto_failed = len(re.findall(r"test_auto[^\s]+ (FAILED|ERROR)", stdout))
-
-                # Estrazione per-test del risultato (per confronto differenziale)
-                passed_test_names = set(re.findall(r"(test_[^\s]+)\s+PASSED", stdout))
-
-                return {
-                    "total_tests": total,
-                    "passed": passed,
-                    "failed": failed,
-                    "errors": errors,
-                    "pass_rate": pass_rate,
-                    "semantic_tests": {
-                        "passed": semantic_passed,
-                        "failed": semantic_failed,
-                        "total": semantic_passed + semantic_failed
-                    },
-                    "auto_property_tests": {
-                        "passed": auto_passed,
-                        "failed": auto_failed,
-                        "total": auto_passed + auto_failed
-                    },
-                    "passed_test_names": passed_test_names,
-                    "is_success": (res.returncode == 0 and passed > 0),
-                    "test_output": stdout[-1500:] if len(stdout) > 1500 else stdout
-                }
-            except subprocess.TimeoutExpired:
-                return {
-                    "total_tests": 0, "passed": 0, "failed": 0, "errors": 1,
-                    "pass_rate": 0.0, "passed_test_names": set(), "is_success": False, "test_output": "Execution timed out."
-                }
-            except Exception as e:
-                return {
-                    "total_tests": 0, "passed": 0, "failed": 0, "errors": 1,
-                    "pass_rate": 0.0, "passed_test_names": set(), "is_success": False, "test_output": str(e)
-                }
-            finally:
-                if os.path.exists(tmp_path):
-                    try:
-                        os.remove(tmp_path)
-                    except OSError:
-                        pass
+            return run_pytest_suite(code_under_test, test_code, runtime_scaffold=runtime_scaffold, timeout_sec=timeout_sec)
 
         # 1. Esecuzione sul codice sintetizzato da Documentazione (Doc-Driven)
         synth_exec = _exec_suite(synthesized_code)
@@ -526,9 +454,12 @@ except ImportError:
 
         # Pulizia del set non serializzabile in JSON
         synth_exec.pop("passed_test_names", None)
+        synth_exec.pop("failed_test_names", None)
         return synth_exec
 
-    def evaluate_function_roundtrip(self, func_name: str, signature: str, docstring: str, source_code: str = "", library: str = "", num_tests: Optional[int] = None) -> Dict[str, Any]:
+    def evaluate_function_roundtrip(self, func_name: str, signature: str, docstring: str, source_code: str = "", library: str = "", num_tests: Optional[int] = None,
+                                    mutation: bool = False, max_mutants: int = 20, ground_truth_doc: str = "",
+                                    ambiguity: bool = False, ambiguity_samples: int = 5) -> Dict[str, Any]:
         """Esegue l'intero ciclo di valutazione Round-Trip su una singola funzione con Dual Differential Testing e Context Scaffold."""
         # 0. Risoluzione della libreria e dello Scaffold di Contesto Esterno
         inferred_lib = infer_library_name(func_name, signature, given_library=library)
@@ -552,7 +483,7 @@ except ImportError:
         # 5. Tassonomia della funzione
         category = classify_function_type(func_name, signature)
 
-        return {
+        result = {
             "function_name": func_name,
             "library": inferred_lib,
             "signature": signature,
@@ -562,6 +493,60 @@ except ImportError:
             "test_suite": test_suite,
             "execution": test_results
         }
+
+        # 6. Metriche opzionali sulla "forza" del contratto documentato (richiedono il reference)
+        if mutation and ref_code:
+            result["mutation"] = self.evaluate_doc_mutation(
+                func_name, signature, test_suite, ref_code, inferred_lib, ast_ctx, runtime_scaff,
+                max_mutants=max_mutants, ground_truth_doc=ground_truth_doc)
+        if ambiguity:
+            result["ambiguity"] = self.evaluate_spec_ambiguity(
+                func_name, signature, docstring, ref_code, inferred_lib, ast_ctx, runtime_scaff,
+                n_samples=ambiguity_samples)
+        return result
+
+    # ------------------------------------------------------------------
+    # Doc Mutation Score (utils/doc_mutation_score.py)
+    # ------------------------------------------------------------------
+    NO_DOC_PLACEHOLDER = "(No documentation is available. Infer the behavior only from the function name and signature.)"
+
+    def evaluate_doc_mutation(self, func_name: str, signature: str, doc_suite: str, ref_code: str,
+                              library: str, ast_ctx: str, runtime_scaffold: str,
+                              max_mutants: int = 20, ground_truth_doc: str = "") -> Dict[str, Any]:
+        """
+        Mutation score della suite derivata dalla documentazione, con baseline "solo firma"
+        (stesso generatore di test, nessuna documentazione) per isolare il contributo della doc.
+        Se e' fornita la documentazione d'autore, viene valutata come ulteriore suite di confronto.
+        """
+        suites = {DOC_SUITE: doc_suite}
+        suites[BASELINE_SUITE] = self.generate_pytest_suite(
+            func_name, signature, self.NO_DOC_PLACEHOLDER, library=library, context_scaffold=ast_ctx)
+        if ground_truth_doc:
+            suites["ground_truth"] = self.generate_pytest_suite(
+                func_name, signature, ground_truth_doc, library=library, context_scaffold=ast_ctx)
+        target = func_name.split("::")[-1]
+        return evaluate_doc_mutation_score(ref_code, suites, [target], runtime_scaffold=runtime_scaffold,
+                                           max_mutants=max_mutants)
+
+    # ------------------------------------------------------------------
+    # Specification Ambiguity Index (utils/spec_ambiguity.py)
+    # ------------------------------------------------------------------
+    AMBIGUITY_TEMPERATURE = 0.8
+
+    def generate_probe_suite(self, func_name: str, signature: str, docstring: str, library: str = "",
+                             context_scaffold: str = "", num_probes: int = 15) -> str:
+        prompt = build_probe_prompt(func_name, signature, docstring, library, context_scaffold, num_probes)
+        return extract_probes_code(self._call_gemini(prompt) or "")
+
+    def evaluate_spec_ambiguity(self, func_name: str, signature: str, docstring: str, ref_code: str,
+                                library: str, ast_ctx: str, runtime_scaffold: str,
+                                n_samples: int = 5) -> Dict[str, Any]:
+        probes = self.generate_probe_suite(func_name, signature, docstring, library, ast_ctx)
+        return compute_spec_ambiguity(
+            synthesize=lambda i: self.synthesize_code_from_doc(
+                func_name, signature, docstring, library=library, context_scaffold=ast_ctx,
+                temperature=self.AMBIGUITY_TEMPERATURE),
+            probes_code=probes, reference_code=ref_code, runtime_scaffold=runtime_scaffold, n_samples=n_samples)
 
 
 def main():
@@ -573,6 +558,10 @@ def main():
     parser.add_argument("-o", "--output-suffix", default="", help="Suffisso per i file di output (es. 'single' o 'multiagent')")
     parser.add_argument("-r", "--random", action="store_true", help="Campionamento casuale uniforme tra le funzioni del file")
     parser.add_argument("-s", "--seed", type=int, default=None, help="Seed per la riproducibilità del campionamento casuale")
+    parser.add_argument("--mutation", action="store_true", help="Calcola il Doc Mutation Score (mutanti del reference vs suite derivata dalla doc)")
+    parser.add_argument("--max-mutants", type=int, default=20, help="Numero massimo di mutanti per funzione (default: 20)")
+    parser.add_argument("--ambiguity", action="store_true", help="Calcola lo Specification Ambiguity Index (N sintesi indipendenti dalla stessa doc)")
+    parser.add_argument("--ambiguity-samples", type=int, default=5, help="Numero N di sintesi per lo SAI (default: 5)")
     args = parser.parse_args()
 
     json_path = os.path.join(ROOT_DIR, args.json) if not os.path.isabs(args.json) else args.json
@@ -642,7 +631,10 @@ def main():
                 pass
 
         print(f"\n[{idx}/{len(candidates)}] Dual Testing: {fname} (Lib: {lib_name or 'Auto'})...")
-        res = evaluator.evaluate_function_roundtrip(fname, sig, doc, source_code=source_code, library=lib_name, num_tests=num_tests_arg)
+        res = evaluator.evaluate_function_roundtrip(
+            fname, sig, doc, source_code=source_code, library=lib_name, num_tests=num_tests_arg,
+            mutation=args.mutation, max_mutants=args.max_mutants, ground_truth_doc=item.get("ground_truth", ""),
+            ambiguity=args.ambiguity, ambiguity_samples=args.ambiguity_samples)
         exec_res = res["execution"]
         sem = exec_res.get("semantic_tests", {})
         auto = exec_res.get("auto_property_tests", {})
@@ -651,6 +643,12 @@ def main():
         breakdown_str = f" [Sem: {sem.get('passed', 0)}/{sem.get('total', 0)} | Auto: {auto.get('passed', 0)}/{auto.get('total', 0)}]" if sem or auto else ""
         diff_str = f" | Dual Agreement: {diff.get('differential_agreement_rate', 'N/A')}% (Ref Pass: {diff.get('reference_pass_rate', 'N/A')}%)" if diff else ""
         print(f"  -> Pass Rate Doc: {exec_res['pass_rate']}% ({exec_res['passed']}/{exec_res['total_tests']} test passati){breakdown_str}{diff_str}")
+        mut = res.get("mutation")
+        if mut:
+            print(f"  -> Doc Mutation Score: {mut.get('mutation_score')} (adjusted: {mut.get('adjusted_score')}, doc lift: {mut.get('doc_lift')}, mutanti: {mut.get('n_mutants')})")
+        amb = res.get("ambiguity")
+        if amb:
+            print(f"  -> Spec Ambiguity Index: {amb.get('sai')} (diagnosi: {amb.get('diagnosis')}, impl valide: {amb.get('n_valid_impls')}/{amb.get('n_samples')})")
         summary_results.append(res)
 
     if db_conn:
@@ -667,6 +665,13 @@ def main():
         print(f"  Dual Agreement Medio (Doc vs Reference C/C++ Reale): {avg_diff_rate}%")
     print("=" * 65)
 
+    mutation_summary = aggregate_mutation_results([r["mutation"] for r in summary_results if r.get("mutation")]) if args.mutation else None
+    ambiguity_summary = aggregate_ambiguity_results([r["ambiguity"] for r in summary_results if r.get("ambiguity")]) if args.ambiguity else None
+    if mutation_summary:
+        print(f"  Doc Mutation Score medio: {mutation_summary['avg_mutation_score']} | adjusted: {mutation_summary['avg_adjusted_score']} | doc lift: {mutation_summary['avg_doc_lift']}")
+    if ambiguity_summary:
+        print(f"  Spec Ambiguity Index medio: {ambiguity_summary['avg_sai']} | tassonomia: {ambiguity_summary['avg_taxonomy']}")
+
     # Analisi diagnostica delle tipologie di errore
     error_analysis = analyze_roundtrip_errors(summary_results)
 
@@ -678,6 +683,8 @@ def main():
         json.dump({
             "avg_pass_rate": avg_pass_rate,
             "avg_differential_agreement": avg_diff_rate,
+            "mutation_summary": mutation_summary,
+            "ambiguity_summary": ambiguity_summary,
             "error_analysis": {
                 "summary": error_analysis["summary"],
                 "categories": error_analysis["categories"],
